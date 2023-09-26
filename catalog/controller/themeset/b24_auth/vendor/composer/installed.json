@@ -1,0 +1,106 @@
+{
+    "packages": [
+        {
+            "name": "mervick/curl-helper",
+            "version": "v1.1.0",
+            "version_normalized": "1.1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mervick/curl-helper.git",
+                "reference": "64cb70b8d1211b8d1179b309b7177cbc8eccde1a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mervick/curl-helper/zipball/64cb70b8d1211b8d1179b309b7177cbc8eccde1a",
+                "reference": "64cb70b8d1211b8d1179b309b7177cbc8eccde1a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "time": "2016-04-28T22:37:39+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-0": {
+                    "CurlHelper": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Andrey Izman",
+                    "email": "izman.dev@gmail.com"
+                }
+            ],
+            "description": "PHP Curl Helper",
+            "support": {
+                "issues": "https://github.com/mervick/curl-helper/issues",
+                "source": "https://github.com/mervick/curl-helper/tree/master"
+            },
+            "install-path": "../mervick/curl-helper"
+        },
+        {
+            "name": "ujy/bitrix24_api_authorization",
+            "version": "dev-master",
+            "version_normalized": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/xUJYx/bitrix24_api_authorization.git",
+                "reference": "f176914914281355244d595587f09ec4a88e59fb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/xUJYx/bitrix24_api_authorization/zipball/f176914914281355244d595587f09ec4a88e59fb",
+                "reference": "f176914914281355244d595587f09ec4a88e59fb",
+                "shasum": ""
+            },
+            "require": {
+                "mervick/curl-helper": "^1.1"
+            },
+            "time": "2019-04-14T09:45:17+00:00",
+            "default-branch": true,
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ievgenii Gardysh",
+                    "email": "ujy@ukr.net",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Oleg Pravdin",
+                    "email": "opravdin@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Authorization class to easy get Bitrix24 Access Tokens for use in API",
+            "homepage": "https://github.com/xUJYx/bitrix24_api_authorization",
+            "keywords": [
+                "Bitrix24",
+                "access",
+                "api",
+                "token"
+            ],
+            "support": {
+                "issues": "https://github.com/xUJYx/bitrix24_api_authorization/issues",
+                "source": "https://github.com/xUJYx/bitrix24_api_authorization/tree/1.1.1"
+            },
+            "install-path": "../ujy/bitrix24_api_authorization"
+        }
+    ],
+    "dev": true,
+    "dev-package-names": []
+}

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name>AVCLUB WishList</name>
+	<code>avclub_wishlist</code>
+	<version>0.0.1.0</version>
+	<author>Maxim Babasik (bu.babasik@gmail.com)</author>
+
+	<file path="catalog/controller/startup/startup.php">
+		<operation error="skip">
+			<search><![CDATA[// Cart]]></search>
+			<add position="before">
+				<![CDATA[
+				$this->registry->set('visitor', new Visitor($this->registry));
+				$this->registry->set('wishlist', new Wishlist($this->registry));
+				]]>
+			</add>
+		</operation>
+	</file>
+
+
+</modification>

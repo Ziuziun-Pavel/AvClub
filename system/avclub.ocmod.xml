@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name>Доработки темы avclub</name>
+	<code>avclub_theme</code>
+	<version>0.0.1.0</version>
+	<author>Maxim Babasik (bu.babasik@gmail.com)</author>
+	
+
+	<!-- LANGUAGE -->
+	<file path="catalog/language/ru-ru/ru-ru.php">
+		<operation error="skip">
+			<search><![CDATA['<i class="fa fa-home"></i>']]></search>
+			<add position="replace"><![CDATA['Главная']]></add>
+		</operation>
+	</file>
+	<!-- # LANGUAGE -->
+
+
+
+	<!-- CANONICAL -->
+	<file path="catalog/controller/product/category.php">
+		<operation error="skip">
+			<search><![CDATA[$this->document->addLink($this->url->link('product/category', 'path=' . $category_info['category_id'], true), 'canonical');]]></search>
+			<add position="replace"><![CDATA[//$this->document->addLink($this->url->link('product/category', 'path=' . $category_info['category_id'], true), 'canonical');]]></add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[if ($page == 1) {]]></search>
+			<add position="before"><![CDATA[$this->document->addLink($this->url->link('product/category', 'path=' . $category_info['category_id'], true), 'canonical');]]></add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[$this->document->addLink($this->url->link('product/category', 'path=' . $category_info['category_id'], true), 'prev');]]></search>
+			<add position="replace"><![CDATA[$this->document->addLink($this->url->link('product/category', 'path=' . $category_info['category_id'] . '&page='. ($page - 1), true), 'prev');]]></add>
+		</operation>
+	</file>
+	<file path="catalog/controller/product/manufacturer.php">
+		<operation error="skip">
+			<search><![CDATA[$this->document->addLink($this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'], true), 'canonical');]]></search>
+			<add position="replace"><![CDATA[//$this->document->addLink($this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'], true), 'canonical');]]></add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[if ($page == 1) {]]></search>
+			<add position="before"><![CDATA[$this->document->addLink($this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'], true), 'canonical');]]></add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[$this->document->addLink($this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'], true), 'prev');]]></search>
+			<add position="replace">
+				<![CDATA[$this->document->addLink($this->url->link('product/manufacturer/info', 'manufacturer_id=' . $this->request->get['manufacturer_id'] . $url . '&page='. ($page - 1), true), 'prev');]]>
+			</add>
+		</operation>
+	</file>
+	<file path="catalog/controller/product/search.php">
+		<operation error="skip">
+			<search><![CDATA[$this->document->addLink($this->url->link('product/search', '', true), 'canonical');]]></search>
+			<add position="replace"><![CDATA[//$this->document->addLink($this->url->link('product/search', '', true), 'canonical');]]></add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[if ($page == 1) {]]></search>
+			<add position="before"><![CDATA[$this->document->addLink($this->url->link('product/search', '', true), 'canonical');]]></add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[ $this->document->addLink($this->url->link('product/search', '', true), 'prev');]]></search>
+			<add position="replace"><![CDATA[$this->document->addLink($this->url->link('product/search', $url . '&page='. ($page - 1), true), 'prev');]]></add>
+		</operation>
+	</file>
+	<file path="catalog/controller/product/special.php">
+		<operation error="skip">
+			<search><![CDATA[$this->document->addLink($this->url->link('product/special', '', true), 'canonical');]]></search>
+			<add position="replace"><![CDATA[//$this->document->addLink($this->url->link('product/special', '', true), 'canonical');]]></add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[if ($page == 1) {]]></search>
+			<add position="before"><![CDATA[$this->document->addLink($this->url->link('product/special', '', true), 'canonical');]]></add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[$this->document->addLink($this->url->link('product/special', '', true), 'prev');]]></search>
+			<add position="replace"><![CDATA[$this->document->addLink($this->url->link('product/special', 'page='. ($page - 1), true), 'prev');]]></add>
+		</operation>
+	</file>
+	<file path="catalog/controller/module/mega_filter.php">
+		<operation error="skip">
+			<search><![CDATA[$this->document->addLink($this->url->link('module/mega_filter/results', $url . '&page=' . $pagination->page), 'canonical');]]></search>
+			<add position="replace"><![CDATA[$this->document->addLink($this->url->link('module/mega_filter/results', $url), 'canonical');]]></add>
+		</operation>
+	</file>
+	<file path="catalog/controller/newsblog/category.php">
+		<operation error="skip">
+			<search><![CDATA[$this->document->addLink($this->url->link('newsblog/category', 'newsblog_path=' . $category_info['category_id'], 'SSL'), 'canonical');]]></search>
+			<add position="replace"><![CDATA[//$this->document->addLink($this->url->link('newsblog/category', 'newsblog_path=' . $category_info['category_id'], 'SSL'), 'canonical');]]></add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[if ($page == 1) {]]></search>
+			<add position="before"><![CDATA[$this->document->addLink($this->url->link('newsblog/category', 'newsblog_path=' . $category_info['category_id'], 'SSL'), 'canonical');]]></add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[$this->document->addLink($this->url->link('newsblog/category', 'newsblog_path=' . $category_info['category_id'], 'SSL'), 'prev');]]></search>
+			<add position="replace"><![CDATA[$this->document->addLink($this->url->link('newsblog/category', 'newsblog_path=' . $category_info['category_id'] . '&page='. ($page - 1), 'SSL'), 'prev');]]></add>
+		</operation>
+	</file>
+	<!-- # CANONICAL -->
+
+
+	<!-- HEADER WISHLIST -->
+	<file path="catalog/controller/common/header.php">
+		<operation error="skip">
+			<search><![CDATA[$data['wishlist'] = $this->url->link('account/wishlist', '', true);]]></search>
+			<add position="before">
+				<![CDATA[
+				$data['wishlist_active'] = $this->wishlist->count() ? true : false;
+				]]>
+			</add>
+		</operation>
+	</file>
+	<!-- # HEADER WISHLIST -->
+
+
+	<!-- HEADER CONTROLLER -->
+	<file path="catalog/controller/common/header.php">
+		<operation error="skip">
+			<search><![CDATA[$data['language'] = $this->load->controller('common/language');]]></search>
+			<add position="replace">
+				<![CDATA[
+				// $data['language'] = $this->load->controller('common/language');
+				$data['fixed'] = $this->load->controller('common/fixed');
+				$data['tag'] = $this->load->controller('common/tag');
+				]]>
+			</add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[$data['currency'] = $this->load->controller('common/currency');]]></search>
+			<add position="replace">
+				<![CDATA[
+				// $data['currency'] = $this->load->controller('common/currency');
+				]]>
+			</add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[$data['search'] = $this->load->controller('common/search');]]></search>
+			<add position="replace">
+				<![CDATA[
+				// $data['search'] = $this->load->controller('common/search');
+				]]>
+			</add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[$data['search'] = $this->load->controller('common/search');]]></search>
+			<add position="replace">
+				<![CDATA[
+				// $data['search'] = $this->load->controller('common/search');
+				]]>
+			</add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[$data['cart'] = $this->load->controller('common/cart');]]></search>
+			<add position="replace">
+				<![CDATA[
+				// $data['cart'] = $this->load->controller('common/cart');
+				]]>
+			</add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[$categories = $this->model_catalog_category->getCategories(0);]]></search>
+			<add position="replace">
+				<![CDATA[
+				// $categories = $this->model_catalog_category->getCategories(0);
+				$categories = array();
+				]]>
+			</add>
+		</operation>
+	</file>
+	<!-- # HEADER CONTROLLER -->
+
+
+	<!-- HEADER AND FOOTER MENU -->
+	<file path="catalog/controller/common/header.php">
+		<operation error="skip">
+			<search><![CDATA[$data['title'] = $this->document->getTitle();]]></search>
+			<add position="before">
+				<![CDATA[
+				require(DIR_APPLICATION . 'controller/common/fixed-menu.php');
+				]]>
+			</add>
+		</operation>
+	</file>
+	<file path="catalog/controller/common/footer.php">
+		<operation error="skip">
+			<search><![CDATA[$this->load->model('catalog/information');]]></search>
+			<add position="before">
+				<![CDATA[
+				require(DIR_APPLICATION . 'controller/common/fixed-menu.php');
+				]]>
+			</add>
+		</operation>
+	</file>
+	<!-- # HEADER AND FOOTER MENU -->
+
+
+	<!-- HEADER TEMPLATE -->
+	<file path="catalog/controller/common/header.php">
+		<operation error="skip">
+			<search><![CDATA[$data['language'] = $this->load->controller('common/language');]]></search>
+			<add position="before">
+				<![CDATA[
+				if(isset($this->request->get['event_id'])) {
+				$this->load->model('avevent/event');
+				$event_info = $this->model_avevent_event->getEvent($this->request->get['event_id']);
+				if($event_info) {
+
+				$month_list = array(
+				1 	=> 'января',
+				2 	=> 'февраля',
+				3 	=> 'марта',
+				4 	=> 'апреля',
+				5 	=> 'мая',
+				6 	=> 'июня',
+				7 	=> 'июля',
+				8 	=> 'августа',
+				9 	=> 'сентября',
+				10 	=> 'октября',
+				11 	=> 'ноября',
+				12 	=> 'декабря'
+				);
+
+				$data['all_events'] = $this->url->link('avevent/event');
+				
+				$data['event_id'] = $event_info['event_id'];
+				$data['address_full'] = $event_info['address_full'];
+				$data['type'] = $event_info['type'];
+				$data['city'] = $event_info['city'];
+				$data['register'] = $event_info['link'];
+
+				$date = strtotime($event_info['date']);
+				$data['date'] = date('d', $date) . '&nbsp;' . $month_list[(int)date('m', $date)] . '&nbsp;' . date('Y', $date);
+
+				$time_start = strtotime($event_info['time_start']);
+				$time_end = strtotime($event_info['time_end']);
+
+				$data['time_start'] = date('H:s', $time_start);
+				$data['time_end'] = date('H:s', $time_end);
+
+				$data['type_page'] = 'event';
+				}
+				}
+				]]>
+			</add>
+		</operation>
+	</file>
+	<!-- # HEADER TEMPLATE -->
+
+
+
+	<!-- BRANDING -->
+	<file path="catalog/controller/common/header.php">
+		<operation error="skip">
+			<search><![CDATA[return $this->load->view('common/header', $data);]]></search>
+			<add position="before">
+				<![CDATA[
+				$this->load->model('themeset/themeset');
+
+				$route_dis = array(
+					'register/register',
+					'register/event',
+					'register/login',
+					'register/account',
+					'expert/edit',
+					'register/edit',
+					'expert/expert/edit',
+				);
+
+				if(!in_array($this->request->get['route'], $route_dis)) {
+				$banner_info = $this->model_themeset_themeset->getBanner('branding');
+				}else{
+				$banner_info = array();
+				}
+
+				if($banner_info) {
+				$data['branding'] = array(
+				'banner_id'		=> $banner_info['banner_id'],
+				'link'		=> $banner_info['link'],
+				'target'	=> $banner_info['target'],
+				);
+				$brand_pc = $banner_info['image_pc'];
+				$brand_mob = $banner_info['image_mob'];
+				
+				if($brand_pc && is_file(DIR_IMAGE . $brand_pc)) {
+				$data['branding']['pc'] = $this->model_themeset_themeset->resize_crop($brand_pc);
+				$data['class'] .= ' branding__pc ';
+				}else{
+				$data['branding']['pc'] = '';
+				}
+				
+				if($brand_mob && is_file(DIR_IMAGE . $brand_mob)) {
+				$data['branding']['mob'] = $this->model_themeset_themeset->resize_crop($brand_mob);
+				$data['class'] .= ' branding__mob ';
+				}else{
+				$data['branding']['mob'] = '';
+				}
+				}
+
+				]]>
+			</add>
+		</operation>
+	</file>
+	<!-- # BRANDING -->
+
+	<!-- SEO PRO -->
+	<file path="catalog/controller/startup/seo_pro.php">
+		<operation error="skip">
+			<search><![CDATA[private function getPathByCategory($category_id) {]]></search>
+			<add position="before">
+				<![CDATA[
+				private function getTypeByJournal($journal_id = 0) {
+				if(!$journal_id) {return false;}
+
+				static $type = null;
+				if (!isset($type)) {
+				$type = $this->cache->get('journal.seotype');
+				if (!isset($type)) $type = array();
+				}
+
+				if (!isset($type[$journal_id])) {
+				$sql = "SELECT DISTINCT type FROM " . DB_PREFIX . "journal WHERE journal_id = '" . $journal_id . "'";
+
+				$query = $this->db->query($sql);
+
+				$type[$journal_id] = $query->num_rows ? $query->row['type'] : false;
+
+				$this->cache->set('journal.seotype', $type);
+				}
+
+				return $type[$journal_id];
+				}
+				]]>
+			</add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[$this->request->get['route'] = 'product/manufacturer/info';]]></search>
+			<add position="after">
+				<![CDATA[
+				} elseif (isset($this->request->get['expert_id'])) {
+				$this->request->get['route'] = 'expert/expert';
+				} elseif (isset($this->request->get['company_id'])) {
+				$this->request->get['route'] = 'company/info';
+				} elseif (isset($this->request->get['company_category_id'])) {
+				$this->request->get['route'] = 'company/company/category';
+				} elseif (isset($this->request->get['tag_id'])) {
+				$this->request->get['route'] = 'tag/tag/info';
+				} elseif (isset($this->request->get['event_id'])) {
+				$this->request->get['route'] = 'avevent/event/info';
+				} elseif (isset($this->request->get['journal_id'])) {
+				$type = $this->getTypeByJournal($this->request->get['journal_id']);
+				$this->request->get['route'] = 'journal/' . $type . '/info';
+				]]>
+			</add>
+		</operation> 
+		<operation error="skip">
+			<search><![CDATA[case 'product_id':]]></search>
+			<add position="before">
+				<![CDATA[
+				case 'expert_id':
+				$queries[] = $key . '=' . $value;
+				unset($data[$key]);
+				$postfix = 1;
+				break;
+
+				case 'journal_id':
+				$type = $this->getTypeByJournal($value);
+				if($type) {
+				$queries[] = 'journal/' . $type;
+				}
+				$queries[] = $key . '=' . $value;
+				unset($data[$key]);
+				$postfix = 1;
+				break;
+
+				case 'company_id':
+				case 'company_category_id':
+				$queries[] = 'company/company';
+				$queries[] = $key . '=' . $value;
+				unset($data[$key]);
+				$postfix = 1;
+				break;
+
+				case 'event_id':
+				$queries[] = 'avevent/event';
+				$queries[] = $key . '=' . $value;
+				unset($data[$key]);
+				$postfix = 1;
+				break;
+
+				case 'tag_id':
+				$queries[] = 'tag/tag';
+				$queries[] = $key . '=' . $value;
+				unset($data[$key]);
+				$postfix = 1;
+				break;
+
+				]]>
+			</add>
+		</operation> 
+
+	</file>
+	<!-- # SEO PRO -->
+
+	<!-- NAME -->
+	<file path="">
+		<operation error="skip">
+			<search><![CDATA[]]></search>
+			<add position="">
+				<![CDATA[
+
+				]]>
+			</add>
+		</operation>
+	</file>
+	<!-- # NAME -->
+
+
+
+</modification>

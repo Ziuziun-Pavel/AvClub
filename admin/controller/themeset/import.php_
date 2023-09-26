@@ -1,0 +1,525 @@
+<?php
+class ControllerThemesetImport extends Controller {
+	private $error = array();
+
+	public function index() {
+		$this->load->language('themeset/import');
+
+		$this->document->setTitle($this->language->get('heading_title'));
+
+		$this->load->model('themeset/import');
+
+		$this->getList();
+	}
+
+	public function add() {
+		$this->load->language('themeset/import');
+
+		$this->document->setTitle($this->language->get('heading_title'));
+
+		$this->load->model('themeset/import');
+
+
+		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+			$this->model_themeset_import->addImport($this->request->post);
+
+			$this->session->data['success'] = $this->language->get('text_success');
+
+			$url = '';
+
+			if (isset($this->request->get['sort'])) {
+				$url .= '&sort=' . $this->request->get['sort'];
+			}
+
+			if (isset($this->request->get['order'])) {
+				$url .= '&order=' . $this->request->get['order'];
+			}
+
+			if (isset($this->request->get['page'])) {
+				$url .= '&page=' . $this->request->get['page'];
+			}
+
+			$this->response->redirect($this->url->link('themeset/import', 'token=' . $this->session->data['token'] . $url, true));
+		}
+
+		$this->getForm();
+	}
+
+	public function edit() {
+		$this->load->language('themeset/import');
+
+		$this->document->setTitle($this->language->get('heading_title'));
+
+		$this->load->model('themeset/import');
+
+		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+			$this->model_themeset_import->editImport($this->request->get['import_id'], $this->request->post);
+
+			$this->session->data['success'] = $this->language->get('text_success');
+
+			$url = '';
+
+			if (isset($this->request->get['sort'])) {
+				$url .= '&sort=' . $this->request->get['sort'];
+			}
+
+			if (isset($this->request->get['order'])) {
+				$url .= '&order=' . $this->request->get['order'];
+			}
+
+			if (isset($this->request->get['page'])) {
+				$url .= '&page=' . $this->request->get['page'];
+			}
+
+			$this->response->redirect($this->url->link('themeset/import', 'token=' . $this->session->data['token'] . $url, true));
+		}
+
+		$this->getForm();
+	}
+
+	/*public function delete() {
+		$this->load->language('themeset/import');
+
+		$this->document->setTitle($this->language->get('heading_title'));
+
+		$this->load->model('themeset/import');
+
+		if (isset($this->request->post['selected']) && $this->validateDelete()) {
+			foreach ($this->request->post['selected'] as $import_id) {
+				$this->model_themeset_import->deleteImport($import_id);
+			}
+
+			$this->session->data['success'] = $this->language->get('text_success');
+
+			$url = '';
+
+			if (isset($this->request->get['sort'])) {
+				$url .= '&sort=' . $this->request->get['sort'];
+			}
+
+			if (isset($this->request->get['order'])) {
+				$url .= '&order=' . $this->request->get['order'];
+			}
+
+			if (isset($this->request->get['page'])) {
+				$url .= '&page=' . $this->request->get['page'];
+			}
+
+
+			$this->response->redirect($this->url->link('themeset/import', 'token=' . $this->session->data['token'] . $url, true));
+		}
+
+		$this->getList();
+	}*/
+
+	protected function getList($type = '') {
+		$heading_title = $this->language->get('heading_title');
+
+		if (isset($this->request->get['sort'])) {
+			$sort = $this->request->get['sort'];
+		} else {
+			$sort = 'j.date_available';
+		}
+
+		if (isset($this->request->get['order'])) {
+			$order = $this->request->get['order'];
+		} else {
+			$order = 'DESC';
+		}
+
+		if (isset($this->request->get['page'])) {
+			$page = $this->request->get['page'];
+		} else {
+			$page = 1;
+		}
+
+		$url = '';
+
+		if (isset($this->request->get['sort'])) {
+			$url .= '&sort=' . $this->request->get['sort'];
+		}
+
+		if (isset($this->request->get['order'])) {
+			$url .= '&order=' . $this->request->get['order'];
+		}
+
+		if (isset($this->request->get['page'])) {
+			$url .= '&page=' . $this->request->get['page'];
+		}
+
+		$data['breadcrumbs'] = array();
+
+		$data['breadcrumbs'][] = array(
+			'text' => $this->language->get('text_home'),
+			'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], true)
+		);
+
+		$data['breadcrumbs'][] = array(
+			'text' => $heading_title,
+			'href' => $this->url->link('themeset/import', 'token=' . $this->session->data['token'] . $url, true)
+		);
+
+
+		$data['add'] = $this->url->link('themeset/import/add', 'token=' . $this->session->data['token'] . $url, true);
+		$data['delete'] = $this->url->link('themeset/import/delete', 'token=' . $this->session->data['token'] . $url, true);
+
+		$data['imports'] = array();
+
+		$filter_data = array(
+			'sort'  => $sort,
+			'order' => $order,
+			'start' => ($page - 1) * $this->config->get('config_limit_admin'),
+			'limit' => $this->config->get('config_limit_admin')
+		);
+
+
+		$import_total = $this->model_themeset_import->getTotalImports($filter_data);
+
+
+		$results = $this->model_themeset_import->getImports($filter_data);
+
+		foreach ($results as $result) {
+			$data['imports'][] = array(
+				'import_id' => $result['import_id'],
+				'title'          => $result['title'],
+				'date_available'	=> $result['date_available'],
+				'sort_order'     => $result['sort_order'],
+				'edit'           => $this->url->link('themeset/import/edit', 'token=' . $this->session->data['token'] . '&import_id=' . $result['import_id'] . $url, true)
+			);
+		}
+
+		
+
+		$data['heading_title'] = $heading_title;
+
+		$lang_list = array(
+			'text_list',
+			'text_no_results',
+			'text_confirm',
+
+			'column_date_available',
+			'column_title',
+			'column_sort_order',
+			'column_action',
+
+			'button_add',
+			'button_edit',
+			'buttonbutton_delete_add',
+		);
+		foreach($lang_list as $key) {
+			$data[$key] = $this->language->get($key);
+		}
+
+
+		if (isset($this->error['warning'])) {
+			$data['error_warning'] = $this->error['warning'];
+		} else {
+			$data['error_warning'] = '';
+		}
+
+		if (isset($this->session->data['success'])) {
+			$data['success'] = $this->session->data['success'];
+
+			unset($this->session->data['success']);
+		} else {
+			$data['success'] = '';
+		}
+
+		if (isset($this->request->post['selected'])) {
+			$data['selected'] = (array)$this->request->post['selected'];
+		} else {
+			$data['selected'] = array();
+		}
+
+		$url = '';
+
+		if ($order == 'ASC') {
+			$url .= '&order=DESC';
+		} else {
+			$url .= '&order=ASC';
+		}
+
+		if (isset($this->request->get['page'])) {
+			$url .= '&page=' . $this->request->get['page'];
+		}
+
+		$data['sort_title'] = $this->url->link('themeset/import', 'token=' . $this->session->data['token'] . '&sort=jd.title' . $url, true);
+		$data['sort_date_available'] = $this->url->link('themeset/import', 'token=' . $this->session->data['token'] . '&sort=j.date_available' . $url, 'SSL');
+		$data['sort_sort_order'] = $this->url->link('themeset/import', 'token=' . $this->session->data['token'] . '&sort=j.sort_order' . $url, true);
+
+		$url = '';
+
+		if (isset($this->request->get['sort'])) {
+			$url .= '&sort=' . $this->request->get['sort'];
+		}
+
+		if (isset($this->request->get['order'])) {
+			$url .= '&order=' . $this->request->get['order'];
+		}
+
+		$pagination = new Pagination();
+		$pagination->total = $import_total;
+		$pagination->page = $page;
+		$pagination->limit = $this->config->get('config_limit_admin');
+		$pagination->url = $this->url->link('themeset/import', 'token=' . $this->session->data['token'] . $url . '&page={page}', true);
+
+		$data['pagination'] = $pagination->render();
+
+		$data['results'] = sprintf($this->language->get('text_pagination'), ($import_total) ? (($page - 1) * $this->config->get('config_limit_admin')) + 1 : 0, ((($page - 1) * $this->config->get('config_limit_admin')) > ($import_total - $this->config->get('config_limit_admin'))) ? $import_total : ((($page - 1) * $this->config->get('config_limit_admin')) + $this->config->get('config_limit_admin')), $import_total, ceil($import_total / $this->config->get('config_limit_admin')));
+
+		$data['sort'] = $sort;
+		$data['order'] = $order;
+
+		$data['header'] = $this->load->controller('common/header');
+		$data['column_left'] = $this->load->controller('common/column_left');
+		$data['footer'] = $this->load->controller('common/footer');
+
+		$this->response->setOutput($this->load->view('themeset/import_list', $data));
+	}
+
+	protected function getForm() {
+
+		
+		$import_id = !empty($this->request->get['import_id']) ? $this->request->get['import_id'] : 0;
+
+
+		$heading_title = $this->language->get('heading_title');
+		$data['heading_title'] = $heading_title;
+
+		$data['text_form'] = !isset($this->request->get['import_id']) ? $this->language->get('text_add') : $this->language->get('text_edit');
+
+		$lang_list = array(
+			'text_default',
+			'text_enabled',
+			'text_disabled',
+			
+			'entry_image',
+			'entry_title',
+			'entry_description',
+			'entry_preview',
+			'entry_meta_title',
+			'entry_meta_h1',
+			'entry_meta_description',
+			'entry_meta_keyword',
+			'entry_keyword',
+			'entry_sort_order',
+			'entry_status',
+			'entry_layout',
+			'entry_date_available',
+			'entry_master',
+			'entry_master_default',
+			'entry_tag',
+			'entry_tag_placeholder',
+			'entry_copy',
+			'entry_copy_remove',
+			'entry_author',
+			'entry_author_placeholder',
+			'entry_video',
+			'entry_master_old',
+			
+			'help_keyword',
+			'help_input_master',
+			
+			'button_save',
+			'button_cancel',
+			'button_add',
+
+			'tab_general',
+			'tab_data',
+			'tab_gallery',
+			'tab_design',
+			'tab_copy',
+
+			'tag_new',
+			'tag_exist',
+			'tag_remove',
+
+			'tab_case',
+			'case_title',
+			'case_description',
+			'case_logo',
+			'case_template',
+			'case_template_simple',
+			'case_template_full',
+			'case_catalog',
+			'text_yes',
+			'text_no',
+			'case_attr',
+			'case_text',
+			'case_remove',
+
+
+		);
+		foreach($lang_list as $key) {
+			$data[$key] = $this->language->get($key);
+		}
+
+
+		$error_list = array(
+			'warning'	=> '',
+			'title'	=> array(),
+			'description'	=> array(),
+			'meta_title'	=> array(),
+			'keyword'	=> '',
+			'link'	=> '',
+			'author'	=> '',
+		);
+
+		foreach($error_list as $key=>$default) {
+			if (isset($this->error[$key])) {
+				$data['error_' . $key] = $this->error[$key];
+			} else {
+				$data['error_' . $key] = $default;
+			}
+		}
+
+
+		$url = '';
+
+		if (isset($this->request->get['sort'])) {
+			$url .= '&sort=' . $this->request->get['sort'];
+		}
+
+		if (isset($this->request->get['order'])) {
+			$url .= '&order=' . $this->request->get['order'];
+		}
+
+		if (isset($this->request->get['page'])) {
+			$url .= '&page=' . $this->request->get['page'];
+		}
+
+
+		$data['breadcrumbs'] = array();
+
+		$data['breadcrumbs'][] = array(
+			'text' => $this->language->get('text_home'),
+			'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], true)
+		);
+
+		$data['breadcrumbs'][] = array(
+			'text' => $heading_title,
+			'href' => $this->url->link('themeset/import', 'token=' . $this->session->data['token'] . $url, true)
+		);
+
+		if (!isset($this->request->get['import_id'])) {
+			$data['action'] = $this->url->link('themeset/import/add', 'token=' . $this->session->data['token'] . $url, true);
+		} else {
+			$data['action'] = $this->url->link('themeset/import/edit', 'token=' . $this->session->data['token'] . '&import_id=' . $this->request->get['import_id'] . $url, true);
+		}
+
+		$data['cancel'] = $this->url->link('themeset/import', 'token=' . $this->session->data['token'] . $url, true);
+
+		$type = 'article';
+		if (isset($this->request->get['import_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
+			$import_info = $this->model_themeset_import->getImport($this->request->get['import_id']);
+			$type = $import_info['type'];
+		}
+
+		$data['type'] = $type;
+
+
+		$data['token'] = $this->session->data['token'];
+
+		$key_list = array(
+			'title'				=> '',
+			'type'				=> '',
+			'keyword'			=> '',
+			'link'				=> '',
+			'status'			=> true,
+			'master_id'		=> '',
+			'sort_order'	=> '',
+			'image'				=> '',
+			'video'				=> '',
+			'master_old'	=> 0,
+			'author_id'		=> ''
+		);
+
+		foreach($key_list as $key=>$default) {
+			if (isset($this->request->post[$key])) {
+				$data[$key] = $this->request->post[$key];
+			} elseif (!empty($import_info[$key])) {
+				$data[$key] = $import_info[$key];
+			} else {
+				$data[$key] = $default;
+			}
+		}
+
+		$data['author'] = array();
+
+		if($data['author_id']) {
+			$this->load->model('visitor/visitor');
+			$author_info = $this->model_visitor_visitor->getVisitor($data['author_id']);
+			if($author_info) {
+				$data['author'] = array(
+					'author_id'	=> $author_info['visitor_id'],
+					'name'			=> $author_info['name'],
+					'exp'				=> $author_info['exp'],
+				);
+			}
+		}
+
+
+		if (isset($this->request->post['tags'])) {
+			$data['tags'] = $this->request->post['tags'];
+		} elseif (isset($this->request->get['import_id'])) {
+			$data['tags'] = $this->model_themeset_import->getImportTags($this->request->get['import_id']);
+		} else {
+			$data['tags'] = array();
+		}
+
+		$data['types'] = array(
+			'article'		=> 'Статья',
+			'news'			=> 'Новость',
+			'opinion'		=> 'Мнение',
+			'case'			=> 'Кейс',
+			'video'			=> 'Видео',
+		);
+
+
+		$data['header'] = $this->load->controller('common/header');
+		$data['column_left'] = $this->load->controller('common/column_left');
+		$data['footer'] = $this->load->controller('common/footer');
+
+		$this->response->setOutput($this->load->view('themeset/import_form', $data));
+	}
+
+	protected function validateForm() {
+		if (!$this->user->hasPermission('modify', 'themeset/import')) {
+			$this->error['warning'] = $this->language->get('error_permission');
+		}
+
+		if ((utf8_strlen($this->request->post['title']) < 3) || (utf8_strlen($this->request->post['title']) > 128)) {
+			$this->error['title'] = $this->language->get('error_title');
+		}
+
+		if (utf8_strlen($this->request->post['link']) < 3) {
+			$this->error['link'] = $this->language->get('error_link');
+		}
+
+		if($this->request->post['type'] === 'opinion') {
+			if(isset($this->request->post['author_id'])) {
+				$this->load->model('visitor/visitor');
+				$author_info = $this->model_visitor_visitor->getVisitor($this->request->post['author_id']);
+				if(!$author_info) {
+					$this->error['author'] = $this->language->get('error_author');
+				}
+			}else{
+				$this->error['author'] = $this->language->get('error_author');
+			}
+		}
+
+		if ($this->error && !isset($this->error['warning'])) {
+			$this->error['warning'] = $this->language->get('error_warning');
+		}
+
+		return !$this->error;
+	}
+
+	protected function validateDelete() {
+		if (!$this->user->hasPermission('modify', 'themeset/import')) {
+			$this->error['warning'] = $this->language->get('error_permission');
+		}
+
+		return !$this->error;
+	}
+}

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name>Пагинация с многоточием</name>
+	<code>themeset_pagination</code>
+	<version>0.0.1.0</version>
+	<author>Maxim Babasik (bu.babasik@gmail.com)</author>
+	
+	<!-- PAGINATION -->
+	<file path="system/library/pagination.php">
+
+		<!-- Количество выводимых ссылок пагинации -->
+		<operation error="skip">
+			<search><![CDATA[$num_links = 8;]]></search>
+			<add position="replace"><![CDATA[$num_links = 4;]]></add>
+		</operation>
+
+
+		<!-- МНоготочие слева -->
+		<operation error="skip">
+			<search><![CDATA[for ($i = $start; $i <= $end; $i++) {]]></search>
+			<add position="before">
+				<![CDATA[
+				if( $start > 1 ){ 
+				$output .= '<li><a href="' . str_replace(array('&amp;page={page}', '?page={page}', '&page={page}'), '', $this->url) . '">' . '1' . '</a></li>'; 
+				$output .= '<li class="page__dots"><span>' . '...' . '</span></a></li>';
+				}
+				]]>
+			</add>
+		</operation>
+
+		<!-- МНоготочие справа -->
+		<operation error="skip">
+			<search><![CDATA[if ($page < $num_pages) {]]></search>
+			<add position="before">
+				<![CDATA[
+				if ($page < $num_pages) { 
+				if ( $end < $num_pages){ 
+				$output .= '<li class="page__dots"><span>' . '...' . '</span></a></li>'; 
+				$output .= '<li><a href="' . str_replace('{page}', $num_pages, $this->url) . '">' . $num_pages . '</a></li>';
+				}
+				}
+				]]>
+			</add>
+		</operation>
+
+		<!-- Добавление класса page__orig_next кнопке Далее -->
+		<operation error="skip">
+			<search><![CDATA[$output .= '<li><a href="' . str_replace('{page}', $page + 1, $this->url) . '">' . $this->text_next . '</a></li>';]]></search>
+			<add position="replace"><![CDATA[$output .= '<li class="page__orig_next"><a href="' . str_replace('{page}', $page + 1, $this->url) . '">' . $this->text_next . '</a></li>';]]></add>
+		</operation>
+
+		<!-- LAST LINK -->
+		<operation error="skip">
+			<search><![CDATA[$output .= '<li><a href="' . str_replace('{page}', $num_pages, $this->url) . '">' . $this->text_last . '</a></li>';]]></search>
+			<add position="replace"><![CDATA[$output .= '';]]></add>
+		</operation>
+
+		<!-- Добавление класса page__orig_prev кнопке Назад -->
+		<operation error="skip">
+			<search><![CDATA[$output .= '<li><a href="' . str_replace(array('&amp;page={page}', '?page={page}', '&page={page}'), '', $this->url) . '">' . $this->text_prev . '</a></li>';]]></search>
+			<add position="replace"><![CDATA[$output .= '<li class="page__orig_prev"><a href="' . str_replace(array('&amp;page={page}', '?page={page}', '&page={page}'), '', $this->url) . '">' . $this->text_prev . '</a></li>';]]></add>
+		</operation>
+		<operation error="skip">
+			<search><![CDATA[$output .= '<li><a href="' . str_replace('{page}', $page - 1, $this->url) . '">' . $this->text_prev . '</a></li>';]]></search>
+			<add position="replace"><![CDATA[$output .= '<li class="page__orig_prev"><a href="' . str_replace('{page}', $page - 1, $this->url) . '">' . $this->text_prev . '</a></li>';]]></add>
+		</operation>
+
+		<!-- FIRST LINK -->
+		<operation error="skip">
+			<search><![CDATA[$output .= '<li><a href="' . str_replace(array('&amp;page={page}', '?page={page}', '&page={page}'), '', $this->url) . '">' . $this->text_first . '</a></li>';]]></search>
+			<add position="replace"><![CDATA[$output .= '';]]></add>
+		</operation>
+
+	</file>
+	<!-- # PAGINATION -->
+
+
+	<!-- NAME -->
+	<file path="">
+		<operation error="skip">
+			<search><![CDATA[]]></search>
+			<add position="">
+				<![CDATA[
+
+				]]>
+			</add>
+		</operation>
+	</file>
+	<!-- # NAME -->
+
+
+
+</modification>

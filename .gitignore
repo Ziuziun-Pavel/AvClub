@@ -1,0 +1,13 @@
+.htaccess
+/admin/config.php
+admin/config.php
+
+appReport
+b24
+
+!index.html
+
+image/cache/
+image/catalog/publikacii
+image/catalog/upload
+system/storage/

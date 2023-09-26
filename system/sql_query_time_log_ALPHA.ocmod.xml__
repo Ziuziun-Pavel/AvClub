@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name>SQL Query Time Log</name>
+    <version>2.x-3.x</version>
+    <code>SQL Query Time Log</code>
+    <author>full-index.ru</author>
+    <link>//full-index.ru</link>
+	
+	<file path="system/library/db.php">
+		<operation>
+			<search><![CDATA[
+			public function query
+			]]></search>
+			<add position="replace"><![CDATA[
+			public function query($sql){
+			
+        		$min_time = 10;//МИНИМАЛЬНОЕ ВРЕМЯ ИСПОЛНЕНИЯ ЗАПРОСА В МС, ЗАПИСЫВАЕМОЕ В ЛОГ
+        		
+                $file = debug_backtrace();
+                $init_by = ((!isset($file[0]['file'])) ? 'N/A' : $file[0]['file']) . ' → ' . ((!isset($file[1]['function'])) ? 'N/A' : $file[1]['function']);
+        		
+                $start = time() + (float)microtime();
+        		
+                $query_out = $this->query_($sql);
+        		
+                $sql_time = round(time() + (float)microtime() - $start, 5)*1000;
+				
+				$log = $sql_time > $min_time;
+				
+				$this->queries_num += 1;
+				
+				if ($log) {
+				
+					$this->log = true;
+					
+					$this->queries[] = array(
+						'sql' => $sql,
+						'time' => $sql_time,
+						'init_by' => $init_by
+					);
+				
+				}
+        		
+        		return $query_out;
+			}
+			
+			public function query_
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[
+			class DB {
+			]]></search>
+			<add position="after"><![CDATA[
+        	private $queries = array();
+        	private $start_time;
+        	private $log = false;
+        	private $queries_num = 0;
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[
+			public function escape
+			]]></search>
+			<add position="before"><![CDATA[            	
+            	function __destruct() {				
+				
+					if (!$this->log) return false;					
+					
+					$uri = $_SERVER['REQUEST_URI'];
+					
+					if (substr($uri, 0, 7) =='/admin/') return false;
+
+					$total_time = round(time() + (float)microtime() - $this->start_time, 5)*1000;
+
+
+					$out =  "\n►► Страница: ".$uri."\n   Время генерации: ~" . $total_time . "мс \n   К-во запросов: " . $this->queries_num . " \n\nМедленные(" . count($this->queries) . "):\n";
+
+					$n = 1;
+					
+					foreach ($this->queries as $query){
+					
+						$out .= "\n" . $n . ") Источник:" . $query['init_by'] . "\n   Время выполнения: " .  $query['time'] . "мс\n\n   " .  $query['sql'] . "\n\n\n";
+					
+						$n++;
+					}
+				   
+				   
+					$out .= "end\n===============================\n";
+					
+					file_put_contents(DIR_LOGS.'sql_time.log',  $out, FILE_APPEND); 
+        
+				   
+                }
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[
+			$class = 'DB\\']]></search>
+			<add position="before"><![CDATA[
+				$this->start_time = time() + (float)microtime();
+			]]></add>
+		</operation>
+		
+		
+		
+	</file>
+</modification>

@@ -1,0 +1,633 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name>SeoUrlGenerator by &lt;a href=&quot;//web-jump.in.ua/link/284&quot; &gt;Web-Jump&lt;/a&gt;</name>
+	<code>SEOURLGeneratorBySergeTkach</code>
+	<version>2.0</version>
+	<author>Serge Tkach &lt;a href=&quot;//web-jump.in.ua/link/283&quot; &gt;web-jump.﻿in.ua &lt;/a&gt;</author>
+	<link>http://web-jump.in.ua/link/282</link>
+	
+	<!-- Category, Manufacturer -->
+	<!-- Category -->
+	<file path="admin/view/template/catalog/category_form.tpl">
+		<operation>
+			<search index="0">
+				<![CDATA[<script type="text/javascript"><!--
+				]]>
+			</search>
+			<add position="before"><![CDATA[
+				<!-- SEO URL Generator.Begin -->
+				<script type="text/javascript">
+
+					var config_language_id = <?php echo $config_language_id; ?>;  
+
+					<?php if(stristr($_GET['route'], 'add')) { ?>
+
+					$('#input-name' + config_language_id).change(function(){ generateUrlOnAdd(); });  
+
+					function generateUrlOnAdd() {
+					data = {
+					name        : $('#input-name' + config_language_id).val(),
+					essence     : 'category',
+					category_id : ''
+					};
+
+					getSeoUrl(data);
+					}
+
+					<?php } else { ?>
+
+					// enque button #generateUrlOnEdit
+					$('#input-keyword').after('<br><button id="generateUrlOnEdit" class="btn btn-success">GENERATE SEO URL</button>');
+
+					$('#generateUrlOnEdit').click(function(e){
+					e.preventDefault();
+
+					data = {
+					name        : $('#input-name' + config_language_id).val(),
+					essence     : 'category',
+					category_id : <?php echo $_GET['category_id']; ?>
+					};
+
+					getSeoUrl(data);
+					});   
+
+					<?php } ?>
+
+					function getSeoUrl(data) {
+					$.ajax({
+					url: 'index.php?route=extension/module/seo_url_generator/getSeoUrlByAjax&token=<?php echo $token; ?>',
+					dataType: 'json',
+					data: data,
+					method : 'POST',
+					beforeSend: function() {
+					},
+					success: function( response, textStatus, jqXHR ){
+					// success ajax query
+					if( response.result != '' ){
+					$('#input-keyword').val(response.result);
+					}
+					},
+					error: function( jqXHR, textStatus, errorThrown ){
+					// Error ajax query
+					console.log('AJAX query Error: ' + textStatus );
+					},
+					complete: function() {  
+					},
+					});
+					}
+
+				</script>
+				<!-- SEO URL Generator.End -->
+				]]>
+
+			</add>
+		</operation>
+	</file>
+
+	<!-- Product -->
+	<file path="admin/view/template/catalog/product_form.tpl">
+		<operation>
+			<search index="0">
+				<![CDATA[		<script type="text/javascript"><!--
+				]]>
+
+			</search>
+			<add position="before"><![CDATA[
+				<!-- SEO URL Generator.Begin -->
+				<script type="text/javascript">
+
+					var config_language_id = <?php echo $config_language_id; ?>;  
+
+					<?php if(stristr($_GET['route'], 'add')) { ?>
+
+					$('#input-name' + config_language_id).change(function(){ generateUrlOnAdd(); });  
+					$('#input-model').change(function(){ generateUrlOnAdd(); });  
+					$('#input-sku').change(function(){ generateUrlOnAdd(); });  
+
+					function generateUrlOnAdd() {
+					data = {
+					name         : $('#input-name' + config_language_id).val(),
+					model        : $('#input-model').val(),
+					sku          : $('#input-sku').val(),
+					essence      : 'product',
+					product_id   : ''
+					};
+
+					getSeoUrl(data);
+					}
+
+					<?php } else { ?>
+
+					// enque button #generateUrlOnEdit
+					$('#input-keyword').after('<br><button id="generateUrlOnEdit" class="btn btn-success">GENERATE SEO URL</button>');
+
+					$('#generateUrlOnEdit').click(function(e){
+					e.preventDefault();
+
+					data = {
+					name         : $('#input-name' + config_language_id).val(),
+					model        : $('#input-model').val(),
+					sku          : $('#input-sku').val(),
+					essence      : 'product',
+					product_id   : <?php echo $_GET['product_id']; ?>
+					};
+
+					getSeoUrl(data);
+					});   
+
+					<?php } ?>
+
+					function getSeoUrl(data) {
+					$.ajax({
+					url: 'index.php?route=extension/module/seo_url_generator/getSeoUrlByAjax&token=<?php echo $token; ?>',
+					dataType: 'json',
+					data: data,
+					method : 'POST',
+					beforeSend: function() {
+					},
+					success: function( response, textStatus, jqXHR ){
+					// success ajax query
+					if( response.result != '' ){
+					$('#input-keyword').val(response.result);
+					}
+					},
+					error: function( jqXHR, textStatus, errorThrown ){
+					// Error ajax query
+					console.log('AJAX query Error: ' + textStatus );
+					},
+					complete: function() {  
+					},
+					});
+					}
+
+				</script>
+				<!-- SEO URL Generator.End -->
+				]]>
+				
+			</add>
+		</operation>
+	</file>
+
+	<!-- Manufacturer (for ocStore ONLY!!!)-->
+	<file path="admin/view/template/catalog/manufacturer_form.tpl">
+		<operation>
+			<search index="0"><![CDATA[
+				<script type="text/javascript"><!--
+					]]></search>
+					<add position="before"><![CDATA[
+						<!-- SEO URL Generator.Begin -->
+						<script type="text/javascript">
+
+							var config_language_id = <?php echo $config_language_id; ?>;  
+
+							<?php if(stristr($_GET['route'], 'add')) { ?>
+
+							$('#input-name' + config_language_id).change(function(){ generateUrlOnAdd(); });  
+
+							function generateUrlOnAdd() {
+							data = {
+							name            : $('#input-name' + config_language_id).val(),
+							essence         : 'manufacturer',
+							manufacturer_id : ''
+							};
+
+							getSeoUrl(data);
+							}
+
+							<?php } else { ?>
+
+							// enque button #generateUrlOnEdit
+							$('#input-keyword').after('<br><button id="generateUrlOnEdit" class="btn btn-success">GENERATE SEO URL</button>');
+
+							$('#generateUrlOnEdit').click(function(e){
+							e.preventDefault();
+
+							data = {
+							name            : $('#input-name' + config_language_id).val(),
+							essence         : 'manufacturer',
+							manufacturer_id : <?php echo $_GET['manufacturer_id']; ?>
+							};
+
+							getSeoUrl(data);
+							});   
+
+							<?php } ?>
+
+							function getSeoUrl(data) {
+							$.ajax({
+							url: 'index.php?route=extension/module/seo_url_generator/getSeoUrlByAjax&token=<?php echo $token; ?>',
+							dataType: 'json',
+							data: data,
+							method : 'POST',
+							beforeSend: function() {
+							},
+							success: function( response, textStatus, jqXHR ){
+							// success ajax query
+							if( response.result != '' ){
+							$('#input-keyword').val(response.result);
+							}
+							},
+							error: function( jqXHR, textStatus, errorThrown ){
+							// Error ajax query
+							console.log('AJAX query Error: ' + textStatus );
+							},
+							complete: function() {  
+							},
+							});
+							}
+
+						</script>
+						<!-- SEO URL Generator.End -->
+						]]></add>
+					</operation>
+				</file>
+
+				<!-- Information -->
+				<file path="admin/view/template/catalog/information_form.tpl">
+					<operation>
+						<search index="0"><![CDATA[
+							<script type="text/javascript"><!--
+								]]></search>
+								<add position="before"><![CDATA[
+									<!-- SEO URL Generator.Begin -->
+									<script type="text/javascript">
+
+										var config_language_id = <?php echo $config_language_id; ?>;  
+
+										<?php if(stristr($_GET['route'], 'add')) { ?>
+
+										$('#input-title' + config_language_id).change(function(){ generateUrlOnAdd(); });  
+
+										function generateUrlOnAdd() {
+										data = {
+										name           : $('#input-title' + config_language_id).val(),
+										essence        : 'information',
+										information_id : ''
+										};
+
+										getSeoUrl(data);
+										}
+
+										<?php } else { ?>
+
+										// enque button #generateUrlOnEdit
+										$('#input-keyword').after('<br><button id="generateUrlOnEdit" class="btn btn-success">GENERATE SEO URL</button>');
+
+										$('#generateUrlOnEdit').click(function(e){
+										e.preventDefault();
+
+										data = {
+										name           : $('#input-title' + config_language_id).val(),
+										essence        : 'information',
+										information_id : <?php echo $_GET['information_id']; ?>
+										};
+
+										getSeoUrl(data);
+										});   
+
+										<?php } ?>
+
+										function getSeoUrl(data) {
+										$.ajax({
+										url: 'index.php?route=extension/module/seo_url_generator/getSeoUrlByAjax&token=<?php echo $token; ?>',
+										dataType: 'json',
+										data: data,
+										method : 'POST',
+										beforeSend: function() {
+										},
+										success: function( response, textStatus, jqXHR ){
+										// success ajax query
+										if( response.result != '' ){
+										$('#input-keyword').val(response.result);
+										}
+										},
+										error: function( jqXHR, textStatus, errorThrown ){
+										// Error ajax query
+										console.log('AJAX query Error: ' + textStatus );
+										},
+										complete: function() {  
+										},
+										});
+										}
+
+									</script>
+									<!-- SEO URL Generator.End -->
+									]]></add>
+								</operation>
+							</file>
+
+							<!-- All is different from OC Pure -->
+							<file path="admin/controller/catalog/{product,category,manufacturer,information}.php">    
+								<operation>
+									<search><![CDATA[
+										$data['languages'] = $this->model_localisation_language->getLanguages();
+										]]></search>
+										<add position="before"><![CDATA[    $data['config_language_id'] = $this->config->get('config_language_id'); // SEO URL Generator
+											]]></add>
+										</operation>    
+									</file>
+
+	<!-- On Save
+	========================================================================== -->
+	
+	<!-- Product -->
+	<file path="admin/controller/catalog/product.php">
+		<operation>
+			<search><![CDATA[
+				if (utf8_strlen($this->request->post['keyword']) > 0) {
+				]]></search>
+				<add position="before"><![CDATA[    // SEO URL Generator . begin
+					if(empty($this->request->post['keyword'])){
+					$a_data = array(
+					'name'    => $this->request->post['product_description'][$this->config->get('config_language_id')]['name'],
+					'model'   => $this->request->post['model'],
+					'sku'     => $this->request->post['sku'],
+					'essence' => 'product',
+					);
+
+					$this->request->post['keyword'] = $this->load->controller('extension/module/seo_url_generator/getSeoUrl', $a_data); 
+					} else {
+					$this->load->model('extension/module/seo_url_generator');
+					$this->request->post['keyword'] = $this->model_extension_module_seo_url_generator->translit($this->request->post['keyword']);
+					}
+					// SEO URL Generator . end
+					]]></add>
+				</operation>
+			</file>
+
+			<!-- Category -->
+			<file path="admin/controller/catalog/category.php">
+				<operation>
+					<search><![CDATA[
+						if (utf8_strlen($this->request->post['keyword']) > 0) {
+						]]></search>
+						<add position="before"><![CDATA[    // SEO URL Generator . begin
+							if(empty($this->request->post['keyword'])){
+							$a_data = array(
+							'name'    => $this->request->post['category_description'][$this->config->get('config_language_id')]['name'],
+							'essence' => 'category',
+							);
+
+							$this->request->post['keyword'] = $this->load->controller('extension/module/seo_url_generator/getSeoUrl', $a_data); 
+							} else {
+							$this->load->model('extension/module/seo_url_generator');
+							$this->request->post['keyword'] = $this->model_extension_module_seo_url_generator->translit($this->request->post['keyword']);
+							}
+							// SEO URL Generator . end
+							]]></add>
+						</operation>
+					</file>
+
+					<!-- Manufacturer (for ocStore ONLY !!!)-->
+					<file path="admin/controller/catalog/manufacturer.php">
+						<operation>
+							<search><![CDATA[
+								if (utf8_strlen($this->request->post['keyword']) > 0) {
+								]]></search>
+								<add position="before"><![CDATA[    // SEO URL Generator . begin
+									if(empty($this->request->post['keyword'])){
+									$a_data = array(
+									'name'    => $this->request->post['manufacturer_description'][$this->config->get('config_language_id')]['name'],
+									'essence' => 'manufacturer',
+									);
+
+									$this->request->post['keyword'] = $this->load->controller('extension/module/seo_url_generator/getSeoUrl', $a_data); 
+									} else {
+									$this->load->model('extension/module/seo_url_generator');
+									$this->request->post['keyword'] = $this->model_extension_module_seo_url_generator->translit($this->request->post['keyword']);
+									}
+									// SEO URL Generator . end
+									]]></add>
+								</operation>
+							</file>
+
+							<!-- Information -->
+							<file path="admin/controller/catalog/information.php">
+								<operation>
+									<search><![CDATA[
+										if (utf8_strlen($this->request->post['keyword']) > 0) {
+										]]></search>
+										<add position="before"><![CDATA[    // SEO URL Generator . begin
+											if(empty($this->request->post['keyword'])){
+											$a_data = array(
+											'name'    => $this->request->post['information_description'][$this->config->get('config_language_id')]['title'],
+											'essence' => 'information',
+											);
+
+											$this->request->post['keyword'] = $this->load->controller('extension/module/seo_url_generator/getSeoUrl', $a_data); 
+											} else {
+											$this->load->model('extension/module/seo_url_generator');
+											$this->request->post['keyword'] = $this->model_extension_module_seo_url_generator->translit($this->request->post['keyword']);
+											}
+											// SEO URL Generator . end
+											]]></add>
+										</operation>
+									</file>
+
+	<!-- Additional : for NewsBlog Module
+	========================================================================== -->
+	<file path="admin/controller/newsblog/{article,category}.php">
+		<operation>
+			<search><![CDATA[
+				$data['languages'] = $this->model_localisation_language->getLanguages();
+				]]></search>
+				<add position="before"><![CDATA[    $data['config_language_id'] = $this->config->get('config_language_id'); // SEO URL Generator
+					]]></add>
+				</operation>    
+			</file>
+
+			<file path="admin/controller/newsblog/article.php">
+				<operation>
+					<search index="0"><![CDATA[
+						if (utf8_strlen($this->request->post['keyword']) == 0) {
+						]]></search>
+						<add position="before"><![CDATA[    // SEO URL Generator . begin
+							if(empty($this->request->post['keyword'])){
+							$a_data = array(
+							'name'    => $this->request->post['article_description'][$this->config->get('config_language_id')]['name'],
+							'essence' => 'newsblog_article',
+							);
+
+							$this->request->post['keyword'] = $this->load->controller('extension/module/seo_url_generator/getSeoUrl', $a_data); 
+							} else {
+							$this->load->model('extension/module/seo_url_generator');
+							$this->request->post['keyword'] = $this->model_extension_module_seo_url_generator->translit($this->request->post['keyword']);
+							}
+							// SEO URL Generator . end
+							// 
+							// therefore not run next block "if (utf8_strlen($this->request->post['keyword']) == 0) {" 
+							]]></add>
+						</operation>
+					</file>
+
+					<file path="admin/view/template/newsblog/article_form.tpl">
+						<operation>
+							<search index="0"><![CDATA[
+								<script type="text/javascript"><!--
+									]]></search>
+									<add position="before"><![CDATA[
+										<!-- SEO URL Generator.Begin -->
+										<script type="text/javascript">
+
+											var config_language_id = <?php echo $config_language_id; ?>;  
+
+											<?php if(stristr($_GET['route'], 'add')) { ?>
+
+											$('#input-name' + config_language_id).change(function(){ generateUrlOnAdd(); });  
+
+											function generateUrlOnAdd() {
+											data = {
+											name       : $('#input-name' + config_language_id).val(),
+											essence    : 'newsblog_article',
+											article_id : ''
+											};
+
+											getSeoUrl(data);
+											}
+
+											<?php } else { ?>
+
+											// enque button #generateUrlOnEdit
+											$('#input-keyword').after('<br><button id="generateUrlOnEdit" class="btn btn-success">GENERATE SEO URL</button>');
+
+											$('#generateUrlOnEdit').click(function(e){
+											e.preventDefault();
+
+											data = {
+											name       : $('#input-name' + config_language_id).val(),
+											essence    : 'newsblog_article',
+											article_id : <?php echo $_GET['article_id']; ?>
+											};
+
+											getSeoUrl(data);
+											});   
+
+											<?php } ?>
+
+											function getSeoUrl(data) {
+											$.ajax({
+											url: 'index.php?route=extension/module/seo_url_generator/getSeoUrlByAjax&token=<?php echo $token; ?>',
+											dataType: 'json',
+											data: data,
+											method : 'POST',
+											beforeSend: function() {
+											},
+											success: function( response, textStatus, jqXHR ){
+											// success ajax query
+											if( response.result != '' ){
+											$('#input-keyword').val(response.result);
+											}
+											},
+											error: function( jqXHR, textStatus, errorThrown ){
+											// Error ajax query
+											console.log('AJAX query Error: ' + textStatus );
+											},
+											complete: function() {  
+											},
+											});
+											}
+
+										</script>
+										<!-- SEO URL Generator.End -->
+										]]></add>
+									</operation>
+								</file>
+
+								<file path="admin/controller/newsblog/category.php">
+									<operation>
+										<search index="0"><![CDATA[
+											if (utf8_strlen($this->request->post['keyword']) == 0) {
+											]]></search>
+											<add position="before"><![CDATA[    // SEO URL Generator . begin
+												if(empty($this->request->post['keyword'])){
+												$a_data = array(
+												'name'    => $this->request->post['category_description'][$this->config->get('config_language_id')]['name'],
+												'essence' => 'newsblog_category',
+												);
+
+												$this->request->post['keyword'] = $this->load->controller('extension/module/seo_url_generator/getSeoUrl', $a_data); 
+												} else {
+												$this->load->model('extension/module/seo_url_generator');
+												$this->request->post['keyword'] = $this->model_extension_module_seo_url_generator->translit($this->request->post['keyword']);
+												}
+												// SEO URL Generator . end
+												// 
+												// therefore not run next block "if (utf8_strlen($this->request->post['keyword']) == 0) {"
+												]]></add>
+											</operation>
+										</file>
+
+										<file path="admin/view/template/newsblog/category_form.tpl">
+											<operation>
+												<search index="0"><![CDATA[
+													<script type="text/javascript"><!--
+														]]></search>
+														<add position="before"><![CDATA[
+															<!-- SEO URL Generator.Begin -->
+															<script type="text/javascript">
+
+																var config_language_id = <?php echo $config_language_id; ?>;  
+
+																<?php if(stristr($_GET['route'], 'add')) { ?>
+
+																$('#input-name' + config_language_id).change(function(){ generateUrlOnAdd(); });  
+
+																function generateUrlOnAdd() {
+																data = {
+																name        : $('#input-name' + config_language_id).val(),
+																essence     : 'newsblog_category',
+																category_id : ''
+																};
+
+																getSeoUrl(data);
+																}
+
+																<?php } else { ?>
+
+																// enque button #generateUrlOnEdit
+																$('#input-keyword').after('<br><button id="generateUrlOnEdit" class="btn btn-success">GENERATE SEO URL</button>');
+
+																$('#generateUrlOnEdit').click(function(e){
+																e.preventDefault();
+
+																data = {
+																name        : $('#input-name' + config_language_id).val(),
+																essence     : 'newsblog_category',
+																category_id : <?php echo $_GET['category_id']; ?>
+																};
+
+																getSeoUrl(data);
+																});   
+
+																<?php } ?>
+
+																function getSeoUrl(data) {
+																$.ajax({
+																url: 'index.php?route=extension/module/seo_url_generator/getSeoUrlByAjax&token=<?php echo $token; ?>',
+																dataType: 'json',
+																data: data,
+																method : 'POST',
+																beforeSend: function() {
+																},
+																success: function( response, textStatus, jqXHR ){
+																// success ajax query
+																if( response.result != '' ){
+																$('#input-keyword').val(response.result);
+																}
+																},
+																error: function( jqXHR, textStatus, errorThrown ){
+																// Error ajax query
+																console.log('AJAX query Error: ' + textStatus );
+																},
+																complete: function() {  
+																},
+																});
+																}
+
+															</script>
+															<!-- SEO URL Generator.End -->
+															]]></add>
+														</operation>
+													</file>
+
+												</modification>

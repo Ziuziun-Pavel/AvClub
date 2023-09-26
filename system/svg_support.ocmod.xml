@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<code>SVG-support</code>
+	<name>SVG-support</name>
+	<id>SVG-support</id>
+	<version>0.1 Beta</version>
+	<author>Ihor Chyshkala</author>
+
+	<file path="admin/controller/common/filemanager.php">
+		<operation error="log">
+			<search>
+				<![CDATA[jpg,jpeg,png,gif,JPG,JPEG,PNG,GIF]]>
+			</search>
+			<add position="replace">
+				<![CDATA[jpg,jpeg,png,gif,JPG,JPEG,PNG,GIF,svg,SVG]]]>
+			</add>
+		</operation>
+		<operation error="log">
+			<search>
+				<![CDATA['jpg',]]>
+			</search>
+			<add position="after">
+				<![CDATA[						'svg',]]>
+			</add>
+		</operation>
+				<operation error="log">
+			<search>
+				<![CDATA['image/jpeg',]]>
+			</search>
+			<add position="after">
+				<![CDATA[						'image/svg+xml',]]>
+			</add>
+		</operation>
+	</file>
+	<file path="admin/model/tool/image.php">
+		<operation error="log">
+			<search>
+				<![CDATA[
+				$extension = pathinfo($filename, PATHINFO_EXTENSION);
+				]]>
+			</search>
+			<add position="after">
+				<![CDATA[
+		if('svg' == $extension) {
+            if ($this->request->server['HTTPS']) {
+                return HTTPS_CATALOG . 'image/' . $filename;
+            } else {
+                return HTTP_CATALOG . 'image/' . $filename;
+            }
+    	}]]>
+			</add>
+		</operation>
+	</file>
+</modification>
