@@ -1,6 +1,6 @@
 .htaccess
 /admin/config.php
-admin/config.php
+config.php
 
 appReport
 b24
