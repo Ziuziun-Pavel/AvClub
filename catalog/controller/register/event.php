@@ -55,7 +55,13 @@ class ControllerRegisterEvent extends Controller {
 				]
 			);
 
+
+
 			if(!empty($forum_id) && !empty($result['result'][0])) {
+
+                $timeToClose = 17 + current($result['result'][0]['PROPERTY_477']) . ':00:00';
+
+                $isClosed =  !(date('d.m.Y') <= current($result['result'][0]['PROPERTY_427']) && time() <= strtotime($timeToClose));
 
 				$this->session->data['register_event'] = array(
 					'type'				=> 'forum',
@@ -63,7 +69,9 @@ class ControllerRegisterEvent extends Controller {
 					'name'				=> $result['result'][0]['NAME'],
 					'city'				=> current($result['result'][0]['PROPERTY_479']),
 					'date'				=> current($result['result'][0]['PROPERTY_427']),
-					'address_1'		=> current($result['result'][0]['PROPERTY_473']),
+                    'isClosed'				=> $isClosed,
+                    'timezone'				=> current($result['result'][0]['PROPERTY_477']),
+                    'address_1'		=> current($result['result'][0]['PROPERTY_473']),
 					'address_2'		=> current($result['result'][0]['PROPERTY_475']),
 					'price'				=> !empty($result['result'][0]['PROPERTY_547']) ? current($result['result'][0]['PROPERTY_547']) : '',
 				);
@@ -74,7 +82,9 @@ class ControllerRegisterEvent extends Controller {
 					'name'				=> $this->session->data['register_event']['name'],
 					'city'				=> $this->session->data['register_event']['city'],
 					'date'				=> $this->session->data['register_event']['date'],
-					'price'				=> $this->session->data['register_event']['price'],
+                    'isClosed'			=> $this->session->data['register_event']['isClosed'],
+                    'timezone'			=> $this->session->data['register_event']['timezone'],
+                    'price'				=> $this->session->data['register_event']['price'],
 					'address'			=> array()
 				);
 				if($this->session->data['register_event']['address_1']) {
@@ -114,12 +124,19 @@ class ControllerRegisterEvent extends Controller {
 					$date = '';
 				}
 
+                $fullDate = $date . ':00';
+                $dateToClose = explode(" ", $fullDate)[0];
+                $timeToClose = explode(" ", $fullDate)[1];
+
+                $isClosed =  !(date('d.m.Y') <= $dateToClose && time() <= strtotime($timeToClose));
+
 				$this->session->data['register_event'] = array(
 					'type'						=> 'webinar',
 					'webinar_id'			=> $webinar_id,
 					'name'						=> $result['result'][0]['NAME'],
 					'date'						=> $date,
-					'eventSessionId'	=> current($result['result'][0]['PROPERTY_557']),
+                    'isClosed'				=> $isClosed,
+                    'eventSessionId'	=> current($result['result'][0]['PROPERTY_557']),
 					'eventId'					=> current($result['result'][0]['PROPERTY_559']),
 					'duration'				=> current($result['result'][0]['PROPERTY_563']),
 				);
@@ -129,6 +146,7 @@ class ControllerRegisterEvent extends Controller {
 					'title'						=> 'Регистрация на онлайн-событие',
 					'name'						=> $this->session->data['register_event']['name'],
 					'date'						=> $this->session->data['register_event']['date'],
+                    'isClosed'				=> $this->session->data['register_event']['isClosed'],
 					'eventSessionId'	=> $this->session->data['register_event']['eventSessionId'],
 					'eventId'					=> $this->session->data['register_event']['eventId'],
 					'duration'				=> $this->session->data['register_event']['duration']
