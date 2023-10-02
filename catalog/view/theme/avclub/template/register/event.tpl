@@ -15,8 +15,7 @@
                     <img src="catalog/view/theme/avclub/images/logo-register.svg" alt="">
                 </div>
                 <div class="reginfo__name">
-                    Регистрация на
-                    <?= ($event_info['type'] === 'forum') ? 'форум' : 'вебинар'; ?>
+                    <?php echo $event_info['title']; ?>
                     закрыта
                     <svg class="ico">
                         <use xlink:href="#arr-down"></use>

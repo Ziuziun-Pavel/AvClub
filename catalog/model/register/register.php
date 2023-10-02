@@ -12,7 +12,9 @@ class ModelRegisterRegister extends Model {
 	private $url_contact_create = "http://clients.techin.by/avclub/site/api/v1/contact/create";
 	private $url_contact_update = "http://clients.techin.by/avclub/site/api/v1/contact/{id}/update";
 	private $url_company_create = "http://clients.techin.by/avclub/site/api/v1/company/create";
-	private $url_deal = "http://clients.techin.by/avclub/site/api/v1/deal/create";
+    private $url_company_update = "http://clients.techin.by/avclub/site/api/v1/company/{id}/update";
+
+    private $url_deal = "http://clients.techin.by/avclub/site/api/v1/deal/create";
 
 	private $debug = 0;
 
@@ -208,6 +210,23 @@ class ModelRegisterRegister extends Model {
 		return $company_name;
 	}
 
+    public function getCompanyByB24id($b24_company_id = 0) {
+        $company_data = array();
+
+        $query_company = $this->db->query("SELECT * 
+        FROM " . DB_PREFIX . "company_names c
+        WHERE 
+        c.b24id = '" . (int)$b24_company_id . "' 
+        AND c.archive = '0'
+        ");
+
+        if ($query_company->num_rows) {
+            $company_data = $query_company->row;
+        }
+
+        return $company_data;
+    }
+
 	public function getCompanyNames($data = array()) {
 
 		$show_disabled = !empty($data['filter_disabled']) ? true : false;
@@ -392,11 +411,11 @@ class ModelRegisterRegister extends Model {
 	}
 
 	public function createContact($data = array()) {
-		return $this->updateContactInfo($data, true);
+
+        return $this->updateContactInfo($data, true);
 	}
 
 	private function updateContactInfo($data = array(), $new = false) {
-
 		/*{
 			'old_id' : <старый id контакта, если данные поменялись>,
 			'name' : <имя>,
@@ -412,59 +431,103 @@ class ModelRegisterRegister extends Model {
  			'company_activity': <массив активностей в proAV>,
 
  		}*/
-
  		$contact_info = array(
- 			'name'							=> $data['name'],
- 			'last_name'					=> $data['lastname'],
- 			'post'							=> $data['post'],
- 			'email'							=> $data['email'],
- 			'phone'							=> $data['phone'],
-
- 			'company_name'			=> htmlspecialchars_decode($data['company']),
+ 			'name'					=> $data['name'],
+ 			'last_name'				=> $data['lastname'],
+ 			'post'					=> $data['post'],
+ 			'email'					=> $data['email'],
+ 			'phone'					=> $data['phone'],
+            'IsCompanyEdit'         => $data["IsCompanyEdit"],
+            'company_name'			=> htmlspecialchars_decode($data['company']),
  			'company_city'			=> $data['city'],
  			'company_phone'			=> $data['company_phone'],
  			'company_site'			=> $data['company_site'],
  			'company_activity'	=> array($data['company_activity']),
- 		);
+            'b24_company_old_id'	=> $data['b24_company_old_id'],
+        );
 
  		if(!empty($data['old_user_id'])) {
  			$contact_info['old_id'] = $data['old_user_id'];
  		}
- 		
 
  		if(!empty($data['b24_company_id'])) {
  			$contact_info['company_id'] = $data['b24_company_id'];
- 		}else{
- 			/* CREATE NEW COMPANY */
- 			$company_fields = array(
- 				'company_id'					=> $contact_info['company_name'],
- 				'company_name'				=> $contact_info['company_name'],
- 				'company_city'				=> $contact_info['company_city'],
- 				'company_phone'				=> $contact_info['company_phone'],
- 				'company_site'				=> $contact_info['company_site'],
- 				'company_activity'		=> $contact_info['company_activity'],
- 			);
- 			if(!empty($contact_info['b24_company_old_id'])) {
- 				$company_fields['old_id'] = $contact_info['b24_company_old_id'];
- 			}
- 			$ch_company = curl_init($this->url_company_create);
- 			curl_setopt($ch_company, CURLOPT_RETURNTRANSFER, 1);
- 			curl_setopt($ch_company, CURLOPT_TIMEOUT, 60);
- 			curl_setopt($ch_company, CURLOPT_POSTFIELDS, http_build_query($company_fields));
- 			$body_company = curl_exec($ch_company);
- 			curl_close($ch_company);
+ 		}
+         else{
+             if ($contact_info['IsCompanyEdit']) {
+                 /* # EDIT COMPANY */
+                 $company_id_to_update = $contact_info['b24_company_old_id'];
 
- 			$json_company = json_decode($body_company, true);
+                 $company_fields = array(
+                     'company_name'       => $contact_info['company_name'],
+                     'company_city'       => $contact_info['company_city'],
+                     'company_phone'      => $contact_info['company_phone'],
+                     'company_site'       => $contact_info['company_site'],
+                     'company_activity'   => $contact_info['company_activity'],
+                 );
 
- 			if(!empty($json_company['code']) && $json_company['code'] == 200) {
- 				$contact_info['company_id'] = $json_company['id'];
- 			}else{
- 				$error_text = "Создание компании";
- 				$error_text .= "\nINPUT: " . json_encode($company_fields);
- 				$error_text .= "\nRETURN: " . json_encode($json_company);
- 				$this->log($error_text);
- 			}
- 			/* # CREATE NEW COMPANY */
+                 if (!empty($contact_info['b24_company_old_id'])) {
+                     $company_fields['old_id'] = $contact_info['b24_company_old_id'];
+                 }
+
+                 $url = str_replace('{id}', $company_id_to_update, $this->url_company_update);
+
+                 $ch_company = curl_init($url);
+                 curl_setopt($ch_company, CURLOPT_RETURNTRANSFER, 1);
+                 curl_setopt($ch_company, CURLOPT_TIMEOUT, 60);
+                 curl_setopt($ch_company, CURLOPT_CUSTOMREQUEST, 'POST');
+                 curl_setopt($ch_company, CURLOPT_POSTFIELDS, json_encode($company_fields));
+                 curl_setopt($ch_company, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+
+                 $body_company = curl_exec($ch_company);
+
+                 curl_close($ch_company);
+
+                 $json_company = json_decode($body_company, true);
+
+                 if (!empty($json_company['code']) && $json_company['code'] == 200) {
+                     $contact_info['company_id'] = $json_company['id'];
+                 } else {
+                     $error_text = "Обновление компании";
+                     $error_text .= "\nINPUT: " . json_encode($company_fields);
+                     $error_text .= "\nRETURN: " . json_encode($json_company);
+                     $this->log($error_text);
+                 }
+                 /* # EDIT COMPANY */
+             } else {
+                 /* CREATE NEW COMPANY */
+                 $company_fields = array(
+                     'company_id'					=> $contact_info['company_name'],
+                     'company_name'				=> $contact_info['company_name'],
+                     'company_city'				=> $contact_info['company_city'],
+                     'company_phone'				=> $contact_info['company_phone'],
+                     'company_site'				=> $contact_info['company_site'],
+                     'company_activity'		=> $contact_info['company_activity'],
+                 );
+                 if(!empty($contact_info['b24_company_old_id'])) {
+                     $company_fields['old_id'] = $contact_info['b24_company_old_id'];
+                 }
+                 var_dump('121212');
+
+                 $ch_company = curl_init($this->url_company_create);
+                 curl_setopt($ch_company, CURLOPT_RETURNTRANSFER, 1);
+                 curl_setopt($ch_company, CURLOPT_TIMEOUT, 60);
+                 curl_setopt($ch_company, CURLOPT_POSTFIELDS, http_build_query($company_fields));
+                 $body_company = curl_exec($ch_company);
+                 curl_close($ch_company);
+
+                 $json_company = json_decode($body_company, true);
+
+                 if(!empty($json_company['code']) && $json_company['code'] == 200) {
+                     $contact_info['company_id'] = $json_company['id'];
+                 }else{
+                     $error_text = "Создание компании";
+                     $error_text .= "\nINPUT: " . json_encode($company_fields);
+                     $error_text .= "\nRETURN: " . json_encode($json_company);
+                     $this->log($error_text);
+                 }
+                 /* # CREATE NEW COMPANY */
+             }
  		}
 
  		$more_fields = array(
