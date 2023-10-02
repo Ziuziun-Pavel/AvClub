@@ -76,8 +76,8 @@ class ControllerRegisterRegister extends Controller {
 	public function sendFail() {
 
 		$emails = array(
-			'kolikun@yandex.ru',
-			'mmaksimmilliann@mail.ru'
+//			'kolikun@yandex.ru',
+//			'mmaksimmilliann@mail.ru'
 		);
 
 		$title = 'Ошибка регистрации / авторизации';
@@ -94,7 +94,7 @@ class ControllerRegisterRegister extends Controller {
 		$mail->smtp_port = $this->config->get('av_alert_mail_smtp_port');
 		$mail->smtp_timeout = $this->config->get('av_alert_mail_smtp_timeout');
 
-		$mail->setTo('bu.babasik@gmail.com');
+		$mail->setTo('p.ziuziun@techin.by');
 		$mail->setFrom($this->config->get('av_alert_mail_protocol') === 'smtp' ? $this->config->get('av_alert_mail_smtp_username') : $this->config->get('av_alert_email'));
 		$mail->setSender('АВ Клуб | AV Club');
 		$mail->setSubject($email_subject);
