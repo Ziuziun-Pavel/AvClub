@@ -116,20 +116,17 @@ class ControllerRegisterCompany extends Controller {
 
 			$data['company_info'] = array(
 				'b24_company_old_id'	=> $company_info['b24id'],
-				'b24_company_id'			=> $company_info['b24id'],
-				'title'								=> $company_info['name'],
-				'city'								=> $company_info['city'],
-				'web'									=> $company_info['web'],
-				'phone'								=> $company_info['phone'],
-				'activity'						=> $company_info['activity'],
-
-				'search'							=> $company_info['name'],
+				'b24_company_id'		=> $company_info['b24id'],
+				'title'					=> $company_info['name'],
+				'city'					=> $company_info['city'],
+				'web'					=> $company_info['web'],
+				'phone'					=> $company_info['phone'],
+				'activity'				=> $company_info['activity'],
+				'search'				=> $company_info['name'],
 			);
 
 			$return['template'] = $this->load->view('register/_brand_data', $data);
 		}
-
-
 
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($return));

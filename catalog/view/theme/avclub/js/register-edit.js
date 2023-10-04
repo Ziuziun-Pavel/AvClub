@@ -1,9 +1,45 @@
 
 $(function(){
+	var initialFormState = $('#form-edit-expert').find('input:not([type="hidden"]), textarea').serialize();
+	var initialFormProfileState = $('#form-edit-expert').find('.profile__edit input').serialize();
+	var initialCompany = $('.regbrand__result--title').text();
+	var isProfileEdit = false;
+	var isCompanyChange = false;
 
-	$(document).on('change','#form-edit-expert input, #form-edit-expert textarea',  function(){
-		$('#button-edit-save').prop('disabled', false);
+	$(document).on('change', '#form-edit-expert input, #form-edit-expert textarea', function () {
+		// Сериализуем форму, исключая скрытые инпуты
+		var serializedForm = $('#form-edit-expert').find('input:not([type="hidden"]), textarea').serialize();
+
+		isProfileEdit = checkProfileEditChanges();
+		isCompanyChange = checkCompanyAfterFormSubmission();
+		console.log(isProfileEdit)
+		console.log(isCompanyChange)
+
+		// Проверяем, изменилось ли состояние формы
+		if (serializedForm !== initialFormState || checkCompanyAfterFormSubmission()) {
+			$('#button-edit-save').prop('disabled', false);
+		} else {
+			$('#button-edit-save').prop('disabled', true);
+		}
 	});
+
+	// Функция для определения, были ли изменения внутри блока profile__edit
+	function checkProfileEditChanges() {
+		var profileEditForm = $('#form-edit-expert');
+
+		// Сериализируем видимые инпуты и textarea внутри блока profile__edit
+		var serializedFormInsideProfileEdit = profileEditForm.find('.profile__edit input').serialize();
+
+		// Проверяем, изменилось ли состояние формы
+		return serializedFormInsideProfileEdit !== initialFormProfileState;
+	}
+
+	// Функция для сравнения текста после отправки формы
+	function checkCompanyAfterFormSubmission() {
+		var currentCompanyAfterSubmission = $('.regbrand__result--title').text();
+
+		return currentCompanyAfterSubmission !== initialCompany;
+	}
 
 	$(document).on('click', '#button-edit-save', function(e){
 		e.preventDefault();
@@ -99,12 +135,18 @@ $(function(){
 
 
 		if(!error) {
+			var ajaxData = form.serialize();
+			ajaxData += '&isProfileEdit=' + isProfileEdit;
+			ajaxData += '&isCompanyChanged=' + isCompanyChange;
+
+			console.log(ajaxData);
+			console.log(isCompanyChange);
 
 			$.ajax({
-				type: "POST", 
-				url: "index.php?route=register/edit/saveData", 
-				dataType: "json", 
-				data: form.serialize(),
+				type: "POST",
+				url: "index.php?route=register/edit/saveData",
+				dataType: "json",
+				data: ajaxData,
 				beforeSend: function(json) { $('.reg__load').fadeIn(); },
 				complete: function(json) {  },
 				success: function(json){

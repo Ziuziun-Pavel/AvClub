@@ -208,12 +208,11 @@ class ControllerRegisterEdit extends Controller {
 		$data = array();
 		$error = false;
 
-
 		$expert_id = $this->visitor->getId();
 
-		$b24id = $this->model_register_register->getB24Id($expert_id);
+		$b24id = $this->model_register_register->getB24Id($expert_id);//id первого пользователя
 
-		if(!$b24id) {
+        if(!$b24id) {
 			$error = true;
 
 			$return['redirect'] = $this->url->link('register/login');
@@ -222,26 +221,28 @@ class ControllerRegisterEdit extends Controller {
 		// все ок, ошибок нет
 		if(!$error) {
 
-
 			$user_data = array(
-				'user_id'							=> $b24id,
+				'user_id'						=> $b24id,
 				'old_user_id'					=> $b24id,
-				'name'								=> isset($post['name']) ? $post['name'] : '',
+                'IsCompanyEdit'					=> true,
+                'IsCompanyChanged'				=> isset($post['isCompanyChanged']) && $post['isCompanyChanged'] === 'true' ? 1 : 0,
+                'IsContactEdit'					=> isset($post['isProfileEdit']) && $post['isProfileEdit'] === 'true' ? 1 : 0,
+                'name'							=> isset($post['name']) ? $post['name'] : '',
 				'lastname'						=> isset($post['lastname']) ? $post['lastname'] : '',
-				'post'								=> isset($post['post']) ? $post['post'] : '',
-				'b24_company_id'			=> isset($post['b24_company_id']) ? $post['b24_company_id'] : 0,
+				'post'							=> isset($post['post']) ? $post['post'] : '',
+				'b24_company_id'			    => isset($post['b24_company_id']) ? $post['b24_company_id'] : 0,
 				'b24_company_old_id'			=> isset($post['b24_company_old_id']) ? $post['b24_company_old_id'] : 0,
-				'company'							=> isset($post['company']) ? $post['company'] : '',
-				'company_status'			=> isset($post['company_status']) ? $post['company_status'] : '',
-				'company_phone'				=> isset($post['company_phone']) ? $post['company_phone'] : '',
-				'company_site'				=> isset($post['company_site']) ? $post['company_site'] : '',
-				'company_activity'		=> isset($post['company_activity']) ? $post['company_activity'] : array(),
-				'city'								=> isset($post['city']) ? $post['city'] : '',
-				'email'								=> isset($post['email']) ? $post['email'] : '',
-				'phone'								=> isset($post['telephone']) ? $post['telephone'] : '',
+				'company'						=> isset($post['company']) ? $post['company'] : '',
+				'company_status'			    => isset($post['company_status']) ? $post['company_status'] : '',
+				'company_phone'				    => isset($post['company_phone']) ? $post['company_phone'] : '',
+				'company_site'				    => isset($post['company_site']) ? $post['company_site'] : '',
+				'company_activity'		        => isset($post['company_activity']) ? $post['company_activity'] : array(),
+				'city'							=> isset($post['city']) ? $post['city'] : '',
+				'email'							=> isset($post['email']) ? $post['email'] : '',
+				'phone'							=> isset($post['telephone']) ? $post['telephone'] : '',
 				'expertise'						=> isset($post['expertise']) ? $post['expertise'] : '',
-				'useful'							=> isset($post['useful']) ? $post['useful'] : '',
-				'regalia'							=> isset($post['regalia']) ? $post['regalia'] : '',
+				'useful'						=> isset($post['useful']) ? $post['useful'] : '',
+				'regalia'						=> isset($post['regalia']) ? $post['regalia'] : '',
 			);
 
 			if(!empty($post['photo']) && $post['photo'] !== 'delete') {
@@ -264,6 +265,7 @@ class ControllerRegisterEdit extends Controller {
 
 			if(!empty($return_contact['code']) && $return_contact['code'] == 200) {
 				$contact_id = $return_contact['id'];
+
 				$this->model_register_register->addAlternateId($b24id, $contact_id);
 
 				// $this->model_register_register->updateExpertID($b24id, $contact_id);
@@ -286,7 +288,6 @@ class ControllerRegisterEdit extends Controller {
 			
 
 		}
-
 
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($return));
