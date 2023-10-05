@@ -1,19 +1,16 @@
 
 $(function(){
 	var initialFormState = $('#form-edit-expert').find('input:not([type="hidden"]), textarea').serialize();
-	var initialFormProfileState = $('#form-edit-expert').find('.profile__edit input').serialize();
+	var initialFormProfileState = $('#form-edit-expert').find('.profile__edit input, textarea').serialize();
 	var initialCompany = $('.regbrand__result--title').text();
 	var isProfileEdit = false;
 	var isCompanyChange = false;
 
 	$(document).on('change', '#form-edit-expert input, #form-edit-expert textarea', function () {
-		// Сериализуем форму, исключая скрытые инпуты
 		var serializedForm = $('#form-edit-expert').find('input:not([type="hidden"]), textarea').serialize();
 
 		isProfileEdit = checkProfileEditChanges();
 		isCompanyChange = checkCompanyAfterFormSubmission();
-		console.log(isProfileEdit)
-		console.log(isCompanyChange)
 
 		// Проверяем, изменилось ли состояние формы
 		if (serializedForm !== initialFormState || checkCompanyAfterFormSubmission()) {
@@ -28,7 +25,8 @@ $(function(){
 		var profileEditForm = $('#form-edit-expert');
 
 		// Сериализируем видимые инпуты и textarea внутри блока profile__edit
-		var serializedFormInsideProfileEdit = profileEditForm.find('.profile__edit input').serialize();
+		var serializedFormInsideProfileEdit = profileEditForm.find('.profile__edit input, textarea').serialize();
+		// var serializedFormInsideProfileEdit1 = profileEditForm.find('.profile__edit textarea').serialize();
 
 		// Проверяем, изменилось ли состояние формы
 		return serializedFormInsideProfileEdit !== initialFormProfileState;
@@ -138,9 +136,6 @@ $(function(){
 			var ajaxData = form.serialize();
 			ajaxData += '&isProfileEdit=' + isProfileEdit;
 			ajaxData += '&isCompanyChanged=' + isCompanyChange;
-
-			console.log(ajaxData);
-			console.log(isCompanyChange);
 
 			$.ajax({
 				type: "POST",

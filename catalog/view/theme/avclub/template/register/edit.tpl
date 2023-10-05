@@ -181,7 +181,7 @@
                         </div>
                     </div>
 
-                    <div class="regform__outer col-12">
+                    <div class="regform__outer col-12 profile__edit">
                         <div class="regform__inp  regform__inp-plh regform__inp-textarea">
                             <div class="regform__textarea" contentEditable="true"
                                  oninput="textareainp(this);"><?php echo $user['useful']; ?></div>
@@ -191,7 +191,7 @@
                         </div>
                     </div>
 
-                    <div class="regform__outer col-12">
+                    <div class="regform__outer col-12 profile__edit">
                         <div class="regform__inp  regform__inp-plh regform__inp-textarea">
                             <div class="regform__textarea" contentEditable="true"
                                  oninput="textareainp(this);"><?php echo $user['regalia']; ?></div>
