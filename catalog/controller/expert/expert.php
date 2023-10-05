@@ -342,7 +342,7 @@ class ControllerExpertExpert extends Controller {
 	}
 
 	public function getVisited() {
-		$return = array();
+        $return = array();
 		$data = array();
 
 		session_write_close();
@@ -380,6 +380,7 @@ class ControllerExpertExpert extends Controller {
 
 
 			$event_list = $this->model_register_register->getVisitList($expert_info['b24id']);
+
 
 
 			$sort_forum = array();
@@ -463,16 +464,13 @@ class ControllerExpertExpert extends Controller {
 
 			}
 
-			array_multisort($sort_forum, SORT_DESC, $data['event_list']);			
-
+			array_multisort($sort_forum, SORT_DESC, $data['event_list']);
 
 			$return['template'] = $this->load->view('expert/expert_events', $data);
 
 		}else{
 			$return['error'] = true;
 		}
-
-
 
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($return));

@@ -105,9 +105,8 @@
 								<?php $active_tab = true; ?>
 							<?php } ?>
 
-
 							<?php if(!empty($event_list)) { ?>
-								<a href="#" class="expertnav__tab link <?php echo !$active_tab ? 'active' : ''; ?>" data-type="register">Мои регистрации</a>
+								<a href="#" class="expertnav__tab reg link <?php echo !$active_tab ? 'active' : ''; ?>" data-type="register">Мои регистрации</a>
 								<?php $active_tab = true; ?>
 							<?php } ?>
 
@@ -346,13 +345,14 @@
 			var error_text = '<div class="expreg__message --loading">Ошибка загрузки регистраций.<br>Попробуйте обновить страницу или повторить попытку немного позже</div>';
 
 			$.ajax({
-				type: "GET", 
-				url: "index.php?route=expert/expert/getVisited", 
-				dataType: "json", 
+				type: "GET",
+				url: "index.php?route=expert/expert/getVisited",
+				dataType: "json",
 				data: 'expert_id=<?php echo $expert_id; ?>',
 				beforeSend: function(json) {  },
 				complete: function(json) {  },
 				success: function(json){
+
 					if(json['template']) {
 						$('#content-register').html(json['template']);
 					}else if(json['error']){
@@ -364,7 +364,7 @@
 					console.log('expert getVisitet error', json);
 				}
 			});
-		})		
+		})
 	</script>
 <?php } ?>
 

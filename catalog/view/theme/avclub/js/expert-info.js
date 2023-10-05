@@ -201,6 +201,12 @@ $(function(){
 			$('#navlist-' + type).addClass('active').siblings('.expertnav__list').removeClass('active');
 			$('#content-' + type).addClass('active').siblings('.expert__content').removeClass('active');
 		}
+
+		if($(this).hasClass('active') && $(this).hasClass('reg')) {
+			$('.expreg').removeClass('d-none');
+		} else {
+			$('.expreg').addClass('d-none');
+		}
 	})
 
 
