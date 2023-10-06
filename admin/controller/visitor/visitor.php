@@ -259,7 +259,6 @@ class ControllerVisitorVisitor extends Controller {
 		);
 
 		$visitor_total = $this->model_visitor_visitor->getTotalVisitors($filter_data);
-
 		$results = $this->model_visitor_visitor->getVisitors($filter_data);
 
 		foreach ($results as $result) {

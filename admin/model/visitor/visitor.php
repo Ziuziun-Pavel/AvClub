@@ -246,7 +246,12 @@ class ModelVisitorVisitor extends Model {
 			$implode[] = "v.expert = '" . (int)$data['filter_expert'] . "'";
 		}
 
-		if ($implode) {
+        //Убираем из выборки удалённые контакты
+        $implode[] = "v.b24id != 0";
+        //Убираем из выборки заархивированные контакты
+        $implode[] = "v.status != 0";
+
+        if ($implode) {
 			$sql .= " WHERE " . implode(" AND ", $implode);
 		}
 
