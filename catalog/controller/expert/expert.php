@@ -466,6 +466,9 @@ class ControllerExpertExpert extends Controller {
 
 			array_multisort($sort_forum, SORT_DESC, $data['event_list']);
 
+//            var_dump($data);
+//            die();
+
 			$return['template'] = $this->load->view('expert/expert_events', $data);
 
 		}else{

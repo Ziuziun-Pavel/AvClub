@@ -244,8 +244,7 @@
 								</div>
 							</div>
 
-
-							<div class="form-group required">
+							<!-- <div class="form-group required">
 								<label class="col-sm-2 control-label" for="input-email"><?php echo $entry_email; ?></label>
 								<div class="col-sm-10">
 									<input type="text" name="email" value="<?php echo $email; ?>" placeholder="<?php echo $entry_email; ?>" id="input-email" class="form-control" />
@@ -253,7 +252,7 @@
 										<div class="text-danger"><?php echo $error_email; ?></div>
 									<?php  } ?>
 								</div>
-							</div>
+							</div> -->
 
 							<div class="form-group required">
 								<label class="col-sm-2 control-label" for="input-password"><?php echo $entry_password; ?></label>

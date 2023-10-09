@@ -358,6 +358,9 @@
 					}else if(json['error']){
 						$('#content-register').html(error_text);
 					}
+					if ($('.expertnav__tabs a').hasClass('active') && $('.expertnav__tabs a').hasClass('reg')) {
+						$('.expreg').removeClass('d-none');
+					}
 				},
 				error: function(json){
 					$('#content-register').html(error_text);
