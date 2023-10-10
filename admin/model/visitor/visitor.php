@@ -87,20 +87,36 @@ class ModelVisitorVisitor extends Model {
 
 	public function editVisitor($visitor_id, $data) {
 		
-		$this->db->query("UPDATE " . DB_PREFIX . "visitor SET 
+//		$this->db->query("UPDATE " . DB_PREFIX . "visitor SET
+//			name = '" . $this->db->escape($data['firstname'] . ' ' . $data['lastname']) . "',
+//			firstname = '" . $this->db->escape($data['firstname']) . "',
+//			lastname = '" . $this->db->escape($data['lastname']) . "',
+//			exp = '" . $this->db->escape($data['exp']) . "',
+//			expert = '" . (!empty($data['expert']) ? (int)$data['expert'] : 0) . "',
+//			b24id = '" . (!empty($data['b24id']) ? (int)$data['b24id'] : 0) . "',
+//			emails = '" . (!empty($data['emails']) ? $this->db->escape($data['emails']) : '') . "',
+//			field_expertise = '" . (!empty($data['field_expertise']) ? $this->db->escape($data['field_expertise']) : '') . "',
+//			field_useful = '" . (!empty($data['field_useful']) ? $this->db->escape($data['field_useful']) : '') . "',
+//			field_regalia = '" . (!empty($data['field_regalia']) ? $this->db->escape($data['field_regalia']) : '') . "',
+//			image = '" . $this->db->escape($data['image']) . "',
+//			company_id = '" . (!empty($data['company_id']) ? (int)$data['company_id'] : 0) . "',
+//			email = '" . $this->db->escape($data['email']) . "',
+//			status = '" . (int)$data['status'] . "'
+//			WHERE
+//			visitor_id = '" . (int)$visitor_id . "'");
+
+        $this->db->query("UPDATE " . DB_PREFIX . "visitor SET 
 			name = '" . $this->db->escape($data['firstname'] . ' ' . $data['lastname']) . "', 
 			firstname = '" . $this->db->escape($data['firstname']) . "', 
 			lastname = '" . $this->db->escape($data['lastname']) . "', 
 			exp = '" . $this->db->escape($data['exp']) . "', 
 			expert = '" . (!empty($data['expert']) ? (int)$data['expert'] : 0) . "', 
-			b24id = '" . (!empty($data['b24id']) ? (int)$data['b24id'] : 0) . "', 
-			emails = '" . (!empty($data['emails']) ? $this->db->escape($data['emails']) : '') . "', 
+			b24id = '" . (!empty($data['b24id']) ? (int)$data['b24id'] : 0) . "',  
 			field_expertise = '" . (!empty($data['field_expertise']) ? $this->db->escape($data['field_expertise']) : '') . "', 
 			field_useful = '" . (!empty($data['field_useful']) ? $this->db->escape($data['field_useful']) : '') . "', 
 			field_regalia = '" . (!empty($data['field_regalia']) ? $this->db->escape($data['field_regalia']) : '') . "', 
 			image = '" . $this->db->escape($data['image']) . "', 
 			company_id = '" . (!empty($data['company_id']) ? (int)$data['company_id'] : 0) . "', 
-			email = '" . $this->db->escape($data['email']) . "', 
 			status = '" . (int)$data['status'] . "' 
 			WHERE 
 			visitor_id = '" . (int)$visitor_id . "'");
@@ -225,7 +241,16 @@ class ModelVisitorVisitor extends Model {
 		return $query->row;
 	}
 
+    public function getVisitorByB24Id($id) {
+        $b24id = (int)$id;
+
+        $query = $this->db->query("SELECT DISTINCT * FROM " . DB_PREFIX . "visitor WHERE b24id = '" . $this->db->escape($b24id) . "'");
+
+        return $query->row;
+    }
+
 	public function getVisitors($data = array()) {
+
 		$sql = "SELECT * FROM " . DB_PREFIX . "visitor v ";
 
 		$implode = array();
@@ -233,10 +258,10 @@ class ModelVisitorVisitor extends Model {
 		if (!empty($data['filter_name'])) {
 			$implode[] = "v.name LIKE '%" . $this->db->escape($data['filter_name']) . "%'";
 		}
-
-		if (!empty($data['filter_email'])) {
-			$implode[] = "v.email LIKE '" . $this->db->escape($data['filter_email']) . "%'";
-		}
+//
+//		if (!empty($data['filter_email'])) {
+//			$implode[] = "v.email LIKE '" . $this->db->escape($data['filter_email']) . "%'";
+//		}
 
 		if (isset($data['filter_status']) && !is_null($data['filter_status'])) {
 			$implode[] = "v.status = '" . (int)$data['filter_status'] . "'";
@@ -257,7 +282,7 @@ class ModelVisitorVisitor extends Model {
 
 		$sort_data = array(
 			'v.name',
-			'v.email',
+//			'v.email',
 			'v.status'
 		);
 
@@ -299,9 +324,9 @@ class ModelVisitorVisitor extends Model {
 			$implode[] = "name LIKE '%" . $this->db->escape($data['filter_name']) . "%'";
 		}
 
-		if (!empty($data['filter_email'])) {
-			$implode[] = "email LIKE '" . $this->db->escape($data['filter_email']) . "%'";
-		}
+//		if (!empty($data['filter_email'])) {
+//			$implode[] = "email LIKE '" . $this->db->escape($data['filter_email']) . "%'";
+//		}
 
 		if (isset($data['filter_status']) && !is_null($data['filter_status'])) {
 			$implode[] = "status = '" . (int)$data['filter_status'] . "'";

@@ -78,9 +78,9 @@ class ControllerVisitorVisitor extends Controller {
 				$url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
 			}
 
-			if (isset($this->request->get['filter_email'])) {
-				$url .= '&filter_email=' . urlencode(html_entity_decode($this->request->get['filter_email'], ENT_QUOTES, 'UTF-8'));
-			}
+//			if (isset($this->request->get['filter_email'])) {
+//				$url .= '&filter_email=' . urlencode(html_entity_decode($this->request->get['filter_email'], ENT_QUOTES, 'UTF-8'));
+//			}
 
 
 			if (isset($this->request->get['filter_status'])) {
@@ -165,11 +165,11 @@ class ControllerVisitorVisitor extends Controller {
 			$filter_name = null;
 		}
 
-		if (isset($this->request->get['filter_email'])) {
-			$filter_email = $this->request->get['filter_email'];
-		} else {
-			$filter_email = null;
-		}
+//		if (isset($this->request->get['filter_email'])) {
+//			$filter_email = $this->request->get['filter_email'];
+//		} else {
+//			$filter_email = null;
+//		}
 
 
 		if (isset($this->request->get['filter_status'])) {
@@ -207,9 +207,9 @@ class ControllerVisitorVisitor extends Controller {
 			$url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
 		}
 
-		if (isset($this->request->get['filter_email'])) {
-			$url .= '&filter_email=' . urlencode(html_entity_decode($this->request->get['filter_email'], ENT_QUOTES, 'UTF-8'));
-		}
+//		if (isset($this->request->get['filter_email'])) {
+//			$url .= '&filter_email=' . urlencode(html_entity_decode($this->request->get['filter_email'], ENT_QUOTES, 'UTF-8'));
+//		}
 
 		if (isset($this->request->get['filter_status'])) {
 			$url .= '&filter_status=' . $this->request->get['filter_status'];
@@ -249,7 +249,7 @@ class ControllerVisitorVisitor extends Controller {
 
 		$filter_data = array(
 			'filter_name'              => $filter_name,
-			'filter_email'             => $filter_email,
+//			'filter_email'             => $filter_email,
 			'filter_status'            => $filter_status,
 			'filter_expert'            => $filter_expert,
 			'sort'                     => $sort,
@@ -268,7 +268,7 @@ class ControllerVisitorVisitor extends Controller {
 				'name'					=> $result['name'],
 				'exp'						=> $result['exp'],
 				'expert'				=> $result['expert'],
-				'email'					=> $result['email'],
+//				'email'					=> $result['email'],
 				'b24id'					=> $result['b24id'],
 				'update_link'		=> $result['b24id'] ? HTTPS_CATALOG . 'index.php?route=themeset/expert/getContactById&contact_id=' . $result['b24id'] . '&show_info=0&show_result=1' : '',
 				'view'					=> $result['b24id'] && !empty($result['expert']) ? HTTPS_CATALOG . 'index.php?route=expert/expert&expert_id=' . $result['visitor_id'] : '',
@@ -340,9 +340,9 @@ class ControllerVisitorVisitor extends Controller {
 			$url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
 		}
 
-		if (isset($this->request->get['filter_email'])) {
-			$url .= '&filter_email=' . urlencode(html_entity_decode($this->request->get['filter_email'], ENT_QUOTES, 'UTF-8'));
-		}
+//		if (isset($this->request->get['filter_email'])) {
+//			$url .= '&filter_email=' . urlencode(html_entity_decode($this->request->get['filter_email'], ENT_QUOTES, 'UTF-8'));
+//		}
 		if (isset($this->request->get['filter_status'])) {
 			$url .= '&filter_status=' . $this->request->get['filter_status'];
 		}
@@ -361,7 +361,7 @@ class ControllerVisitorVisitor extends Controller {
 		}
 
 		$data['sort_name'] = $this->url->link('visitor/visitor', 'token=' . $this->session->data['token'] . '&sort=name' . $url, true);
-		$data['sort_email'] = $this->url->link('visitor/visitor', 'token=' . $this->session->data['token'] . '&sort=c.email' . $url, true);
+//		$data['sort_email'] = $this->url->link('visitor/visitor', 'token=' . $this->session->data['token'] . '&sort=c.email' . $url, true);
 		$data['sort_status'] = $this->url->link('visitor/visitor', 'token=' . $this->session->data['token'] . '&sort=c.status' . $url, true);
 		
 		$url = '';
@@ -370,9 +370,9 @@ class ControllerVisitorVisitor extends Controller {
 			$url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
 		}
 
-		if (isset($this->request->get['filter_email'])) {
-			$url .= '&filter_email=' . urlencode(html_entity_decode($this->request->get['filter_email'], ENT_QUOTES, 'UTF-8'));
-		}
+//		if (isset($this->request->get['filter_email'])) {
+//			$url .= '&filter_email=' . urlencode(html_entity_decode($this->request->get['filter_email'], ENT_QUOTES, 'UTF-8'));
+//		}
 
 
 		if (isset($this->request->get['filter_status'])) {
@@ -402,7 +402,7 @@ class ControllerVisitorVisitor extends Controller {
 		$data['results'] = sprintf($this->language->get('text_pagination'), ($visitor_total) ? (($page - 1) * $this->config->get('config_limit_admin')) + 1 : 0, ((($page - 1) * $this->config->get('config_limit_admin')) > ($visitor_total - $this->config->get('config_limit_admin'))) ? $visitor_total : ((($page - 1) * $this->config->get('config_limit_admin')) + $this->config->get('config_limit_admin')), $visitor_total, ceil($visitor_total / $this->config->get('config_limit_admin')));
 
 		$data['filter_name'] = $filter_name;
-		$data['filter_email'] = $filter_email;
+//		$data['filter_email'] = $filter_email;
 		$data['filter_status'] = $filter_status;
 		$data['filter_expert'] = $filter_expert;
 
@@ -460,7 +460,7 @@ class ControllerVisitorVisitor extends Controller {
 			'entry_tag_placeholder',
 			'entry_expert',
 			'entry_b24id',
-			'entry_emails',
+//			'entry_emails',
 			'entry_keyword',
 			'entry_field_expertise',
 			'entry_field_useful',
@@ -496,7 +496,7 @@ class ControllerVisitorVisitor extends Controller {
 			'warning',
 			'firstname',
 			'lastname',
-			'email',
+//			'email',
 			'password',
 			'confirm',
 			'keyword',
@@ -516,9 +516,9 @@ class ControllerVisitorVisitor extends Controller {
 			$url .= '&filter_name=' . urlencode(html_entity_decode($this->request->get['filter_name'], ENT_QUOTES, 'UTF-8'));
 		}
 
-		if (isset($this->request->get['filter_email'])) {
-			$url .= '&filter_email=' . urlencode(html_entity_decode($this->request->get['filter_email'], ENT_QUOTES, 'UTF-8'));
-		}
+//		if (isset($this->request->get['filter_email'])) {
+//			$url .= '&filter_email=' . urlencode(html_entity_decode($this->request->get['filter_email'], ENT_QUOTES, 'UTF-8'));
+//		}
 
 		if (isset($this->request->get['filter_status'])) {
 			$url .= '&filter_status=' . $this->request->get['filter_status'];
@@ -567,8 +567,8 @@ class ControllerVisitorVisitor extends Controller {
 			'firstname'					=> '',
 			'lastname'					=> '',
 			'image'							=> '',
-			'email'							=> '',
-			'emails'						=> '',
+//			'email'							=> '',
+//			'emails'						=> '',
 			'exp'								=> '',
 			'expert'						=> 0,
 			'b24id'							=> 0,
@@ -666,9 +666,6 @@ class ControllerVisitorVisitor extends Controller {
 			$data['tags_branch'] = $this->model_visitor_visitor->getTagsBranch($this->request->get['visitor_id']);
 		}
 
-
-
-
 		$this->load->model('tool/image');
 
 		if (isset($this->request->post['image']) && is_file(DIR_IMAGE . $this->request->post['image'])) {
@@ -749,11 +746,13 @@ class ControllerVisitorVisitor extends Controller {
 			$this->error['lastname'] = $this->language->get('error_lastname');
 		}
 
-		if ((utf8_strlen($this->request->post['email']) > 96) || !preg_match($this->config->get('config_mail_regexp'), $this->request->post['email'])) {
-			$this->error['email'] = $this->language->get('error_email');
-		}
+//		if ((utf8_strlen($this->request->post['email']) > 96) || !preg_match($this->config->get('config_mail_regexp'), $this->request->post['email'])) {
+//			$this->error['email'] = $this->language->get('error_email');
+//		}
 
-		$visitor_info = $this->model_visitor_visitor->getVisitorByEmail($this->request->post['email']);
+		//$visitor_info = $this->model_visitor_visitor->getVisitorByEmail($this->request->post['email']);
+
+        $visitor_info = $this->model_visitor_visitor->getVisitorByB24Id($this->request->post['b24id']);
 
 		if (!isset($this->request->get['visitor_id'])) {
 			if ($visitor_info) {
@@ -774,8 +773,6 @@ class ControllerVisitorVisitor extends Controller {
 				$this->error['confirm'] = $this->language->get('error_confirm');
 			}
 		}
-
-
 
 		if(empty($this->request->post['keyword'])){
 			$a_data = array(
@@ -819,8 +816,6 @@ class ControllerVisitorVisitor extends Controller {
 
 		return !$this->error;
 	}
-
-
 
 	public function existVisitor() {
 		$json = array();
@@ -876,6 +871,7 @@ class ControllerVisitorVisitor extends Controller {
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($json));
 	}
+
 	protected function validateDeleteExp() {
 		if (!$this->user->hasPermission('modify', 'visitor/visitor')) {
 			$this->error['warning'] = $this->language->get('error_permission');

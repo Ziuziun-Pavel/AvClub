@@ -37,12 +37,12 @@
 						<input type="text" name="filter_name" value="<?php echo $filter_name; ?>" placeholder="<?php echo $entry_name; ?>" id="input-name" class="form-control" />
 					</div>
 				</div>
-				<div class="col-sm-3">
+				<!--<div class="col-sm-3">
 					<div class="form-group">
 						<label class="control-label" for="input-email"><?php echo $entry_email; ?></label>
 						<input type="text" name="filter_email" value="<?php echo $filter_email; ?>" placeholder="<?php echo $entry_email; ?>" id="input-email" class="form-control" />
 					</div>
-				</div>
+				</div>-->
 				<div class="col-sm-3">
 					<div class="form-group">
 						<label class="control-label" for="input-status"><?php echo $entry_status; ?></label>
@@ -89,13 +89,13 @@
 									<a href="<?php echo $sort_name; ?>"><?php echo $column_name; ?></a>
 								<?php } ?>
 							</td>
-							<td class="text-left">
+							<!--<td class="text-left">
 								<?php if ($sort == 'c.email') { ?>
 									<a href="<?php echo $sort_email; ?>" class="<?php echo strtolower($order); ?>"><?php echo $column_email; ?></a>
 								<?php } else { ?>
 									<a href="<?php echo $sort_email; ?>"><?php echo $column_email; ?></a>
 								<?php } ?>
-							</td>
+							</td>-->
 							<td class="text-left">Bitrix24 id</td>
 							<td class="text-center">
 								<?php if ($sort == 'c.status') { ?>
@@ -117,7 +117,7 @@
 										<input type="checkbox" name="selected[]" value="<?php echo $visitor['visitor_id']; ?>" />
 										<?php } ?></td>
 										<td class="text-left"><?php echo $visitor['name']; ?></td>
-										<td class="text-left"><?php echo $visitor['email']; ?></td>
+										<!--<td class="text-left"><?php echo $visitor['email']; ?></td>-->
 										<td class="text-left"><?php echo $visitor['b24id']; ?></td>
 										<td class="text-center"><div class=" <?php echo $visitor['status'] ? 'text-success' : 'text-danger'; ?>"><?php echo $visitor['status'] ? $text_enabled : $text_disabled; ?></div></td>
 										<td class="text-right">
@@ -147,7 +147,7 @@
 		</div>
 	</div>
 </div>
-<script type="text/javascript"><!--
+<script type="text/javascript">
 	$('#button-filter').on('click', function() {
 		url = 'index.php?route=visitor/visitor&token=<?php echo $token; ?>';
 
@@ -157,11 +157,11 @@
 			url += '&filter_name=' + encodeURIComponent(filter_name);
 		}
 
-		var filter_email = $('input[name=\'filter_email\']').val();
-
-		if (filter_email) {
-			url += '&filter_email=' + encodeURIComponent(filter_email);
-		}
+		// var filter_email = $('input[name=\'filter_email\']').val();
+		//
+		// if (filter_email) {
+		// 	url += '&filter_email=' + encodeURIComponent(filter_email);
+		// }
 
 		var filter_status = $('select[name=\'filter_status\']').val();
 
@@ -179,7 +179,7 @@
 		location = url;
 	});
 	//--></script> 
-	<script type="text/javascript"><!--
+	<script type="text/javascript">
 		$('input[name=\'filter_name\']').autocomplete({
 			'source': function(request, response) {
 				$.ajax({
@@ -200,27 +200,27 @@
 			}	
 		});
 
-		$('input[name=\'filter_email\']').autocomplete({
-			'source': function(request, response) {
-				$.ajax({
-					url: 'index.php?route=visitor/visitor/autocomplete&token=<?php echo $token; ?>&filter_email=' +  encodeURIComponent(request),
-					dataType: 'json',			
-					success: function(json) {
-						response($.map(json, function(item) {
-							return {
-								label: item['email'],
-								value: item['visitor_id']
-							}
-						}));
-					}
-				});
-			},
-			'select': function(item) {
-				$('input[name=\'filter_email\']').val(item['label']);
-			}	
-		});
+		// $('input[name=\'filter_email\']').autocomplete({
+		// 	'source': function(request, response) {
+		// 		$.ajax({
+		// 			url: 'index.php?route=visitor/visitor/autocomplete&token=<?php echo $token; ?>&filter_email=' +  encodeURIComponent(request),
+		// 			dataType: 'json',
+		// 			success: function(json) {
+		// 				response($.map(json, function(item) {
+		// 					return {
+		// 						label: item['email'],
+		// 						value: item['visitor_id']
+		// 					}
+		// 				}));
+		// 			}
+		// 		});
+		// 	},
+		// 	'select': function(item) {
+		// 		$('input[name=\'filter_email\']').val(item['label']);
+		// 	}
+		// });
 		//--></script> 
-		<script type="text/javascript"><!--
+		<script type="text/javascript">
 			$('.date').datetimepicker({
 				pickTime: false
 			});

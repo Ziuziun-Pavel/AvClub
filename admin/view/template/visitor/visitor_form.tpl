@@ -100,12 +100,12 @@
 								</div>
 							</div>
 
-							<div class="form-group <?php echo $expert == 1 ? '' : 'hidden'; ?>">
+							<!--<div class="form-group <?php echo $expert == 1 ? '' : 'hidden'; ?>">
 								<label class="col-sm-2 control-label" for="input-emails"><?php echo $entry_emails; ?></label>
 								<div class="col-sm-10">
 									<textarea name="emails" rows="5" placeholder="<?php echo $entry_emails; ?>" id="input-emails" class="form-control"><?php echo $emails; ?></textarea>
 								</div>
-							</div>
+							</div>-->
 
 							<div class="form-group">
 								<label class="col-sm-2 control-label" for="input-exp"><?php echo $entry_exp; ?></label>
@@ -234,7 +234,7 @@
 								<?php require_once(DIR_TEMPLATE . 'avevent/event-autocomplete.tpl'); ?>
 							</div>
 
-							<div class="form-group required">
+							<!--<div class="form-group required">
 								<label class="col-sm-2 control-label" for="input-email"><?php echo $entry_email; ?></label>
 								<div class="col-sm-10">
 									<input type="text" name="email" value="<?php echo $email; ?>" placeholder="<?php echo $entry_email; ?>" id="input-email" class="form-control" />
@@ -242,7 +242,7 @@
 										<div class="text-danger"><?php echo $error_email; ?></div>
 									<?php  } ?>
 								</div>
-							</div>
+							</div>-->
 
 							<!-- <div class="form-group required">
 								<label class="col-sm-2 control-label" for="input-email"><?php echo $entry_email; ?></label>
