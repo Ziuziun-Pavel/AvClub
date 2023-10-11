@@ -77,6 +77,7 @@ class ControllerThemesetExpert extends Controller {
 
 	public function getContactById($contact_id = 0) {
 
+
 		$this->load->model('themeset/expert');
 
 		if(isset($this->request->get['contact_id'])) {

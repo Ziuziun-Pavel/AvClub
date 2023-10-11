@@ -575,7 +575,6 @@ class ControllerVisitorVisitor extends Controller {
 			'status'						=> true,
 			'company_id'				=> '',
 			'keyword'						=> '',
-
 			'field_expertise'		=> '',
 			'field_useful'			=> '',
 			'field_regalia'			=> '',

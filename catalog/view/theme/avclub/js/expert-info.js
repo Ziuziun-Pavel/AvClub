@@ -203,9 +203,23 @@ $(function(){
 		}
 
 		if($(this).hasClass('active') && $(this).hasClass('reg')) {
-			$('.expreg').removeClass('d-none');
+			$('#content-register .expreg').removeClass('d-none');
+			$('#content-register.expert__content').css("display", "block");
+			$('#content-register').removeClass('d-none')
 		} else {
-			$('.expreg').addClass('d-none');
+			$('#content-register .expreg').addClass('d-none');
+			$('#content-register.expert__content').css("display", "none");
+			$('#content-register').addClass('d-none');
+		}
+
+		if($(this).hasClass('active') && $(this).hasClass('fut_ev')) {
+			$('#content-events .expreg').removeClass('d-none');
+			$('#content-events.expert__content').css("display", "block");
+			$('#content-events').removeClass('d-none')
+		} else {
+			$('#content-events .expreg').addClass('d-none');
+			$('#content-events.expert__content').css("display", "none");
+			$('#content-events').addClass('d-none');
 		}
 	})
 

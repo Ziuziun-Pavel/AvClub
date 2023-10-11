@@ -387,8 +387,47 @@ class ModelRegisterRegister extends Model
             }
         }
 
-
         return $return_list;
+    }
+
+    //todo Моковые данные для будущих мероприятий. Потом заменить на метод получения из Б24
+    public function getFutureEvents()
+    {
+        return [
+            [
+                "name" => "AV FOCUS Алматы 2023",
+                "date" => "2023-10-26T03:00:00+03:00",
+                "status" => "visited",
+                "sum" => NULL,
+                "location" => "",
+                "address" => "",
+                "type" => "делегат",
+                "ticket_public_url" => "https://registration.avclub.pro/avf23_sankt_peterburg/",
+                "type_event" => "forum"
+            ],
+            [
+                "name" => "AV FOCUS Минск 2023",
+                "date" => "2023-10-26T03:00:00+03:00",
+                "status" => "visited",
+                "sum" => NULL,
+                "location" => "",
+                "address" => "",
+                "url" => '/video/master-klass-revolyutsiya-tsveta/',
+                "type" => "делегат",
+                "type_event" => "webinar"
+            ],
+            [
+                "name" => "AV FOCUS Москва 2023",
+                "date" => "2023-10-26T03:00:00+03:00",
+                "status" => "visited",
+                "sum" => NULL,
+                "location" => "",
+                "address" => "",
+                "type" => "делегат",
+                "ticket_public_url" => "https://registration.avclub.pro/avf23_sankt_peterburg/",
+                "type_event" => "forum"
+            ]
+        ];
     }
 
     public function getContactInfo($id = 0)

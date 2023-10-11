@@ -43,7 +43,7 @@ class ModelThemesetExpert extends Model {
 
 			$result = $this->model_register_register->getContactInfo($contact_id);
 			$info = $result;
-			
+
 			if(empty($info['ID'])) {
 				$result = CRest::call(
 					'crm.contact.get',
@@ -93,8 +93,6 @@ class ModelThemesetExpert extends Model {
 
 			return;
 		}
-
-		
 
 		if($show_info) {
 			echo '<pre>';
