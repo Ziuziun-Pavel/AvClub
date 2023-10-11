@@ -19,7 +19,7 @@
         <?php if(!$event['old'] && !empty($event['link'])) { ?>
         <div class="expreg__btns">
             <a href="<?php echo $event['link']; ?>" class="btn btn-red" target="_blank">Зарегистрироваться</a>
-            <div class="expreg__qr"></div>
+            <!--<div class="expreg__qr"></div>-->
         </div>
         <!--<div class="expreg__bottom">Для посещения мероприятия предъявите распечатанный билет (бейдж)</div>-->
         <?php } ?>
@@ -30,7 +30,7 @@
         <?php if($event['type_event'] === 'webinar') { ?>
         <div class="expreg__btns">
             <a href="<?php echo $event['url']; ?>" class="btn btn-red" target="_blank">Ссылка на вебинар</a>
-            <div class="expreg__qr"></div>
+            <!--<div class="expreg__qr"></div>-->
         </div>
         <?php } ?>
         <?php /* # WEBINAR */ ?>
@@ -51,18 +51,18 @@
 <script>
     let buttons = document.querySelectorAll(".expreg__btns");
 
-    buttons.forEach((button) => {
-        let btn = button.querySelector('.btn');
-        let qr = button.querySelector('.expreg__qr');
-
-        let qrcode = new QRCode(qr, {
-            text: btn.href,
-            width: 50,
-            height: 50,
-            colorDark: "#000000",
-            colorLight: "#ffffff",
-            correctLevel: QRCode.CorrectLevel.H
-        });
-    })
+    // buttons.forEach((button) => {
+    //     let btn = button.querySelector('.btn');
+    //     let qr = button.querySelector('.expreg__qr');
+    //
+    //     let qrcode = new QRCode(qr, {
+    //         text: btn.href,
+    //         width: 50,
+    //         height: 50,
+    //         colorDark: "#000000",
+    //         colorLight: "#ffffff",
+    //         correctLevel: QRCode.CorrectLevel.H
+    //     });
+    // })
 </script>
 <?php } ?>

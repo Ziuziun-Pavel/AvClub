@@ -216,11 +216,18 @@ $(function(){
 			$('#content-events .expreg').removeClass('d-none');
 			$('#content-events.expert__content').css("display", "block");
 			$('#content-events').removeClass('d-none')
+			$('#content-bio').removeClass('active');
 		} else {
 			$('#content-events .expreg').addClass('d-none');
 			$('#content-events.expert__content').css("display", "none");
 			$('#content-events').addClass('d-none');
 		}
+
+		if($(this).hasClass('active') && $(this).hasClass('bio')) {
+			$('#content-bio').addClass('active');
+
+		}
+
 	})
 
 

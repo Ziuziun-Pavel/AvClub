@@ -103,7 +103,7 @@
                         <?php } ?>
 
                         <?php if(!$tabs) { ?>
-                        <a href="#" class="expertnav__tab link <?php echo !$active_tab ? 'active' : ''; ?>"
+                        <a href="#" class="expertnav__tab bio link <?php echo !$active_tab ? 'active' : ''; ?>"
                            data-type="bio">Биография</a>
                         <?php $active_tab = true; ?>
                         <?php } ?>
