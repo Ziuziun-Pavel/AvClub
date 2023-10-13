@@ -406,8 +406,8 @@ class ModelRegisterRegister extends Model
                 "type_event" => "forum"
             ],
             [
-                "name" => "AV FOCUS Минск 2023",
-                "date" => "2023-10-26T03:00:00+03:00",
+                "name" => "Мастер-класс «Революция цвета»",
+                "date" => "2023-11-30T03:00:00+03:00",
                 "status" => "visited",
                 "sum" => NULL,
                 "location" => "",

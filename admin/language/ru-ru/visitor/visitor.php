@@ -51,7 +51,7 @@ $_['entry_keyword']          	= 'SEO URL:';
 
 $_['entry_field_expertise']          	= 'Экпертиза:';
 $_['entry_field_useful']          	= 'Чем могу быть полезен:';
-$_['entry_field_regalia']          	= 'Заслуги и решгалии:';
+$_['entry_field_regalia']          	= 'Заслуги и регалии:';
 
 // Error
 $_['error_warning']         = 'Внимание: проверьте форму на наличие ошибок!';

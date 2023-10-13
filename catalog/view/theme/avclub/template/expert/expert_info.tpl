@@ -108,6 +108,7 @@
                         <?php $active_tab = true; ?>
                         <?php } ?>
 
+
                         <?php if(!empty($event_list)) { ?>
                         <a href="#" class="expertnav__tab reg link <?php echo !$active_tab ? 'active' : ''; ?>"
                            data-type="register">Прошедшие мероприятия</a>
@@ -167,6 +168,22 @@
                         </ul>
                     </div>
                     <?php $active_tab = true; ?>
+                    <?php } else { ?>
+                    <div id="navlist-bio" class="expert__content <?php echo !empty($active_tab) ? '' : 'active'; ?>">
+
+                        <div class="expreg">
+                            <div class="expreg__info">
+                                <div class="imaster__text">
+                                    Пожалуйста,
+                                    <a href="<?= HTTP_SERVER ?>edit-account/" class="link active" style="color: var(--red);padding: 0; text-transform: none; background: none">заполните</a>
+                                    информацию о себе.
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+
                     <?php } ?>
 
                     <?php if(!empty($event_list)) { ?>
@@ -404,7 +421,7 @@
             type: "GET",
             url: "index.php?route=expert/expert/getFutureEvents",
             dataType: "json",
-            data: '',
+            data: 'expert_id=<?php echo $expert_id; ?>',
             beforeSend: function (json) {
                 $('#content-events').html(`
                                             <div class="expreg__message ">
@@ -428,6 +445,7 @@
                 if ($('.expertnav__tabs a.fut_ev').hasClass('active')) {
                     $('.expreg').removeClass('d-none');
                     $('.expert__content').removeClass('d-none');
+                    $('#navlist-bio').removeClass('active');
                 }
             },
             error: function (json) {

@@ -206,6 +206,7 @@ $(function(){
 			$('#content-register .expreg').removeClass('d-none');
 			$('#content-register.expert__content').css("display", "block");
 			$('#content-register').removeClass('d-none')
+			$('#navlist-bio').addClass('d-none')
 		} else {
 			$('#content-register .expreg').addClass('d-none');
 			$('#content-register.expert__content').css("display", "none");
@@ -217,6 +218,8 @@ $(function(){
 			$('#content-events.expert__content').css("display", "block");
 			$('#content-events').removeClass('d-none')
 			$('#content-bio').removeClass('active');
+			$('#navlist-bio').addClass('d-none')
+
 		} else {
 			$('#content-events .expreg').addClass('d-none');
 			$('#content-events.expert__content').css("display", "none");
@@ -225,6 +228,7 @@ $(function(){
 
 		if($(this).hasClass('active') && $(this).hasClass('bio')) {
 			$('#content-bio').addClass('active');
+			$('#navlist-bio').removeClass('d-none')
 
 		}
 
