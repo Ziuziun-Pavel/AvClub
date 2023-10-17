@@ -1,3 +1,4 @@
+<p>(Раздел в разработке)</p>
 <?php if(!empty($event_list)) { ?>
 <?php foreach($event_list as $event) { ?>
 <div class="expreg expreg-fut-ev d-none">
@@ -12,6 +13,13 @@
         <div class="expreg__date expreg__date-fut-ev">
             <span><?php echo $event['date']; ?></span>
         </div>
+        <div class="expreg__date expreg__date-fut-ev">
+            <?php if ($event['price']) { ?>
+                <span><?php echo $event['price']; ?> ₽</span>
+            <?php } else { ?>
+                <span>Бесплатно</span>
+            <?php } ?>
+        </div>
 
         <?php /* FORUM */ ?>
         <?php if($event['type_event'] === 'forum') { ?>
@@ -19,6 +27,8 @@
         <?php if(!$event['old'] && !empty($event['link'])) { ?>
         <div class="expreg__btns expreg__btns-fut-ev">
             <a href="<?php echo $event['link']; ?>" class="btn btn-red" target="_blank">Зарегистрироваться</a>
+            <a href="<?php echo $event['about_url']; ?>" class="btn btn-white" target="_blank">Подробнее</a>
+
             <!--<div class="expreg__qr"></div>-->
         </div>
         <!--<div class="expreg__bottom">Для посещения мероприятия предъявите распечатанный билет (бейдж)</div>-->
@@ -29,7 +39,8 @@
         <?php /* WEBINAR */ ?>
         <?php if($event['type_event'] === 'webinar') { ?>
         <div class="expreg__btns expreg__btns-fut-ev">
-            <a href="<?php echo $event['url']; ?>" class="btn btn-red" target="_blank">Присоединиться</a>
+            <a href="<?php echo $event['url']; ?>" class="btn btn-red" target="_blank">Зарегистрироваться</a>
+            <a href="<?php echo $event['about_url']; ?>" class="btn btn-white" target="_blank">Подробнее</a>
             <!--<div class="expreg__qr"></div>-->
         </div>
         <?php } ?>

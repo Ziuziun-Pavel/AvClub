@@ -360,7 +360,8 @@ class ModelRegisterRegister extends Model
     public function getVisitList($contact_id = 0)
     {
         $return_list = array();
-
+//        var_dump($contact_id);
+//        die();
         $fields = array(
             'contact_id' => $contact_id
         );
@@ -391,28 +392,37 @@ class ModelRegisterRegister extends Model
     }
 
     //todo Моковые данные для будущих мероприятий. Потом заменить на метод получения из Б24
-    public function getFutureEvents()
+    public function getFutureEvents($contact_id = 0)
     {
-        return [
+        $return_list = array();
+//        var_dump($contact_id);
+//        die();
+        $fields = array(
+            'contact_id' => $contact_id
+        );
+    if ($contact_id === "59759") {
+        $return_list = [
             [
                 "name" => "AV FOCUS Алматы 2023",
                 "date" => "2023-10-26T03:00:00+03:00",
                 "status" => "visited",
-                "sum" => NULL,
+                "price" => 40000,
                 "location" => "",
                 "address" => "",
                 "type" => "делегат",
-                "ticket_public_url" => "https://registration.avclub.pro/avf23_sankt_peterburg/",
+                "ticket_public_url" => "https://www.avclub.pro/event-register/?forum_id=15281",
+                "about_url" => "https://www.avclub.pro/event/avfocus2023kazan/",
                 "type_event" => "forum"
             ],
             [
                 "name" => "Мастер-класс «Революция цвета»",
                 "date" => "2023-11-30T03:00:00+03:00",
                 "status" => "visited",
-                "sum" => NULL,
+                "price" => NULL,
                 "location" => "",
                 "address" => "",
-                "url" => '/video/master-klass-revolyutsiya-tsveta/',
+                "url" => 'https://www.avclub.pro/event-register/?webinar_id=15315',
+                "about_url" => 'https://www.avclub.pro/video/master-klass-revolyutsiya-tsveta/',
                 "type" => "делегат",
                 "type_event" => "webinar"
             ],
@@ -420,14 +430,17 @@ class ModelRegisterRegister extends Model
                 "name" => "AV FOCUS Москва 2023",
                 "date" => "2023-10-26T03:00:00+03:00",
                 "status" => "visited",
-                "sum" => NULL,
+                "price" => 15000,
                 "location" => "",
                 "address" => "",
                 "type" => "делегат",
-                "ticket_public_url" => "https://registration.avclub.pro/avf23_sankt_peterburg/",
+                "ticket_public_url" => "https://www.avclub.pro/event-register/?forum_id=15281",
+                "about_url" => "https://www.avclub.pro/event/avfocus2023kazan/",
                 "type_event" => "forum"
             ]
         ];
+    }
+        return $return_list;
     }
 
     public function getContactInfo($id = 0)

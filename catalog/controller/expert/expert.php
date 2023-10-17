@@ -425,9 +425,7 @@ class ControllerExpertExpert extends Controller
 
             $now = strtotime("now");
 
-
             $event_list = $this->model_register_register->getVisitList($expert_info['b24id']);
-
 
             $sort_forum = array();
 
@@ -559,92 +557,94 @@ class ControllerExpertExpert extends Controller
 
             $now = strtotime("now");
 
-            $event_list = $this->model_register_register->getFutureEvents();
+            $event_list = $this->model_register_register->getFutureEvents($expert_info['b24id']);
 
             $sort_forum = array();
-            if ($event_list) {
-                foreach ($event_list as $event_item) {
-                    $time = strtotime($event_item['date']);
 
-                    $statuses = array();
+            foreach ($event_list as $event_item) {
+                $time = strtotime($event_item['date']);
 
-                    $statuses[] = array(
-                        'text' => 'Заявка на рассмотрении',
-                        'active' => true
-                    );
+                $statuses = array();
 
-                    if ($event_item['status'] === 'consideration') {
-                        $statuses[] = array('text' => 'Участие одобрено', 'active' => false);
-                    }
+                $statuses[] = array(
+                    'text' => 'Заявка на рассмотрении',
+                    'active' => true
+                );
 
-                    if ($event_item['status'] === 'paid_participation') {
-                        $statuses[] = array('text' => 'Предложено платное участие', 'active' => false);
-                    }
-
-                    if (in_array($event_item['status'], array('admitted', 'visited', 'noVisited'))) {
-                        $statuses[] = array('text' => 'Участие одобрено', 'active' => true);
-                    }
-
-                    if ($event_item['status'] === 'visited') {
-                        $statuses[] = array('text' => 'Успешный визит', 'active' => true);
-                    }
-
-                    if ($event_item['status'] === 'noVisited') {
-                        $statuses[] = array('text' => 'Визит не состоялся', 'active' => true);
-                    }
-
-                    foreach ($statuses as $key => &$status) {
-                        if ($key == count($statuses) - 2 && !$statuses[count($statuses) - 1]['active']) {
-                            $status['preactive'] = true;
-                        } else {
-                            $status['preactive'] = false;
-                        }
-                    }
-
-                    $addresses = array();
-                    if (!empty($event_item['location'])) {
-                        $addresses[] = $event_item['location'];
-                    }
-                    if (!empty($event_item['address'])) {
-                        $addresses[] = $event_item['address'];
-                    }
-
-                    $event_item_info = array(
-                        'type_event' => $event_item['type_event'],
-                        'type' => $event_item['type'],
-                        'name' => $event_item['name'],
-                        'status' => $event_item['status'],
-                        'old' => false,
-                        'statuses' => $statuses,
-                        'date' => date('d', $time) . '&nbsp;' . $month_list[(int)date('m', $time)] . '&nbsp;' . date('Y', $time)
-                    );
-
-                    switch ($event_item['type_event']) {
-                        case 'webinar':
-                            $event_item_info['date'] .= ' ' . date('h:i', $time);
-                            $event_item_info['url'] = $event_item['url'];
-                            $event_item_info['type_text'] = $time < $now ? 'Прошедший вебинар' : 'Вебинар';
-                            break;
-
-                        case 'forum':
-                            $event_item_info['link'] = $event_item['ticket_public_url'];
-                            $event_item_info['summ'] = $event_item['summ'];
-                            $event_item_info['location'] = $event_item['location'];
-                            $event_item_info['address'] = $event_item['address'];
-                            $event_item_info['addresses'] = $addresses;
-                            $event_item_info['type_text'] = $time < $now ? 'Прошедшее офлайн-мероприятие' : 'Офлайн-мероприятие';
-                    }
-
-                    $data['event_list'][] = $event_item_info;
-
-                    $sort_forum[] = $time;
-
+                if ($event_item['status'] === 'consideration') {
+                    $statuses[] = array('text' => 'Участие одобрено', 'active' => false);
                 }
 
-                array_multisort($sort_forum, SORT_DESC, $data['event_list']);
+                if ($event_item['status'] === 'paid_participation') {
+                    $statuses[] = array('text' => 'Предложено платное участие', 'active' => false);
+                }
 
-                $return['template'] = $this->load->view('expert/expert_future_events', $data);
+                if (in_array($event_item['status'], array('admitted', 'visited', 'noVisited'))) {
+                    $statuses[] = array('text' => 'Участие одобрено', 'active' => true);
+                }
+
+                if ($event_item['status'] === 'visited') {
+                    $statuses[] = array('text' => 'Успешный визит', 'active' => true);
+                }
+
+                if ($event_item['status'] === 'noVisited') {
+                    $statuses[] = array('text' => 'Визит не состоялся', 'active' => true);
+                }
+
+                foreach ($statuses as $key => &$status) {
+                    if ($key == count($statuses) - 2 && !$statuses[count($statuses) - 1]['active']) {
+                        $status['preactive'] = true;
+                    } else {
+                        $status['preactive'] = false;
+                    }
+                }
+
+                $addresses = array();
+                if (!empty($event_item['location'])) {
+                    $addresses[] = $event_item['location'];
+                }
+                if (!empty($event_item['address'])) {
+                    $addresses[] = $event_item['address'];
+                }
+
+                $event_item_info = array(
+                    'type_event' => $event_item['type_event'],
+                    'type' => $event_item['type'],
+                    'name' => $event_item['name'],
+                    'price' => $event_item['price'],
+                    'status' => $event_item['status'],
+                    'about_url' => $event_item['about_url'],
+                    'old' => false,
+                    'statuses' => $statuses,
+                    'date' => date('d', $time) . '&nbsp;' . $month_list[(int)date('m', $time)] . '&nbsp;' . date('Y', $time)
+                );
+
+                switch ($event_item['type_event']) {
+                    case 'webinar':
+                        $event_item_info['date'] .= ' ' . date('h:i', $time);
+                        $event_item_info['url'] = $event_item['url'];
+                        $event_item_info['type_text'] = $time < $now ? 'Прошедший вебинар' : 'Вебинар';
+                        break;
+
+                    case 'forum':
+                        $event_item_info['link'] = $event_item['ticket_public_url'];
+                        $event_item_info['summ'] = $event_item['summ'];
+                        $event_item_info['location'] = $event_item['location'];
+                        $event_item_info['address'] = $event_item['address'];
+                        $event_item_info['addresses'] = $addresses;
+                        $event_item_info['type_text'] = $time < $now ? 'Прошедшее офлайн-мероприятие' : 'Офлайн-мероприятие';
+                }
+
+                $data['event_list'][] = $event_item_info;
+
+                $sort_forum[] = $time;
+
             }
+
+            array_multisort($sort_forum, SORT_DESC, $data['event_list']);
+
+            $return['template'] = $this->load->view('expert/expert_future_events', $data);
+
         } else {
             $return['error'] = true;
         }
@@ -675,7 +675,6 @@ class ControllerExpertExpert extends Controller
             $send_data['visitor_id'] = $expert_id;
             $send_data['emails'] = $expert_info['emails'];
 
-
             $this->model_visitor_expert->addExpertMail($send_data);
 
             $email_subject = 'Сообщение с сайта ' . $this->config->get('config_name');
@@ -688,7 +687,6 @@ class ControllerExpertExpert extends Controller
             $mail->smtp_password = html_entity_decode($this->config->get('av_alert_mail_smtp_password'), ENT_QUOTES, 'UTF-8');
             $mail->smtp_port = $this->config->get('av_alert_mail_smtp_port');
             $mail->smtp_timeout = $this->config->get('av_alert_mail_smtp_timeout');
-
 
             if (!empty($send_data['email'])) {
                 $mail->setReplyTo($send_data['email']);
@@ -757,7 +755,6 @@ class ControllerExpertExpert extends Controller
         } else {
             $json['error'] = 'Эксперт не найден!';
         }
-
 
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($json));

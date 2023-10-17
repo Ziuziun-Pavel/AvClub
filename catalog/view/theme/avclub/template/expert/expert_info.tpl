@@ -108,18 +108,27 @@
                         <?php $active_tab = true; ?>
                         <?php } ?>
 
-
                         <?php if(!empty($event_list)) { ?>
-                        <a href="#" class="expertnav__tab reg link <?php echo !$active_tab ? 'active' : ''; ?>"
-                           data-type="register">Прошедшие мероприятия</a>
+                        <a href="#" class="expertnav__tab events link <?php echo !$active_tab ? 'active' : ''; ?>"
+                           data-type="events">Мероприятия</a>
                         <?php $active_tab = true; ?>
                         <?php } ?>
 
-                        <?php if(!$tabs) { ?>
-                        <a href="#" class="expertnav__tab fut_ev link <?php echo !$active_tab ? 'active' : ''; ?>"
-                           data-type="future_events">Ближайшие мероприятия</a>
-                        <?php $active_tab = true; ?>
-                        <?php } ?>
+                        <div class="events__tabs d-none">
+                            <?php if(!empty($event_list)) { ?>
+                            <a href="#" class="expertnav__tab reg link <?php echo !$active_tab ? 'active' : ''; ?>"
+                               data-type="register">Прошедшие</a>
+                            <?php $active_tab = true; ?>
+                            <?php } ?>
+
+                            <?php if(!$tabs) { ?>
+                            <a href="#" class="expertnav__tab fut_ev link <?php echo !$active_tab ? 'active' : ''; ?>"
+                               data-type="future_events">Ближайшие</a>
+                            <?php $active_tab = true; ?>
+                            <?php } ?>
+                        </div>
+
+
 
                     </div>
                     <?php }else if(!empty($tabs)){ ?>
@@ -169,8 +178,8 @@
                     </div>
                     <?php $active_tab = true; ?>
                     <?php } else { ?>
+                    <?php if (strpos($_SERVER['REQUEST_URI'], 'account') == true): ?>
                     <div id="navlist-bio" class="expert__content <?php echo !empty($active_tab) ? '' : 'active'; ?>">
-
                         <div class="expreg">
                             <div class="expreg__info">
                                 <div class="imaster__text">
@@ -183,18 +192,9 @@
                         </div>
 
                     </div>
-
+                    <?php endif; ?>
                     <?php } ?>
 
-                    <?php if(!empty($event_list)) { ?>
-                    <div id="navlist-register"
-                         class="expertnav__list <?php echo !empty($active_tab) ? '' : 'active'; ?>">
-                        <ul class="list-hor">
-                            <li><a href="#" class="expertnav__change disable" data-type="">&nbsp;</a></li>
-                        </ul>
-                    </div>
-                    <?php $active_tab = true; ?>
-                    <?php } ?>
 
                     <?php if(empty($event_list) && !$tabs) { ?>
                     <div class="expertnav__list active">&nbsp;</div>
@@ -456,6 +456,14 @@
 
     })
 </script>
+
+<style>
+    .events__tabs {
+        width: 100%;
+        margin-top: 14px;
+        font-size: .8rem;
+    }
+</style>
 <?php } ?>
 
 <?php echo $footer; ?>
