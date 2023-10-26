@@ -13,9 +13,9 @@
         <div class="expreg__date expreg__date-fut-ev">
             <span><?php echo $event['date']; ?></span>
         </div>
-        <div class="expreg__date expreg__date-fut-ev">
-            <?php if ($event['price']) { ?>
-                <span><?php echo $event['price']; ?> ₽</span>
+        <div class="expreg__date expreg__date-fut-ev price">
+            <?php if ($event['sum']) { ?>
+                <span><?php echo $event['sum']; ?> ₽</span>
             <?php } else { ?>
                 <span>Бесплатно</span>
             <?php } ?>
@@ -24,28 +24,36 @@
         <?php /* FORUM */ ?>
         <?php if($event['type_event'] === 'forum') { ?>
         <div class="expreg__address"><?php echo implode(', ', $event['addresses']) ?></div>
-        <?php if(!$event['old'] && !empty($event['link'])) { ?>
-        <div class="expreg__btns expreg__btns-fut-ev">
-            <a href="<?php echo $event['link']; ?>" class="btn btn-red" target="_blank">Зарегистрироваться</a>
-            <a href="<?php echo $event['about_url']; ?>" class="btn btn-white" target="_blank">Подробнее</a>
+        <div class="expreg__btns expreg__btns-fut-ev" style="font-size: 13px;">
+            <a class="btn btn-red" style="width: 48%; min-width: 147px;" target="_blank">Принять приглашение</a>
+            <a href="<?php echo $event['landing_url']; ?>" class="btn btn-red" style="width: 48%;min-width: 147px;" target="_blank">Подробнее</a>
 
             <!--<div class="expreg__qr"></div>-->
         </div>
         <!--<div class="expreg__bottom">Для посещения мероприятия предъявите распечатанный билет (бейдж)</div>-->
         <?php } ?>
-        <?php } ?>
         <?php /* # FORUM */ ?>
 
         <?php /* WEBINAR */ ?>
         <?php if($event['type_event'] === 'webinar') { ?>
-        <div class="expreg__btns expreg__btns-fut-ev">
-            <a href="<?php echo $event['url']; ?>" class="btn btn-red" target="_blank">Зарегистрироваться</a>
-            <a href="<?php echo $event['about_url']; ?>" class="btn btn-white" target="_blank">Подробнее</a>
+        <div class="expreg__btns expreg__btns-fut-ev" style="font-size: 13px;">
+            <a class="btn btn-red" style="width: 48%;min-width: 147px;" target="_blank">Принять приглашение</a>
+            <a href="<?php echo $event['landing_url']; ?>" class="btn btn-red" style="width: 48%;min-width: 147px;" target="_blank">Подробнее</a>
             <!--<div class="expreg__qr"></div>-->
         </div>
         <?php } ?>
         <?php /* # WEBINAR */ ?>
 
+    </div>
+    <div class="expreg__path">
+        <div class="expreg__capt">Статус регистрации</div>
+        <div class="expreg__status">
+            <?php foreach($event['statuses'] as $key=>$status) { ?>
+            <div class="expreg__status--item <?php echo $status['preactive'] ? '--preactive' : ''; ?> <?php echo $status['active'] ? '' : '--passive'; ?>">
+                <span></span> <?php echo $status['text']; ?>
+            </div>
+            <?php } ?>
+        </div>
     </div>
 </div>
 <?php }?>

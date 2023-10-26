@@ -10,7 +10,7 @@ class ModelRegisterRegister extends Model
 
     private $url_search = "http://clients.techin.by/avclub/site/api/v1/contact/search";
     private $url_contact = "http://clients.techin.by/avclub/site/api/v1/contact/";
-    private $url_contact_visit = "http://clients.techin.by/avclub/site/api/v1/deal/getVisitList";
+    private $url_contact_visit = "http://clients.techin.by/avclub/site/api/v1/deal/getEventList";
     private $url_contact_create = "http://clients.techin.by/avclub/site/api/v1/contact/create";
     private $url_contact_update = "http://clients.techin.by/avclub/site/api/v1/contact/{id}/update";
     private $url_company_create = "http://clients.techin.by/avclub/site/api/v1/company/create";
@@ -360,10 +360,10 @@ class ModelRegisterRegister extends Model
     public function getVisitList($contact_id = 0)
     {
         $return_list = array();
-//        var_dump($contact_id);
-//        die();
+
         $fields = array(
-            'contact_id' => $contact_id
+            'contact_id' => $contact_id,
+            'type' => 'past'
         );
         $ch = curl_init($this->url_contact_visit);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -391,55 +391,38 @@ class ModelRegisterRegister extends Model
         return $return_list;
     }
 
-    //todo Моковые данные для будущих мероприятий. Потом заменить на метод получения из Б24
     public function getFutureEvents($contact_id = 0)
     {
         $return_list = array();
-//        var_dump($contact_id);
-//        die();
+
         $fields = array(
-            'contact_id' => $contact_id
+            'contact_id' => $contact_id,
+            'type' => 'future'
         );
-    if ($contact_id === "59759") {
-        $return_list = [
-            [
-                "name" => "AV FOCUS Алматы 2023",
-                "date" => "2023-10-26T03:00:00+03:00",
-                "status" => "visited",
-                "price" => 40000,
-                "location" => "",
-                "address" => "",
-                "type" => "делегат",
-                "ticket_public_url" => "https://www.avclub.pro/event-register/?forum_id=15281",
-                "about_url" => "https://www.avclub.pro/event/avfocus2023kazan/",
-                "type_event" => "forum"
-            ],
-            [
-                "name" => "Мастер-класс «Революция цвета»",
-                "date" => "2023-11-30T03:00:00+03:00",
-                "status" => "visited",
-                "price" => NULL,
-                "location" => "",
-                "address" => "",
-                "url" => 'https://www.avclub.pro/event-register/?webinar_id=15315',
-                "about_url" => 'https://www.avclub.pro/video/master-klass-revolyutsiya-tsveta/',
-                "type" => "делегат",
-                "type_event" => "webinar"
-            ],
-            [
-                "name" => "AV FOCUS Москва 2023",
-                "date" => "2023-10-26T03:00:00+03:00",
-                "status" => "visited",
-                "price" => 15000,
-                "location" => "",
-                "address" => "",
-                "type" => "делегат",
-                "ticket_public_url" => "https://www.avclub.pro/event-register/?forum_id=15281",
-                "about_url" => "https://www.avclub.pro/event/avfocus2023kazan/",
-                "type_event" => "forum"
-            ]
-        ];
-    }
+        $ch = curl_init($this->url_contact_visit);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
+        $body = curl_exec($ch);
+        curl_close($ch);
+
+        $json = json_decode($body, true);
+
+        if (!empty($json['forumList'])) {
+            foreach ($json['forumList'] as &$event_item) {
+                $event_item['type_event'] = 'forum';
+                $return_list[] = $event_item;
+            }
+        }
+
+        if (!empty($json['webinarList'])) {
+            foreach ($json['webinarList'] as &$event_item) {
+                $event_item['type_event'] = 'webinar';
+                $return_list[] = $event_item;
+            }
+        }
+
+
         return $return_list;
     }
 
@@ -662,7 +645,7 @@ class ModelRegisterRegister extends Model
                 "code" => 200,
 //                "id" => 59807,
                 "company_id" => $contact_info['company_id'],
-                "COMPANY_ID" =>  !empty($contact_info['company_id']) ? $contact_info['company_id'] : 0
+                "COMPANY_ID" => !empty($contact_info['company_id']) ? $contact_info['company_id'] : 0
             );
         }
     }

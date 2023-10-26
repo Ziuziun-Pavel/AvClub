@@ -495,7 +495,7 @@ class ControllerExpertExpert extends Controller
 
                     case 'forum':
                         $event_item_info['link'] = $event_item['ticket_public_url'];
-                        $event_item_info['summ'] = $event_item['summ'];
+                        $event_item_info['sum'] = $event_item['sum'];
                         $event_item_info['location'] = $event_item['location'];
                         $event_item_info['address'] = $event_item['address'];
                         $event_item_info['addresses'] = $addresses;
@@ -522,7 +522,6 @@ class ControllerExpertExpert extends Controller
 
     public function getFutureEvents()
     {
-        sleep(3);
         $return = array();
         $data = array();
 
@@ -611,7 +610,6 @@ class ControllerExpertExpert extends Controller
                     'type_event' => $event_item['type_event'],
                     'type' => $event_item['type'],
                     'name' => $event_item['name'],
-                    'price' => $event_item['price'],
                     'status' => $event_item['status'],
                     'about_url' => $event_item['about_url'],
                     'old' => false,
@@ -628,7 +626,7 @@ class ControllerExpertExpert extends Controller
 
                     case 'forum':
                         $event_item_info['link'] = $event_item['ticket_public_url'];
-                        $event_item_info['summ'] = $event_item['summ'];
+                        $event_item_info['sum'] = $event_item['sum'];
                         $event_item_info['location'] = $event_item['location'];
                         $event_item_info['address'] = $event_item['address'];
                         $event_item_info['addresses'] = $addresses;
