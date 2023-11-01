@@ -14,8 +14,8 @@
             <span><?php echo $event['date']; ?></span>
         </div>
         <div class="expreg__date expreg__date-fut-ev price">
-            <?php if ($event['sum']) { ?>
-                <span><?php echo $event['sum']; ?> ₽</span>
+            <?php if ($event['sum'] && $event['sum'] !== "0.00") { ?>
+                <span><?php var_dump($event['sum']); ?> ₽</span>
             <?php } else { ?>
                 <span>Бесплатно</span>
             <?php } ?>
@@ -25,9 +25,8 @@
         <?php if($event['type_event'] === 'forum') { ?>
         <div class="expreg__address"><?php echo implode(', ', $event['addresses']) ?></div>
         <div class="expreg__btns expreg__btns-fut-ev" style="font-size: 13px;">
-            <a class="btn btn-red" style="width: 48%; min-width: 147px;" target="_blank">Принять приглашение</a>
+            <a data-deal-id="<?php echo $event['id']; ?>" data-event-type="<?php echo $event['type_event']; ?>" class="btn btn-red invitation" style="width: 48%; min-width: 147px;" target="_blank">Принять приглашение</a>
             <a href="<?php echo $event['landing_url']; ?>" class="btn btn-red" style="width: 48%;min-width: 147px;" target="_blank">Подробнее</a>
-
             <!--<div class="expreg__qr"></div>-->
         </div>
         <!--<div class="expreg__bottom">Для посещения мероприятия предъявите распечатанный билет (бейдж)</div>-->
@@ -37,7 +36,7 @@
         <?php /* WEBINAR */ ?>
         <?php if($event['type_event'] === 'webinar') { ?>
         <div class="expreg__btns expreg__btns-fut-ev" style="font-size: 13px;">
-            <a class="btn btn-red" style="width: 48%;min-width: 147px;" target="_blank">Принять приглашение</a>
+            <a data-deal-id="<?php echo $event['id']; ?>" data-event-type="<?php echo $event['type_event']; ?>" class="btn btn-red invitation" style="width: 48%;min-width: 147px;" target="_blank">Принять приглашение</a>
             <a href="<?php echo $event['landing_url']; ?>" class="btn btn-red" style="width: 48%;min-width: 147px;" target="_blank">Подробнее</a>
             <!--<div class="expreg__qr"></div>-->
         </div>
@@ -69,7 +68,6 @@
 </div>
 <script>
     let buttons = document.querySelectorAll(".expreg__btns");
-
     // buttons.forEach((button) => {
     //     let btn = button.querySelector('.btn');
     //     let qr = button.querySelector('.expreg__qr');

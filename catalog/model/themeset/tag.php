@@ -32,7 +32,6 @@ class ModelThemesetTag extends Model {
 
 	}
 
-
 	public function getTagsFromList($list_id, $filter_ids = array()) {
 
 		$return_list = array();
@@ -57,8 +56,6 @@ class ModelThemesetTag extends Model {
 		return $return_list;
 	}
 
-
-
 	public function updateActivity($activity_list = array()) {
 
 		$this->db->query("DELETE FROM " . DB_PREFIX . "b24_activity WHERE 1");
@@ -72,6 +69,7 @@ class ModelThemesetTag extends Model {
 		}
 
 	}
+
 	public function getActivity() {
 
 		$return_list = array();

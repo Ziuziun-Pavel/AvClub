@@ -117,13 +117,13 @@
                         <div class="events__tabs d-none">
                             <?php if(!empty($event_list)) { ?>
                             <a href="#" class="expertnav__tab reg link <?php echo !$active_tab ? 'active' : ''; ?>"
-                               data-type="register">Прошедшие</a>
+                               data-type="register">ПРОШЕДШИЕ</a>
                             <?php $active_tab = true; ?>
                             <?php } ?>
 
                             <?php if(!$tabs) { ?>
                             <a href="#" class="expertnav__tab fut_ev link <?php echo !$active_tab ? 'active' : ''; ?>"
-                               data-type="future_events">Ближайшие</a>
+                               data-type="future_events">БЛИЖАЙШИЕ</a>
                             <?php $active_tab = true; ?>
                             <?php } ?>
                         </div>
@@ -447,6 +447,8 @@
                     $('.expert__content').removeClass('d-none');
                     $('#navlist-bio').removeClass('active');
                 }
+
+                acceptInvitation();
             },
             error: function (json) {
                 $('#content-events').html(error_text);
@@ -455,6 +457,53 @@
         });
 
     })
+
+    function acceptInvitation() {
+        $('.invitation').click(function () {
+            var dealId = $(this).data('deal-id');
+            var eventType = $(this).data('event-type');
+
+            $.ajax({
+                type: "GET",
+                url: "index.php?route=expert/expert/confirmParticipation",
+                dataType: "json",
+                data: {type: eventType, deal_id: dealId},
+                // beforeSend: function (json) {
+                //     $('#content-events').html(`
+                //                             <div class="expreg__message ">
+                //                 <div class="expreg__message--preloader">
+                //                     <div class="cssload-clock"></div>
+                //                 </div>
+                //                 <div class="expreg__message--text">
+                //                     Подождите, идет поиск мероприятий...
+                //                 </div>
+                //             </div>
+                // `);
+                // },
+                complete: function (json) {
+                },
+                success: function (json) {
+                    alert('Участие одобрено!')
+                    console.log(json)
+
+                    acceptInvitation();
+                },
+                error: function (json) {
+                    alert('Произошла ошибка!')
+
+                    console.log('ERROR')
+                    console.log(json)
+
+                }
+            });
+
+
+            console.log(eventType)
+
+            console.log(dealId)
+
+        });
+    }
 </script>
 
 <style>

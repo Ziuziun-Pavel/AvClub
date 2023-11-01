@@ -42,6 +42,8 @@ class ModelAveventEvent extends Model {
 
 		$event_id = $this->db->getLastId();
 
+        var_dump($data);
+        die();
 		foreach ($data['event_description'] as $language_id => $value) {
 			$this->db->query("INSERT INTO " . DB_PREFIX . "avevent_description SET event_id = '" . (int)$event_id . "', language_id = '" . (int)$language_id . "', title = '" . $this->db->escape($value['title']) . "', description = '" . $this->db->escape($value['description']) . "', meta_title = '" . $this->db->escape($value['meta_title']) . "', meta_h1 = '" . $this->db->escape($value['meta_h1']) . "', meta_description = '" . $this->db->escape($value['meta_description']) . "', meta_keyword = '" . $this->db->escape($value['meta_keyword']) . "'");
 		}
@@ -276,7 +278,7 @@ class ModelAveventEvent extends Model {
 			);
 
 			if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
-				$sql .= " ORDER BY " . $data['sort'];
+				$sql .= " ORDER BY e.event_id" ;
 			} else {
 				$sql .= " ORDER BY e.date_available";
 			}
@@ -304,6 +306,7 @@ class ModelAveventEvent extends Model {
 			return $query->rows;
 		} else {
 			$event_data = $this->cache->get('event.' . (int)$this->config->get('config_language_id'));
+
 
 			if (!$event_data) {
 				$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "avevent e LEFT JOIN " . DB_PREFIX . "avevent_description ed ON (e.event_id = ed.event_id) WHERE ed.language_id = '" . (int)$this->config->get('config_language_id') . "' ORDER BY ed.title");

@@ -317,8 +317,9 @@ class ControllerAveventEvent extends Controller {
 
 		$results = $this->model_avevent_event->getEvents($filter_data);
 
-
 		foreach ($results as $result) {
+//            var_dump($result['event_id']);
+
 			$time = strtotime($result['date_available']);
 
 			$data['events'][] = array(

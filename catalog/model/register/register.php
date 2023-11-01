@@ -15,6 +15,7 @@ class ModelRegisterRegister extends Model
     private $url_contact_update = "http://clients.techin.by/avclub/site/api/v1/contact/{id}/update";
     private $url_company_create = "http://clients.techin.by/avclub/site/api/v1/company/create";
     private $url_company_update = "http://clients.techin.by/avclub/site/api/v1/company/{id}/update";
+    private $url_confirm_participation = "http://clients.techin.by/avclub/site/api/v1/deal/{id}/confirmParticipation";
 
     private $url_deal = "http://clients.techin.by/avclub/site/api/v1/deal/create";
 
@@ -356,14 +357,13 @@ class ModelRegisterRegister extends Model
         return $contact_id;
     }
 
-
-    public function getVisitList($contact_id = 0)
+    public function getEventList($contact_id = 0, $type)
     {
         $return_list = array();
 
         $fields = array(
             'contact_id' => $contact_id,
-            'type' => 'past'
+            'type' => $type
         );
         $ch = curl_init($this->url_contact_visit);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -391,39 +391,30 @@ class ModelRegisterRegister extends Model
         return $return_list;
     }
 
-    public function getFutureEvents($contact_id = 0)
+    public function confirmParticipation($deal_id = 0, $type)
     {
-        $return_list = array();
-
         $fields = array(
-            'contact_id' => $contact_id,
-            'type' => 'future'
+            'type' => $type
         );
-        $ch = curl_init($this->url_contact_visit);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
-        $body = curl_exec($ch);
-        curl_close($ch);
+
+        $id_to_update = (int)$deal_id;
+
+        $url = str_replace('{id}', $id_to_update, $this->url_confirm_participation);
+
+        $ch_deal = curl_init($url);
+        curl_setopt($ch_deal, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch_deal, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch_deal, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch_deal, CURLOPT_POSTFIELDS, json_encode($fields));
+        curl_setopt($ch_deal, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+
+        $body = curl_exec($ch_deal);
+
+        curl_close($ch_deal);
 
         $json = json_decode($body, true);
 
-        if (!empty($json['forumList'])) {
-            foreach ($json['forumList'] as &$event_item) {
-                $event_item['type_event'] = 'forum';
-                $return_list[] = $event_item;
-            }
-        }
-
-        if (!empty($json['webinarList'])) {
-            foreach ($json['webinarList'] as &$event_item) {
-                $event_item['type_event'] = 'webinar';
-                $return_list[] = $event_item;
-            }
-        }
-
-
-        return $return_list;
+        return $json;
     }
 
     public function getContactInfo($id = 0)
@@ -643,7 +634,7 @@ class ModelRegisterRegister extends Model
             return array(
                 "message" => "Ok",
                 "code" => 200,
-//                "id" => 59807,
+//                "id" => $contact_id,
                 "company_id" => $contact_info['company_id'],
                 "COMPANY_ID" => !empty($contact_info['company_id']) ? $contact_info['company_id'] : 0
             );

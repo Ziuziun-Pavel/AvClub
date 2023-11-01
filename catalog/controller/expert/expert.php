@@ -425,7 +425,7 @@ class ControllerExpertExpert extends Controller
 
             $now = strtotime("now");
 
-            $event_list = $this->model_register_register->getVisitList($expert_info['b24id']);
+            $event_list = $this->model_register_register->getEventList($expert_info['b24id'], 'past');
 
             $sort_forum = array();
 
@@ -556,7 +556,7 @@ class ControllerExpertExpert extends Controller
 
             $now = strtotime("now");
 
-            $event_list = $this->model_register_register->getFutureEvents($expert_info['b24id']);
+            $event_list = $this->model_register_register->getEventList($expert_info['b24id'], 'future');
 
             $sort_forum = array();
 
@@ -607,6 +607,7 @@ class ControllerExpertExpert extends Controller
                 }
 
                 $event_item_info = array(
+                    'id' => $event_item['id'],
                     'type_event' => $event_item['type_event'],
                     'type' => $event_item['type'],
                     'name' => $event_item['name'],
@@ -641,6 +642,7 @@ class ControllerExpertExpert extends Controller
 
             array_multisort($sort_forum, SORT_DESC, $data['event_list']);
 
+
             $return['template'] = $this->load->view('expert/expert_future_events', $data);
 
         } else {
@@ -651,10 +653,27 @@ class ControllerExpertExpert extends Controller
         $this->response->setOutput(json_encode($return));
     }
 
-    public function edit()
+    public function confirmParticipation()
     {
+        $this->load->model('register/register');
 
+        $deal_id = !empty($this->request->get['deal_id']) ? $this->request->get['deal_id'] : 0;
+
+        $type = !empty($this->request->get['type']) ? $this->request->get['type'] : '';
+
+        $response = $this->model_register_register->confirmParticipation($deal_id, $type);
+
+        if ($response) {
+            $response['success'] = true;
+        } else {
+            $response['error'] = true;
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($response));
     }
+
+    public function edit() { }
 
     public function sendMail()
     {
