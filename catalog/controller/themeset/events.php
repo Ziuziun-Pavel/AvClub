@@ -27,26 +27,27 @@ class ControllerThemesetEvents extends Controller
         return $value;
     }
 
-    public function updateEventList() {
+    public function updateEventList()
+    {
         header('Content-Type: application/json');
         $data = $_REQUEST;
 
         $this->load->model('themeset/events');
         $this->load->model('themeset/themeset');
-        print_r($data);
+//        print_r($data);
 
-        if(!empty($data['event_id'])) {
+        if (!empty($data)) {
             $event_info = array(
-                'event_id'	=> $data['event_id'],
-                'title'	=> $data['title'],
-                'date'	=> $data['date'],
-                'price'	=> $data['price'],
-                'image'	=> $data['image'],
-                'image_full'	=> $data['image'],
-                'count'	=> $data['count'],
-                'address'	=> $data['address'],
-                'address_full'	=> $data['address_full'],
-                'type'	=> $data['type'],
+                'event_id' => $data['event_id'],
+                'title' => $data['title'],
+                'date' => $data['date'],
+                'price' => $data['price'],
+                'image' => 'catalog/events/' . basename($data['image']),
+                'image_full' => 'catalog/events/' . basename($data['image']),
+                'count' => $data['count'],
+                'address' => $data['address'],
+                'address_full' => $data['address_full'],
+                'type' => $data['type'],
                 'status' => 1,
                 'show_event' => 1,
                 'keyword' => $data['type'] === 'AV Focus' ?
@@ -55,19 +56,19 @@ class ControllerThemesetEvents extends Controller
                 'date_available' => $data['date'] . '9:00:00',
                 'time_start' => '9:00:00',
                 'time_end' => '17:00:00',
-                'link'					=> 'https://www.avclub.pro/event-register/?forum_id=' . $data['event_id'],
-                'old_type'					=> 'page',
-                'old_link'					=> '',
-                'coord'					=> '',
-                'present_title'		=> '',
-                'brand_title'			=> 'Бренды участники',
-                'brand_template'	=> 0,
-                'insta_title'			=> '',
-                'prg_title'				=> 'Что будет на мероприятии',
-                'prg_template'		=> 0,
-                'prg_file_id'			=> '',
-                'speaker_title'		=> 'Вы сможете задать вопрос любому из спикеров',
-                'ask_title'				=> 'Вопросы и ответы',
+                'link' => 'https://www.avclub.pro/event-register/?forum_id=' . $data['event_id'],
+                'old_type' => 'page',
+                'old_link' => '',
+                'coord' => '',
+                'present_title' => '',
+                'brand_title' => 'Бренды участники',
+                'brand_template' => 0,
+                'insta_title' => '',
+                'prg_title' => 'Что будет на мероприятии',
+                'prg_template' => 0,
+                'prg_file_id' => '',
+                'speaker_title' => 'Вы сможете задать вопрос любому из спикеров',
+                'ask_title' => 'Вопросы и ответы',
             );
 
             $this->load->model('tool/image');
@@ -89,6 +90,11 @@ class ControllerThemesetEvents extends Controller
                     break;
                 }
             }
+
+            $image_dir = DIR_IMAGE . 'catalog/events/';
+            $image_path = $image_dir . basename($data['image']);
+
+            copy($data['image'], $image_path);
 
             if (isset($this->request->post['image']) && is_file(DIR_IMAGE . $this->request->post['image'])) {
                 $event_info['thumb'] = $this->model_tool_image->resize($this->request->post['image'], 100, 100);
@@ -125,7 +131,7 @@ class ControllerThemesetEvents extends Controller
             $date_start = strtotime($event_info['date']);
             $date_stop = strtotime($event_info['date_stop']);
 
-            if($date_stop < $date_start) {
+            if ($date_stop < $date_start) {
                 $event_info['date_stop'] = $event_info['date'];
             }
 
@@ -155,40 +161,58 @@ class ControllerThemesetEvents extends Controller
 
             // template
             $template = array();
-            if(isset($this->request->post['template'])) {
+            if (isset($this->request->post['template'])) {
                 $tpl = $this->request->post['template'];
-                foreach($tpl as $key=>$item) {
-                    $template[$key] = array('status'=>$item);
+                foreach ($tpl as $key => $item) {
+                    $template[$key] = array('status' => $item);
                 }
-            } else{
+            } else {
                 $template = array(
-                    'top'				=> array('status'=>1),
-                    'video'			=> array('status'=>0),
-                    'brand'			=> array('status'=>0),
-                    'plus'			=> array('status'=>0),
-                    'insta'			=> array('status'=>0),
-                    'prg'				=> array('status'=>0),
-                    'speaker'		=> array('status'=>0),
-                    'present'		=> array('status'=>0),
-                    'register'	=> array('status'=>0),
-                    'ask'				=> array('status'=>0),
+                    'top' => 1,
+                    'video' => 1,
+                    'brand' => 0,
+                    'plus' => 1,
+                    'insta' => 0,
+                    'prg' => 0,
+                    'speaker' => 0,
+                    'present' => 0,
+                    'register' => 1,
+                    'ask' => 1,
                 );
             }
-            foreach($template as $key=>$item) {
-                $template[$key]['title'] = $this->language->get('template_' . $key);
-                $template[$key]['disabled'] = $key === 'top' ? true : false;
-            }
+
             $event_info['template'] = $template;
 
-            $this->model_themeset_events->addEvent($event_info);
+            $address = $event_info['address'] . ', ' . $event_info['address_full'];
+
+            $parameters = array(
+                'apikey' => 'c5ca1e67-1c9d-4482-b2bb-701be89f29de',
+                'geocode' => $address,
+                'format' => 'json'
+            );
+
+            $response = file_get_contents('https://geocode-maps.yandex.ru/1.x/?'. http_build_query($parameters));
+            $obj = json_decode($response, true);
+
+            $cord = str_replace(" ", ",", $obj['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos']);
+
+            $event_info['coord'] = $cord;
+
+            if ($data['event_db_id']) {
+                $this->model_themeset_events->editEvent($data['event_db_id'], $event_info);
+                $event_id = $data['event_db_id'];
+            } else {
+                $event_id = $this->model_themeset_events->addEvent($event_info);
+            }
 
             $link = 'https://www.avclub.pro/event/' . $event_info['keyword'];
+            $json = ['url' => $link, 'id' => $event_id, 'b24_id' => (int)$data['event_id']];
 
-            return $link;
-        }else{
+            echo json_encode($json);
+        } else {
             $message = array(
-                'alert'	=> 'ошибка обновления мероприятия списка',
-                'date'	=> $data
+                'alert' => 'ошибка обновления мероприятия списка',
+                'date' => $data
             );
             $this->model_themeset_themeset->alert($message);
             echo '0';

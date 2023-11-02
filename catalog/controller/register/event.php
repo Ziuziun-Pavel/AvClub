@@ -1035,8 +1035,6 @@ class ControllerRegisterEvent extends Controller
             'b24_company_old_id' => !empty($this->session->data['register_user']['b24_company_old_id']) ? $this->session->data['register_user']['b24_company_old_id'] : 0,
         );
 
-
-
         if ($error && $this->write_log) {
             $log = array(
                 'step' => 'Регистрация -- ERROR',
@@ -1056,6 +1054,7 @@ class ControllerRegisterEvent extends Controller
                 /* данные не менялись */
                 case (!empty($user_data['old_user_id']) && $user_data['user_id'] == $user_data['old_user_id']):
                     $contact_id = $user_data['user_id'];
+//                    var_dump('1');
                     break;
 
                 /* данные поменялись */
@@ -1063,6 +1062,7 @@ class ControllerRegisterEvent extends Controller
                     $user_data['IsContactEdit'] = true;
                     $return_contact = $this->model_register_register->createContact($user_data);
                     $contact_id = $return_contact['id'];
+//                    var_dump('2');
 
                     $this->model_register_register->addAlternateId($user_data['old_user_id'], $contact_id);
                     // $this->model_register_register->updateExpertID($user_data['old_user_id'], $contact_id);
@@ -1070,7 +1070,12 @@ class ControllerRegisterEvent extends Controller
 
                 /* новый контакт */
                 default:
+//                    var_dump('3');
+//                    var_dump($user_data);
+                    $user_data['IsContactEdit'] = true;
+
                     $return_contact = $this->model_register_register->createContact($user_data);
+//                    var_dump($return_contact['id']);
                     $contact_id = $return_contact['id'];
             }
 
@@ -1178,7 +1183,7 @@ class ControllerRegisterEvent extends Controller
             }
 
         }
-
+//        die();
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($return));
     }

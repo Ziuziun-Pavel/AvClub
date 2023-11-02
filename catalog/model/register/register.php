@@ -456,7 +456,6 @@ class ModelRegisterRegister extends Model
 
     public function createContact($data = array())
     {
-
         return $this->updateContactInfo($data, true);
     }
 
@@ -493,6 +492,8 @@ class ModelRegisterRegister extends Model
             'company_activity' => array($data['company_activity']),
             'b24_company_old_id' => $data['b24_company_old_id'],
         );
+
+//        var_dump($data);
 
 
         if (!empty($data['old_user_id'])) {
@@ -634,7 +635,7 @@ class ModelRegisterRegister extends Model
             return array(
                 "message" => "Ok",
                 "code" => 200,
-//                "id" => $contact_id,
+                "id" => $data['old_user_id'],
                 "company_id" => $contact_info['company_id'],
                 "COMPANY_ID" => !empty($contact_info['company_id']) ? $contact_info['company_id'] : 0
             );
@@ -728,14 +729,14 @@ class ModelRegisterRegister extends Model
 
         switch ($type) {
             case 'error':
-                $file = 'register_error.log';
+                $file = 'register_error1.log';
                 break;
             case 'login':
                 $file = 'login.log';
                 break;
 
             default:
-                $file = 'register.log';
+                $file = 'register1.log';
         }
 
 
