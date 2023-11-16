@@ -128,6 +128,9 @@
                             <?php } ?>
                         </div>
 
+                       <?php if($expert_id == 5090) { ?>
+                        <a href="#" class="expertnav__tab publication">Создать публикацию</a>
+                        <?php } ?>
 
 
                     </div>
@@ -184,7 +187,8 @@
                             <div class="expreg__info">
                                 <div class="imaster__text">
                                     Пожалуйста,
-                                    <a href="<?= HTTP_SERVER ?>edit-account/" class="link active" style="color: var(--red);padding: 0; text-transform: none; background: none">заполните</a>
+                                    <a href="<?= HTTP_SERVER ?>edit-account/" class="link active"
+                                       style="color: var(--red);padding: 0; text-transform: none; background: none">заполните</a>
                                     информацию о себе.
                                 </div>
 
@@ -390,6 +394,53 @@
 
     $(function () {
         var error_text = '<div class="expreg__message --loading">Ошибка загрузки данных.<br>Попробуйте обновить страницу или повторить попытку немного позже</div>';
+        console.log('<?php echo $expert_id; ?>')
+
+        const data = {
+            data: {
+                dealType: 'publication',
+                additionFiles: [
+                    {
+                        url: 'https://www.avclub.pro/image/no_image.png',
+                        name: 'no_image.png'
+                    },
+                ],
+                files: {
+                    url: 'https://www.avclub.pro/image/no_image.png',
+                    name: 'no_image.png'
+                },
+                company_id: 51625,
+                title: 'заголовок инфоповода',
+                addition_info: 'дополнительная информация'
+            },
+            expert_id: '<?php echo $expert_id; ?>'
+        }
+
+        $('.publication').on('click', function () {
+            console.log('click')
+            $.ajax({
+                type: "POST",
+                url: "index.php?route=expert/expert/sendPublication",
+                dataType: "json",
+                data: data,
+                beforeSend: function (json) {
+                },
+                complete: function (json) {
+                },
+                success: function (json) {
+                    if (json['code'] === 200) {
+                        alert('сделка успешно создана')
+                        $('#form-content').html(json['template']);
+                    } else if (json['error']) {
+                        $('#form-content').html(error_text);
+                    }
+                },
+                error: function (json) {
+                    $('#form-content').html(error_text);
+                    console.log('publication sendPublication error', json);
+                }
+            });
+        });
 
         $.ajax({
             type: "GET",

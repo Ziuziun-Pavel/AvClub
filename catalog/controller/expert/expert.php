@@ -2,7 +2,6 @@
 
 class ControllerExpertExpert extends Controller
 {
-
     private $url_send_mail = "http://clients.techin.by/avclub/site/api/v1/contact/{id}/addComment";
 
     public function index()
@@ -775,5 +774,36 @@ class ControllerExpertExpert extends Controller
 
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($json));
+    }
+
+    public function sendPublication()
+    {
+        $return = array();
+        $data = $this->request->post["data"];
+
+        session_write_close();
+
+        $this->load->model('visitor/expert');
+
+        if (isset($this->request->post['expert_id'])) {
+            $expert_id = (int)$this->request->post['expert_id'];
+        } else {
+            $expert_id = 0;
+        }
+
+        $expert_info = $this->model_visitor_expert->getExpert($expert_id, 0, false);
+        $data['contact_id'] = $expert_info['b24id'];
+
+        if ($data && $this->visitor->getId() && $this->visitor->getId() == $expert_id) {
+            $json = $this->model_visitor_expert->sendPublication($data);
+
+            $return['message'] = $json["message"];
+            $return['code'] = $json["code"];
+        } else {
+            $return['error'] = true;
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($return));
     }
 }
