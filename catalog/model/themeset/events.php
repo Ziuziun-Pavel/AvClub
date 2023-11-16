@@ -337,4 +337,40 @@ class ModelThemesetEvents extends Model {
         }
     }
 
+    public function getPlusByEvent($event_id) {
+        $plus_data = array();
+
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "avevent_plus p WHERE p.event_id = '" . (int)$event_id . "' ORDER BY p.sort_order ASC");
+
+        if($query->num_rows) {
+            foreach($query->rows as $row) {
+                $plus_data[] = array(
+                    'title'				=> $row['title'],
+                    'text'				=> $row['text'],
+                    'image'				=> $row['image'],
+                    'sort_order'	=> $row['sort_order'],
+                );
+            }
+        }
+
+        return $plus_data;
+    }
+
+    public function getAskByEvent($event_id) {
+        $ask_data = array();
+
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "avevent_ask a WHERE a.event_id = '" . (int)$event_id . "' ORDER BY a.sort_order ASC, a.title ASC");
+
+        if($query->num_rows) {
+            foreach($query->rows as $row) {
+                $ask_data[] = array(
+                    'title'				=> $row['title'],
+                    'text'				=> $row['text'],
+                    'sort_order'	=> $row['sort_order'],
+                );
+            }
+        }
+
+        return $ask_data;
+    }
 }

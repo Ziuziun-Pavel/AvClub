@@ -59,6 +59,8 @@ class ControllerThemesetEvents extends Controller
                 'link' => 'https://www.avclub.pro/event-register/?forum_id=' . $data['event_id'],
                 'old_type' => 'page',
                 'old_link' => '',
+                'video' => $data['video'],
+                'video_image' => 'catalog/video/' . basename($data['video_image']),
                 'coord' => '',
                 'present_title' => '',
                 'brand_title' => 'Бренды участники',
@@ -91,10 +93,14 @@ class ControllerThemesetEvents extends Controller
                 }
             }
 
-            $image_dir = DIR_IMAGE . 'catalog/events/';
-            $image_path = $image_dir . basename($data['image']);
+            $image_events_dir = DIR_IMAGE . 'catalog/events/';
+            $image_dir = DIR_IMAGE . 'catalog/video/';
+
+            $image_path = $image_events_dir . basename($data['image']);
+            $video_image_path = $image_dir . basename($data['video_image']);
 
             copy($data['image'], $image_path);
+            copy($data['video_image'], $video_image_path);
 
             if (isset($this->request->post['image']) && is_file(DIR_IMAGE . $this->request->post['image'])) {
                 $event_info['thumb'] = $this->model_tool_image->resize($this->request->post['image'], 100, 100);
@@ -183,6 +189,33 @@ class ControllerThemesetEvents extends Controller
 
             $event_info['template'] = $template;
 
+            // plus
+            $event_info['plus'] = [];
+            $plus = [];
+            if (isset($this->request->post['plus'])) {
+                $plus = $this->request->post['plus'];
+            } elseif (!empty($event_info)) {
+                $plus = $this->model_themeset_events->getPlusByEvent(201);
+            }
+
+            foreach ($plus as $item) {
+                if ($item['image'] && is_file(DIR_IMAGE . $item['image'])) {
+                    $thumb = $this->model_tool_image->resize($item['image'], 100, 100);
+                } else {
+                    $thumb = $this->model_tool_image->resize('no_image.png', 100, 100);
+                }
+                $item['thumb'] = $thumb;
+                $event_info['plus'][] = $item;
+            }
+
+            // ask
+            $event_info['ask'] = array();
+            if (isset($this->request->post['ask'])) {
+                $event_info['ask'] = $this->request->post['ask'];
+            } elseif (!empty($event_info)) {
+                $event_info['ask'] = $this->model_themeset_events->getAskByEvent(201);
+            }
+
             $address = $event_info['address'] . ', ' . $event_info['address_full'];
 
             $parameters = array(
@@ -191,7 +224,7 @@ class ControllerThemesetEvents extends Controller
                 'format' => 'json'
             );
 
-            $response = file_get_contents('https://geocode-maps.yandex.ru/1.x/?'. http_build_query($parameters));
+            $response = file_get_contents('https://geocode-maps.yandex.ru/1.x/?' . http_build_query($parameters));
             $obj = json_decode($response, true);
 
             $cord = str_replace(" ", ",", $obj['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos']);
@@ -217,8 +250,12 @@ class ControllerThemesetEvents extends Controller
             $this->model_themeset_themeset->alert($message);
             echo '0';
         }
+    }
 
-
+    public function updateMasterList()
+    {
+        header('Content-Type: application/json');
+        $data = $_REQUEST;
     }
 
 }
