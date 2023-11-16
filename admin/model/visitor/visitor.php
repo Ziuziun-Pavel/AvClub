@@ -312,7 +312,7 @@ class ModelVisitorVisitor extends Model {
 
 		$query = $this->db->query($sql);
 
-		return $query->rows;
+        return $query->rows;
 	}
 
 	public function getTotalVisitors($data = array()) {

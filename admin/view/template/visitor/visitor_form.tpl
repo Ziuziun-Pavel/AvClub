@@ -524,7 +524,7 @@
 			e.preventDefault();
 
 			data = {
-				name           : $('#input-name').val(),
+				name           : $('#input-firstname').val() + ' ' +  $('#input-lastname').val(),
 				essence        : 'expert',
 				expert_id : <?php echo $_GET['visitor_id']; ?>
 			};

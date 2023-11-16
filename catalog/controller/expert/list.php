@@ -155,7 +155,7 @@ class ControllerExpertList extends Controller {
 
 		$data['filter'] = $filter_data;
 
-		if($json) {
+        if($json) {
 			$data['template'] = $this->load->view('expert/expert_list_content', $data);
 			$this->response->addHeader('Content-Type: application/json');
 			$this->response->setOutput(json_encode($data));

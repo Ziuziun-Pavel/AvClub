@@ -161,11 +161,11 @@ class ControllerExtensionModuleSeoUrlGenerator extends Model {
   
   
   public function getSeoUrl($a_data) {
-    
+
     $test_mode = false;
     
     $keyword = '';
-    
+
     if ($test_mode) {
       ob_start();
       echo "\$a_data in getSeoUrl()" . PHP_EOL;
@@ -181,15 +181,15 @@ class ControllerExtensionModuleSeoUrlGenerator extends Model {
     }
     
     $this->load->model('extension/module/seo_url_generator');
-        
+
     /* Определить сущность
      * Определить, какие переменные есть в формуле
      * Вырезать из формулы лишние - (транслит сам это сделает)
      * Транлитировать
      * Запросить уникальность
      * Если URL не уникален, то использовать индекс N - причем, это не зависит от того, есть ли в формуле генерации доп переменные или нет
-     */     
-    
+     */
+
     if ($a_data['essence']) {
       if ('product' == $a_data['essence']) {
         $keyword = $this->getProductKeywordByForumla($a_data);
@@ -197,21 +197,20 @@ class ControllerExtensionModuleSeoUrlGenerator extends Model {
         $keyword = trim($a_data['name']);
       }
     }
-    
     $keyword = $this->model_extension_module_seo_url_generator->translit($keyword, $test_mode);
-    
+
     if ($test_mode) {
       file_put_contents(
         $_SERVER['DOCUMENT_ROOT'] . "/seo_url_generator.log", date("Y-m-d H:i:s") . " : " . PHP_EOL
         . "\$keyword after translit = $keyword" . PHP_EOL
         . "------------------------------------------" . PHP_EOL . PHP_EOL, 	FILE_APPEND | LOCK_EX
       );
-    }    
-    
+    }
+
     // Unique
-   
+
     $keyword = $this->model_extension_module_seo_url_generator->getUniqueUrl($keyword, $test_mode);
-    
+
     if ($test_mode) {
       file_put_contents(
         $_SERVER['DOCUMENT_ROOT'] . "/seo_url_generator.log", date("Y-m-d H:i:s") . " : " . PHP_EOL
@@ -219,7 +218,7 @@ class ControllerExtensionModuleSeoUrlGenerator extends Model {
         . "------------------------------------------" . PHP_EOL . PHP_EOL, 	FILE_APPEND | LOCK_EX
       );
     }
-    
+
     return $keyword;
     
   }
@@ -230,7 +229,7 @@ class ControllerExtensionModuleSeoUrlGenerator extends Model {
     $test_mode = false;    
     $data = array('result' => '');    
     if (!isset($this->request->post)) return false;
-    
+
     $result = $this->getSeoUrl($this->request->post);
     
     if ($result) {
