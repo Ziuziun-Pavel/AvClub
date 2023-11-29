@@ -124,7 +124,9 @@ class ControllerJournalJournal extends Controller {
 		$this->load->model('journal/journal');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$this->model_journal_journal->editJournal($this->request->get['journal_id'], $this->request->post);
+            var_dump( $this->request->post);
+
+            $this->model_journal_journal->editJournal($this->request->get['journal_id'], $this->request->post);
 
 			$this->session->data['success'] = $this->language->get('text_success');
 

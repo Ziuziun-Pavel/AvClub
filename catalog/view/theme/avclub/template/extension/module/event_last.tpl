@@ -15,6 +15,7 @@
               <?php foreach($year['events'] as $event) { ?>
                 <p>
                   <?php
+
                   $link = '';
                   $target = false;
                   if(!empty($event['old_type'])) {

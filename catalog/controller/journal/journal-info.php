@@ -13,7 +13,6 @@ if (isset($this->request->get['journal_id'])) {
 } else {
 	$journal_id = 0;
 }
-
 switch($this->request->get['route']) {
 	case 'journal/news/info':	$type = 'news';	break;
 	case 'journal/video/info':	$type = 'video';	break;
@@ -25,7 +24,6 @@ switch($this->request->get['route']) {
 }
 
 $meta_info = $this->config->get('av_meta_' . $type);
-
 
 if (isset($this->request->get['journal_id'])) {
 	$journal_id = (int)$this->request->get['journal_id'];

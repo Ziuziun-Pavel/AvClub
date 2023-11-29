@@ -53,8 +53,10 @@ class ControllerMasterMaster extends Controller {
 
 		$this->load->model('master/master');
 
+
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
-			$this->model_master_master->editMaster($this->request->get['master_id'], $this->request->post);
+
+            $this->model_master_master->editMaster($this->request->get['master_id'], $this->request->post);
 
 			$this->session->data['success'] = $this->language->get('text_success');
 
@@ -464,7 +466,8 @@ class ControllerMasterMaster extends Controller {
 			'entry_link',
 			'entry_company',
 			'entry_company_placeholder',
-			
+            'entry_tag',
+            'entry_tag_placeholder',
 			'help_keyword',
 			
 			'button_save',
@@ -478,15 +481,16 @@ class ControllerMasterMaster extends Controller {
 			$data[$key] = $this->language->get($key);
 		}
 
-
 		$error_list = array(
 			'warning',
 			'title',
 			'description',
 			'meta_title',
-			'link',
+            'keyword',
+            'link',
 			'author',
 		);
+
 		foreach($error_list as $key) {
 			if (isset($this->error[$key])) {
 				$data['error_' . $key] = $this->error[$key];
@@ -534,8 +538,6 @@ class ControllerMasterMaster extends Controller {
 			$master_info = $this->model_master_master->getMaster($this->request->get['master_id']);
 		}
 
-
-
 		$data['token'] = $this->session->data['token'];
 		$data['ckeditor'] = $this->config->get('config_editor_default');
 
@@ -556,7 +558,8 @@ class ControllerMasterMaster extends Controller {
 		}
 
 		$key_list = array(
-			'link'				=> '',
+            'keyword'				=> '',
+            'link'				=> '',
 			'type'				=> 'master',
 			'status'			=> true,
 			'image'				=> '',
@@ -587,6 +590,14 @@ class ControllerMasterMaster extends Controller {
 				);
 			}
 		}*/
+
+        if (isset($this->request->post['tags'])) {
+            $data['tags'] = $this->request->post['tags'];
+        } elseif (isset($this->request->get['master_id'])) {
+            $data['tags'] = $this->model_master_master->getMasterTags($this->request->get['master_id']);
+        } else {
+            $data['tags'] = array();
+        }
 
 
 		// company
@@ -719,6 +730,33 @@ class ControllerMasterMaster extends Controller {
 		if (utf8_strlen($this->request->post['link']) < 3) {
 			$this->error['link'] = $this->language->get('error_link');
 		}
+
+        if(empty($this->request->post['keyword'])){
+            $a_data = array(
+                'name'    => $this->request->post['event_description'][$this->config->get('config_language_id')]['title'],
+                'essence' => 'event',
+            );
+
+            $this->request->post['keyword'] = $this->load->controller('extension/module/seo_url_generator/getSeoUrl', $a_data);
+        } else {
+            $this->load->model('extension/module/seo_url_generator');
+            $this->request->post['keyword'] = $this->model_extension_module_seo_url_generator->translit($this->request->post['keyword']);
+        }
+        // SEO URL Generator . end
+
+        if (utf8_strlen($this->request->post['keyword']) > 0) {
+            $this->load->model('catalog/url_alias');
+
+            $url_alias_info = $this->model_catalog_url_alias->getUrlAlias($this->request->post['keyword']);
+
+            if ($url_alias_info && isset($this->request->get['event_id']) && $url_alias_info['query'] != 'event_id=' . $this->request->get['event_id']) {
+                $this->error['keyword'] = sprintf($this->language->get('error_keyword'));
+            }
+
+            if ($url_alias_info && !isset($this->request->get['event_id'])) {
+                $this->error['keyword'] = sprintf($this->language->get('error_keyword'));
+            }
+        }
 
 		/*if(isset($this->request->post['author_id'])) {
 			$this->load->model('visitor/visitor');

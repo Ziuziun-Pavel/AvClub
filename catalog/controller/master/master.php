@@ -87,7 +87,8 @@ class ControllerMasterMaster extends Controller {
 				'author'       	=> $result['author'],
 				'exp'       		=> $result['exp'],
 				'href'        	=> $result['link'],
-				'type'        	=> $result['type'],
+                'href_to_landing'        	=> $this->url->link('master/master/info', 'master_id=' . $result['master_id']),
+                'type'        	=> $result['type'],
 			);
 		}
 
@@ -147,7 +148,7 @@ class ControllerMasterMaster extends Controller {
 		$data['banner'] = array();
 		$banner_info = $this->model_themeset_themeset->getBanner('content');
 		if($banner_info && $banner_info['image_pc'] && is_file(DIR_IMAGE . $banner_info['image_pc'])) {
-	
+
 			$data['banner'] = array(
 				'banner_id'		=> $banner_info['banner_id'],
 				'link'		=> $banner_info['link'],
@@ -199,4 +200,209 @@ class ControllerMasterMaster extends Controller {
 		$this->response->setOutput($this->load->view('master/master', $data));
 
 	}
+
+    public function info() {
+        $this->load->language('master/master');
+
+        $this->load->model('master/master');
+
+        $this->load->model('themeset/themeset');
+        $this->load->model('tool/image');
+
+        if (isset($this->request->get['master_id'])) {
+            $master_id = (int)$this->request->get['master_id'];
+        } else {
+            $master_id = 0;
+        }
+
+        $meta_info = $this->config->get('av_master');
+
+        $data['master_id'] = $master_id;
+
+        $data['breadcrumbs'] = array();
+
+        $data['breadcrumbs'][] = array(
+            'text' => $this->language->get('text_home'),
+            'href' => $this->url->link('common/home')
+        );
+
+        $data['breadcrumbs'][] = array(
+            'text' => $meta_info['bread'],
+            'href' => $this->url->link('master/master')
+        );
+
+        $master_info = $this->model_master_master->getMaster($master_id);
+
+        if ($master_info) {
+            $this->document->setTitle($master_info['title']);
+
+            $data['breadcrumbs'][] = array(
+                'text' => $master_info['title'],
+                'href' => $this->url->link('master/master/info', 'master_id=' . $this->request->get['master_id'])
+            );
+
+            if ($master_info['meta_title']) {
+                $this->document->setTitle($master_info['meta_title']);
+            } else {
+                $this->document->setTitle($master_info['title']);
+            }
+
+            $this->document->setDescription($master_info['meta_description']);
+            $this->document->setKeywords($master_info['meta_keyword']);
+
+            if ($master_info['meta_h1']) {
+                $data['heading_title'] = $master_info['meta_h1'];
+            } else {
+                $data['heading_title'] = $master_info['title'];
+            }
+
+            if ($master_info['image'] && is_file(DIR_IMAGE . $master_info['image'])) {
+                $data['image'] = $this->model_themeset_themeset->resize_crop($master_info['image']);
+                $this->document->setOgImage($data['image']);
+            } else {
+                $data['image'] = '';
+            }
+
+            $month_list = array(
+                1 	=> 'января',
+                2 	=> 'февраля',
+                3 	=> 'марта',
+                4 	=> 'апреля',
+                5 	=> 'мая',
+                6 	=> 'июня',
+                7 	=> 'июля',
+                8 	=> 'августа',
+                9 	=> 'сентября',
+                10 	=> 'октября',
+                11 	=> 'ноября',
+                12 	=> 'декабря'
+            );
+
+            $data['author'] = $master_info['author'];
+
+            $data['link'] = $master_info['link'];
+            $data['master_id'] = $master_info['master_id'];
+            $data['type'] = $master_info['type'];
+
+            $date = strtotime($master_info['date']);
+            $data['date'] = date('d', $date) . '&nbsp;' . $month_list[(int)date('m', $date)] . '&nbsp;' . date('Y', $date);
+
+            $time_start = strtotime($master_info['time']);
+            $time_end = strtotime('+1 hour', $time_start);
+
+            $data['time_start'] = date('H:s', $time_start);
+            $data['time_end'] = date('H:s', $time_end);
+
+            $data['description'] = html_entity_decode($master_info['description'], ENT_QUOTES, 'UTF-8');
+            $data['preview'] = html_entity_decode($master_info['preview'], ENT_QUOTES, 'UTF-8');
+
+            $data['brand_list'] = array();
+
+            $brand_list = $this->model_master_master->getCompaniesByMaster($master_id);
+
+            if($brand_list) {
+                $sort_brand = array();
+                foreach($brand_list as $brand) {
+                    $data['brand_list'][] = array(
+                        'company_id'	=> $brand['company_id'],
+                        'title'				=> $brand['title'],
+                        'activity'				=> $brand['activity'],
+                        'description'				=> $brand['description'],
+                        'image'				=> $this->model_tool_image->resize($brand['image'], 214, 100),
+                        'href'				=> !empty($brand['status']) ? $this->url->link('company/info', 'company_id=' . $brand['company_id']) : '',
+                    );
+                    $sort_brand[] = $brand['title'];
+                }
+                array_multisort($sort_brand, SORT_ASC, $data['brand_list']);
+            }
+
+            $expert_list = $this->model_master_master->getAuthorsByMaster($master_id);
+            $speakers = $this->model_master_master->getSpeakerByMaster($master_id);
+
+
+
+            if($speakers[0]["author_id"]) {
+                foreach($speakers as $speaker) {
+                    $data['speaker_list'][] = array(
+                        'author_id'		=> $speaker['author_id'],
+                        'name'				=> $speaker['name'],
+                        'exp'					=> $speaker['exp'],
+                        'moderator'					=> true,
+                        'image'				=> $this->model_themeset_themeset->resize($speaker['image'], 220, 220),
+                        'href'				=> !empty($speaker['expert']) ? $this->url->link('expert/expert', 'expert_id=' . $speaker['author_id']) : '',
+                    );
+                }
+            }
+
+            if($speakers[0]["author_id"]) {
+                foreach($expert_list as $speaker) {
+                    $data['speaker_list'][] = array(
+                        'author_id'		=> $speaker['author_id'],
+                        'name'				=> $speaker['name'],
+                        'exp'					=> $speaker['exp'],
+                        'moderator'					=> false,
+                        'image'				=> $this->model_themeset_themeset->resize($speaker['image'], 220, 220),
+                        'href'				=> !empty($speaker['expert']) ? $this->url->link('expert/expert', 'expert_id=' . $speaker['author_id']) : '',
+                    );
+                }
+            }
+            $data['page_type'] = 'webinar';
+
+            $data['column_left'] = $this->load->controller('common/column_left');
+            $data['column_right'] = $this->load->controller('common/column_right');
+            $data['content_top'] = $this->load->controller('common/content_top');
+            $data['content_bottom'] = $this->load->controller('common/content_bottom');
+            $data['footer'] = $this->load->controller('common/footer');
+            $data['header'] = $this->load->controller('common/header');
+            $this->response->setOutput($this->load->view('master/master_info', $data));
+        } else {
+            $url = '';
+
+            if (isset($this->request->get['master_id'])) {
+                $url .= '&master_id=' . $this->request->get['master_id'];
+            }
+
+            if (isset($this->request->get['sort'])) {
+                $url .= '&sort=' . $this->request->get['sort'];
+            }
+
+            if (isset($this->request->get['order'])) {
+                $url .= '&order=' . $this->request->get['order'];
+            }
+
+            if (isset($this->request->get['page'])) {
+                $url .= '&page=' . $this->request->get['page'];
+            }
+
+            if (isset($this->request->get['limit'])) {
+                $url .= '&limit=' . $this->request->get['limit'];
+            }
+
+            $data['breadcrumbs'][] = array(
+                'text' => $this->language->get('text_error'),
+                'href' => $this->url->link('master/master/info', $url)
+            );
+
+            $this->document->setTitle($this->language->get('text_error'));
+
+            $data['heading_title'] = $this->language->get('text_error');
+
+            $data['text_error'] = $this->language->get('text_error');
+
+            $data['button_continue'] = $this->language->get('button_continue');
+
+            $data['continue'] = $this->url->link('common/home');
+
+            $this->response->addHeader($this->request->server['SERVER_PROTOCOL'] . ' 404 Not Found');
+
+            $data['header'] = $this->load->controller('common/header');
+            $data['footer'] = $this->load->controller('common/footer');
+            $data['column_left'] = $this->load->controller('common/column_left');
+            $data['column_right'] = $this->load->controller('common/column_right');
+            $data['content_top'] = $this->load->controller('common/content_top');
+            $data['content_bottom'] = $this->load->controller('common/content_bottom');
+
+            $this->response->setOutput($this->load->view('error/not_found', $data));
+        }
+    }
 }

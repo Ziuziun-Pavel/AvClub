@@ -55,7 +55,7 @@
 												<textarea name="master_description[<?php echo $language['language_id']; ?>][preview]" rows="3" placeholder="<?php echo $entry_preview; ?>" id="input-preview<?php echo $language['language_id']; ?>" data-lang="<?php echo $lang; ?>" class="form-control summernote"><?php echo isset($master_description[$language['language_id']]) ? $master_description[$language['language_id']]['preview'] : ''; ?></textarea>
 											</div>
 										</div>
-										<div class="form-group hidden ">
+										<div class="form-group ">
 											<label class="col-sm-2 control-label" for="input-description<?php echo $language['language_id']; ?>"><?php echo $entry_description; ?></label>
 											<div class="col-sm-10">
 												<textarea name="master_description[<?php echo $language['language_id']; ?>][description]" placeholder="<?php echo $entry_description; ?>" id="input-description<?php echo $language['language_id']; ?>" data-lang="<?php echo $lang; ?>" class="form-control summernote"><?php echo isset($master_description[$language['language_id']]) ? $master_description[$language['language_id']]['description'] : ''; ?></textarea>
@@ -142,6 +142,27 @@
 										</span></div>
 									</div>
 								</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label"><?php echo $entry_tag; ?></label>
+								<div class="col-sm-10">
+									<div class="tag__cont">
+										<ul class="tag__list">
+											<?php if($tags) { ?>
+											<?php foreach($tags as $tag) { ?>
+											<li class="tag__item tag__item-<?php echo $tag['tag_id']; ?>" value="<?php echo utf8_strtolower($tag['tag']); ?>">
+												<?php echo $tag['tag']; ?>
+												<button type="button" class="tag__remove" ><i class="fa fa-close"></i></button>
+												<input type="hidden" name="tag[]" value="<?php echo $tag['tag_id']; ?>">
+											</li>
+											<?php } ?>
+											<?php } ?>
+										</ul>
+										<input type="text" name="tag_search" class="tag__input" placeholder="<?php echo $entry_tag_placeholder; ?>">
+									</div>
+								</div>
+								<?php $add_status = false; ?>
+								<?php require_once(DIR_TEMPLATE . 'tag/tag-autocomplete.tpl'); ?>
+							</div>
 								<div class="form-group">
 									<label class="col-sm-2 control-label"><?php echo $entry_author; ?></label>
 									<div class="col-sm-10">
@@ -240,6 +261,15 @@
 												<option value="0" selected="selected"><?php echo $text_disabled; ?></option>
 											<?php } ?>
 										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2 control-label" for="input-keyword"><span data-toggle="tooltip" title="<?php echo $help_keyword; ?>"><?php echo $entry_keyword; ?></span></label>
+									<div class="col-sm-10">
+										<input type="text" name="keyword" value="<?php echo $keyword; ?>" placeholder="<?php echo $entry_keyword; ?>" id="input-keyword" class="form-control" />
+										<?php if ($error_keyword) { ?>
+										<div class="text-danger"><?php echo $error_keyword; ?></div>
+										<?php } ?>
 									</div>
 								</div>
 							</div>

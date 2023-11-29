@@ -256,6 +256,102 @@ class ControllerThemesetEvents extends Controller
     {
         header('Content-Type: application/json');
         $data = $_REQUEST;
+
+        $this->load->model('master/master');
+        $this->load->model('themeset/events');
+        $this->load->model('themeset/themeset');
+        $this->load->model('tool/image');
+
+        $company_ids = $this->model_themeset_events->getCompanyIDs($data["company"]);
+
+        if (!empty($data)) {
+            $master_info = [
+                'master_description' => [
+                    1 => [
+                        'title' => $data["title"],
+                        'preview' => $data["preview"],
+                        'description' => $data["description"],
+                        'meta_title' => '',
+                        'meta_h1' => '',
+                        'meta_description' => '',
+                        'meta_keyword' => '',
+                    ]
+                ],
+
+                'link' => 'https://www.avclub.pro/event-register/?webinar_id=' . $data['b24id'],
+                'type' => $data["type"],
+                'logo' => '',
+                'date_available' => $data["date_available"],
+                'author_search' => '',
+                'authors_search' => '',
+                'company' => $company_ids,
+                'companies_search' => '',
+                'status' => 1,
+                'master_layout' => array(0),
+                'keyword' => 'online' . $data["type"] . explode(' ', $data["date_available"])[0]
+            ];
+
+            $image_events_dir = DIR_IMAGE . 'catalog/webinars/';
+
+            $image_path = $image_events_dir . basename($data['image']);
+
+            copy($data['image'], $image_path);
+            $baseURL = "https://www.avclub.pro/image";
+
+            if (isset($data['image']) && is_file($image_path)) {
+                $cleanedURL = str_replace($baseURL, '', $this->model_tool_image->resize('catalog/webinars/' . basename($data['image']), 100, 100));
+                $master_info['image'] = $cleanedURL;
+            } elseif (!empty($master_info) && is_file($image_path)) {
+                $cleanedURL = $this->model_tool_image->resize('catalog/webinars/' . basename($data['image']), 100, 100);
+                $master_info['image'] = $cleanedURL;
+            } else {
+                $master_info['image'] = $this->model_tool_image->resize('no_image.png', 100, 100);
+            }
+
+            if ($data["type"] === "meetup") {
+
+                if ($data["moderator"]) {
+                    $moderatorInfo = $this->model_themeset_events->getExperts([0 => $data["moderator"]]);
+
+                    if (!empty($moderatorInfo)) {
+                        $master_info['author_id'] = $moderatorInfo[0]['visitor_id'];
+                        $master_info['author_exp'] = $moderatorInfo[0]['exp_id'];
+                    }
+                }
+            }
+
+            if ($data["experts"]) {
+                $expertsInfo = $this->model_themeset_events->getExperts($data["experts"]);
+
+                $experts = [];
+
+                if (!empty($expertsInfo)) {
+                    foreach ($expertsInfo as $expert) {
+                        $experts[(string)$expert["visitor_id"]]["author_id"] = $expert["visitor_id"];
+                        $experts[(string)$expert["visitor_id"]]["exp_id"] = $expert["exp_id"];
+                    }
+                    $master_info['experts'] = $experts;
+
+                }
+            }
+
+            if ($data['master_db_id']) {
+                $this->model_themeset_events->editMaster($data['master_db_id'], $master_info);
+                $master_id = $data['master_db_id'];
+            } else {
+                $master_id = $this->model_themeset_events->addMaster($master_info);
+            }
+
+            if ($master_id) {
+                $json = ['status' => '200', 'message' => 'Список вебинаров успешно обновлен', 'id' => $master_id];
+            } else {
+                $json = ['status' => '400', 'message' => 'Ошибка обнавления списка вебинаров',];
+            }
+
+            echo json_encode($json);
+        }
+
+
     }
 
 }

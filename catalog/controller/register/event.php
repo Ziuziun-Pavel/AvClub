@@ -819,7 +819,6 @@ class ControllerRegisterEvent extends Controller
 
     public function saveData()
     {
-
         $post = $this->request->post;
 
         $this->load->model('register/register');
@@ -855,8 +854,14 @@ class ControllerRegisterEvent extends Controller
         // все ок, ошибок нет
         if (!$error) {
 
+            if ($post['formChanged'] === "true") {
+                $post['formChanged'] = true;
+            } else {
+                $post['formChanged'] = false;
+            }
+
             $user_data = array(
-                // 'user_id'					=> $this->session->data['register_user']['user_id'],
+                //'user_id'					=> $this->session->data['register_user']['user_id'],
                 'user_id' => 0,
                 'old_user_id' => $this->session->data['register_user']['old_user_id'],
                 'name' => isset($post['name']) ? $post['name'] : $this->session->data['register_user']['name'],
@@ -872,7 +877,14 @@ class ControllerRegisterEvent extends Controller
                 'city' => isset($post['city']) ? $post['city'] : '',
                 'email' => isset($post['email']) ? $post['email'] : '',
                 'avatar' => $this->session->data['register_user']['avatar'],
+                'formChanged' => $post["formChanged"]
             );
+
+
+
+//            var_dump($post['formChanged'] );
+//           var_dump($this->session->data['register_user']);
+//            var_dump($user_data);
 
             $this->session->data['register_user'] = $user_data;
 
@@ -1016,6 +1028,9 @@ class ControllerRegisterEvent extends Controller
             $old_company["phone"] !== $this->session->data['register_user']['company_phone'] ||
             $old_company["activity"] !== $this->session->data['register_user']['company_activity'];
 
+//        var_dump($this->session->data['register_user']['formChanged']);
+//        die();
+
         $user_data = array(
             'user_id' => $this->session->data['register_user']['user_id'],
             'old_user_id' => $this->session->data['register_user']['old_user_id'],
@@ -1048,21 +1063,25 @@ class ControllerRegisterEvent extends Controller
 
         // все ок, ошибок нет
         if (!$error) {
+//var_dump($this->session->data['register_user']['formChanged']);
+//            var_dump($this->session->data['register_user']['formChanged']);
 
             switch (true) {
 
                 /* данные не менялись */
-                case (!empty($user_data['old_user_id']) && $user_data['user_id'] == $user_data['old_user_id']):
-                    $contact_id = $user_data['user_id'];
-//                    var_dump('1');
+                case (!empty($user_data['old_user_id']) && $user_data['user_id'] == $user_data['old_user_id'] || !$this->session->data['register_user']['formChanged']):
+                    $contact_id = $user_data['old_user_id'];
+//                    var_dump($contact_id);
+//                    die();
+                    //var_dump('1');
                     break;
 
                 /* данные поменялись */
-                case (!empty($user_data['old_user_id']) && $user_data['user_id'] != $user_data['old_user_id']):
+                case (!empty($user_data['old_user_id']) && $user_data['user_id'] != $user_data['old_user_id'] || $this->session->data['register_user']['formChanged']):
                     $user_data['IsContactEdit'] = true;
                     $return_contact = $this->model_register_register->createContact($user_data);
                     $contact_id = $return_contact['id'];
-//                    var_dump('2');
+                    var_dump('2');
 
                     $this->model_register_register->addAlternateId($user_data['old_user_id'], $contact_id);
                     // $this->model_register_register->updateExpertID($user_data['old_user_id'], $contact_id);
@@ -1070,7 +1089,7 @@ class ControllerRegisterEvent extends Controller
 
                 /* новый контакт */
                 default:
-//                    var_dump('3');
+                    var_dump('3');
 //                    var_dump($user_data);
                     $user_data['IsContactEdit'] = true;
 
@@ -1078,7 +1097,7 @@ class ControllerRegisterEvent extends Controller
 //                    var_dump($return_contact['id']);
                     $contact_id = $return_contact['id'];
             }
-
+//die();
 
             // $this->model_themeset_expert->getContactInfo($contact_id);
 
@@ -1102,7 +1121,7 @@ class ControllerRegisterEvent extends Controller
             switch ($this->session->data['register_event']['type']) {
                 case 'webinar':
                     $event_info = array(
-                        'company_id' => $contact_info['COMPANY_ID'],
+                        'company_id' => $contact_info['COMPANY_ID'] ? $contact_info['COMPANY_ID'] : $contact_info['company_id'],
                         'contact_id' => $contact_id,
                         'dealType' => 'webinar',
                         'webinar_id' => $this->session->data['register_event']['webinar_id'],
@@ -1112,7 +1131,7 @@ class ControllerRegisterEvent extends Controller
 
                 default:
                     $event_info = array(
-                        'company_id' => $contact_info['COMPANY_ID'],
+                        'company_id' => $contact_info['COMPANY_ID'] ? $contact_info['COMPANY_ID'] : $contact_info['company_id'],
                         'contact_id' => $contact_id,
                         'dealType' => 'forum',
                         'forum_id' => $this->session->data['register_event']['forum_id'],
@@ -1122,7 +1141,6 @@ class ControllerRegisterEvent extends Controller
             }
 
             $deal_info = $this->model_register_register->createDeal($event_info);
-
 
             if ($deal_info['code'] == 200) {
                 $return['old_id'] = $this->session->data['register_user']['user_id'];

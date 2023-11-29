@@ -1,4 +1,5 @@
 <?php echo $header; ?>
+
 <?php echo $content_top; ?>
 <section class="section_content section_article">
 	<div class="container">
@@ -30,7 +31,7 @@
 				</div>
 			<?php } ?>
 		</div>
-		
+
 		<div class="content__cont text__cont">
 
 			<div class="content__row row">
@@ -109,7 +110,6 @@
 				<?php echo $column_right; ?>
 
 			</div>
-
 
 		</div>
 

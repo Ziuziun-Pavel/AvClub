@@ -1,10 +1,9 @@
 .htaccess
 /admin/config.php
 config.php
-
 .idea
-config.php
 .gitignore
+
 appReport
 b24
 

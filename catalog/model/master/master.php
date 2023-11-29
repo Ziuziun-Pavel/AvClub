@@ -212,4 +212,105 @@ class ModelMasterMaster extends Model {
 		return $query->row['total'];
 	}
 
+    public function getCompaniesByMaster($master_id) {
+        $company_data = array();
+
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "master_company ac 
+			LEFT JOIN " . DB_PREFIX . "company c ON (ac.company_id = c.company_id) 
+			LEFT JOIN " . DB_PREFIX . "company_description cd ON (ac.company_id = cd.company_id) 
+			WHERE 
+			ac.master_id = '" . (int)$master_id . "' 
+			ORDER BY 
+			ac.master_id ASC");
+
+        if($query->num_rows) {
+            foreach($query->rows as $row) {
+                $company_data[] = array(
+                    'company_id'	=> $row['company_id'],
+                    'title'				=> $row['title'],
+                    'activity'				=> $row['activity'],
+                    'description'				=> $row['description'],
+                    'image'				=> $row['image'],
+                    'status'			=> $row['status'],
+                );
+            }
+        }
+
+        return $company_data;
+    }
+
+    public function getAuthorsByMaster($master_id) {
+        $this->load->model('visitor/visitor');
+
+        $author_data = array();
+
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "master_expert a 
+			LEFT JOIN " . DB_PREFIX . "visitor v ON (a.author_id = v.visitor_id) 
+			WHERE 
+			a.master_id = '" . (int)$master_id . "' 
+			ORDER BY a.master_id ASC");
+
+        if($query->num_rows) {
+            foreach($query->rows as $row) {
+                $author_info = $this->model_visitor_visitor->getVisitor($row['visitor_id'], $row['author_exp']);
+
+                $author_data[] = array(
+                    'author_id'	=> $row['visitor_id'],
+                    'name'			=> $row['name'],
+                    'image'			=> $row['image'],
+                    'expert'		=> $row['expert'],
+                    'exp'				=> !empty($author_info['exp']) ? $author_info['exp'] : '',
+                );
+            }
+        }
+
+        return $author_data;
+    }
+
+    public function getSpeakerByMaster($master_id) {
+        $this->load->model('visitor/visitor');
+
+        $author_data = array();
+
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "master a 
+			LEFT JOIN " . DB_PREFIX . "visitor v ON (a.author_id = v.visitor_id) 
+			WHERE 
+			a.master_id = '" . (int)$master_id . "' 
+			ORDER BY a.master_id ASC");
+
+        if($query->num_rows) {
+            foreach($query->rows as $row) {
+                $author_info = $this->model_visitor_visitor->getVisitor($row['visitor_id'], $row['author_exp']);
+
+                $author_data[] = array(
+                    'author_id'	=> $row['visitor_id'],
+                    'name'			=> $row['name'],
+                    'image'			=> $row['image'],
+                    'expert'		=> $row['expert'],
+                    'exp'				=> !empty($author_info['exp']) ? $author_info['exp'] : '',
+                );
+            }
+        }
+
+        return $author_data;
+    }
+
+    public function getRelated($master_id) {
+        $tag_list = array();
+
+        $sql = "SELECT t2.journal_id, count(*) as cnt FROM " . DB_PREFIX . "master_tag t 
+		LEFT JOIN " . DB_PREFIX . "journal_tag t2 ON (t.tag_id = t2.tag_id) 
+		LEFT JOIN " . DB_PREFIX . "journal m ON (m.journal_id = t2.journal_id) 
+		WHERE t.master_id = '".(int)$master_id."' 
+		AND m.status = '1' 
+		AND m.date_available <= NOW()  
+		GROUP BY t2.journal_id 
+		ORDER BY cnt DESC, t2.journal_id DESC 
+		LIMIT 0,4";
+
+        $query = $this->db->query($sql);
+
+        return $query->rows;
+    }
+
 }

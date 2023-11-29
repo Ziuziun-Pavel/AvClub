@@ -48,6 +48,16 @@ class ModelMasterMaster extends Model {
 			}
 		}
 
+        if (isset($data['tag'])) {
+            foreach ($data['tag'] as $tag_id) {
+                $this->db->query("INSERT INTO " . DB_PREFIX . "master_tag SET master_id = '" . (int)$master_id . "', tag_id = '" . (int)$tag_id . "'");
+            }
+        }
+
+        if (isset($data['keyword'])) {
+            $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'master_id=" . (int)$master_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
+        }
+
 		$this->cache->delete('master');
 
 		return $master_id;
@@ -102,6 +112,16 @@ class ModelMasterMaster extends Model {
 			}
 		}
 
+        $this->db->query("DELETE FROM " . DB_PREFIX . "master_tag WHERE master_id = '" . (int)$master_id . "'");
+        if (isset($data['tag'])) {
+            foreach ($data['tag'] as $tag_id) {
+                $this->db->query("INSERT INTO " . DB_PREFIX . "master_tag SET master_id = '" . (int)$master_id . "', tag_id = '" . (int)$tag_id . "'");
+            }
+        }
+
+        if ($data['keyword']) {
+            $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'master_id=" . (int)$master_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
+        }
 
 		$this->cache->delete('master');
 	}
@@ -111,12 +131,16 @@ class ModelMasterMaster extends Model {
 		$this->db->query("DELETE FROM " . DB_PREFIX . "master_expert WHERE master_id = '" . (int)$master_id . "'");
 		$this->db->query("DELETE FROM " . DB_PREFIX . "master_description WHERE master_id = '" . (int)$master_id . "'");
 		$this->db->query("DELETE FROM " . DB_PREFIX . "master_to_layout WHERE master_id = '" . (int)$master_id . "'");
+        $this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = '$master_id=" . (int)$master_id . "'");
+        $this->db->query("DELETE FROM " . DB_PREFIX . "master_tag WHERE master_id = '" . (int)$master_id . "'");
 
 		$this->cache->delete('master');
 	}
 
 	public function getMaster($master_id) {
-		$query = $this->db->query("SELECT DISTINCT * FROM " . DB_PREFIX . "master WHERE master_id = '" . (int)$master_id . "'");
+		$query = $this->db->query("SELECT DISTINCT *,
+                (SELECT keyword FROM " . DB_PREFIX . "url_alias WHERE query = 'master_id=" . (int)$master_id . "' LIMIT 1) AS keyword
+                FROM " . DB_PREFIX . "master WHERE master_id = '" . (int)$master_id . "'");
 
 		return $query->row;
 	}
@@ -221,6 +245,20 @@ class ModelMasterMaster extends Model {
 		return $query->rows;
 	}
 
+    public function getMasterTags($master_id) {
+        $master_tag_data = array();
+
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "master_tag mt LEFT JOIN " . DB_PREFIX . "tag_description td ON (mt.tag_id = td.tag_id) WHERE master_id = '" . (int)$master_id . "' ORDER BY td.title ASC");
+
+        foreach ($query->rows as $row) {
+            $master_tag_data[] = array(
+                'tag_id'	=> $row['tag_id'],
+                'tag'			=> $row['title']
+            );
+        }
+
+        return $master_tag_data;
+    }
 
 	public function getMasterLayouts($master_id) {
 		$master_layout_data = array();

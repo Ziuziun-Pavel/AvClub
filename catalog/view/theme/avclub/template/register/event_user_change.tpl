@@ -21,7 +21,7 @@
 	<form class="regform row" id="register-newuser">
 
 		<?php if(!empty($show_name_fields)) { ?>
-			<div class="regform__outer col-12 col-md-6">
+		<div class="regform__outer col-12 col-md-6">
 				<div class="regform__inp">
 					<input type="text" name="name" value="<?php echo $user['name']; ?>" class="regform__input " placeholder="Имя" />
 				</div>
@@ -138,3 +138,17 @@
 
 <?php // require(DIR_TEMPLATE . 'avclub/template/register/script-change.tpl'); ?>
 
+<script>
+	var formChanged = false;
+
+	// Track changes in form inputs
+	$('#register-newuser .regform__input').on('input', function() {
+		console.log('1')
+		formChanged = true;
+	});
+
+	$('#register-newuser .regform__select--dropdown').on('click', function() {
+		console.log('2')
+		formChanged = true;
+	});
+</script>

@@ -88,6 +88,8 @@ class ControllerAveventEvent extends Controller {
 		}
 
 
+
+
 		$data['continue'] = $this->url->link('common/home');
 
 		$data['column_left'] = $this->load->controller('common/column_left');
@@ -102,7 +104,7 @@ class ControllerAveventEvent extends Controller {
 	}
 
 	public function info() {
-		
+
 		$this->load->language('avevent/event');
 
 		$this->load->model('avevent/event');
@@ -132,8 +134,11 @@ class ControllerAveventEvent extends Controller {
 			'href' => $this->url->link('avevent/event')
 		);
 
-		$event_info = $this->model_avevent_event->getEvent($event_id);
 
+
+		$event_info = $this->model_avevent_event->getEvent($event_id);
+//        var_dump($event_info);
+//        die();
 		if ($event_info) {
 			$this->document->setTitle($event_info['title']);
 

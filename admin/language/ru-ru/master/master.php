@@ -22,10 +22,10 @@ $_['entry_meta_h1']             = 'HTML-тег H1';
 $_['entry_meta_keyword']        = 'Мета-тег Keywords:';
 $_['entry_meta_description']    = 'Мета-тег Description:';
 
-$_['entry_author']    = 'Спикер:';
-$_['entry_author_placeholder']         = 'Начните вводить имя спикера здесь';
-$_['entry_experts']          	= 'Эксперты:';
-$_['entry_experts_placeholder']          	= 'Начните писать имя эксперта здесь';
+$_['entry_author']    = 'Модератор:';
+$_['entry_author_placeholder']         = 'Начните вводить имя модератора здесь';
+$_['entry_experts']          	= 'Участники:';
+$_['entry_experts_placeholder']          	= 'Начните писать имя участника здесь';
 
 
 $_['entry_date_available']    = 'Дата проведения:';
@@ -33,7 +33,8 @@ $_['entry_title']          		= 'Заголовок:';
 $_['entry_description']       = 'Описание:';
 $_['entry_preview']         	= 'В программе:';
 $_['entry_store']          		= 'Магазины:';
-
+$_['entry_tag']         = 'Теги:';
+$_['entry_tag_placeholder']         = 'Начните писать тег здесь:';
 $_['entry_keyword']          	= 'SEO URL:';
 $_['entry_status']          	= 'Статус:';
 $_['entry_layout']          	= 'Выберите макет:';
@@ -41,7 +42,7 @@ $_['entry_image']          		= 'Изображение:';
 $_['entry_logo']          		= 'Логотип:';
 $_['entry_link']          		= 'Ссылка на регистрацию:';
 $_['entry_type']          		= 'Тип события:';
-$_['entry_company']          		= 'Компания:';
+$_['entry_company']          		= 'Компании:';
 $_['entry_company_placeholder']          		= 'Начните вводить название компании здесь';
 
 // Help

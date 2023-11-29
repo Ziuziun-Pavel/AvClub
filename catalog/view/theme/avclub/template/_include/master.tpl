@@ -15,7 +15,7 @@
 	</div>
 	<div class="master__data">
 		<div class="master__date date"><?php echo $master['date']; ?> <span><?php echo $master['time']; ?></span></div>
-		<div class="master__name"><?php echo $master['title']; ?></div>
+		<a href="<?php echo $master['href_to_landing']; ?>"><div class="master__name"><?php echo $master['title']; ?></div></a>
 		<div class="master__preview">
 			<p><strong>В программе:</strong></p>
 			<?php echo html_entity_decode($master['preview']); ?>

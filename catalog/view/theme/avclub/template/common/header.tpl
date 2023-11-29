@@ -35,6 +35,7 @@
 	<?php } ?>
 	<link rel="stylesheet" href="<?php echo $theme_dir; ?>/css/libs.min.css">
 	<link rel="stylesheet" href="<?php echo $theme_dir; ?>/css/style.min.css?v=<?php echo filectime(DIR_TEMPLATE . 'avclub/css/style.min.css') ?>">
+	<link rel="stylesheet" href="<?php echo $theme_dir; ?>/css/online.min.css?v=<?php echo filectime(DIR_TEMPLATE . 'avclub/css/style.min.css') ?>">
 
 	<?php foreach ($links as $link) { ?>
 		<link href="<?php echo $link['href']; ?>" rel="<?php echo $link['rel']; ?>" />
@@ -220,11 +221,14 @@
 			<?php echo $fixed; ?>
 
 			<div class="page__outer">
+				<?php
 
-				<?php 
 				if(isset($type_page) && $type_page === 'event') {
 					require(DIR_TEMPLATE . 'avclub/template/common/header_event.tpl');
-				} else{
+				} elseif(strpos($_SERVER['REQUEST_URI'], 'master') !== false) {
+					require(DIR_TEMPLATE . 'avclub/template/common/header_master.tpl');
+				}
+				else{
 					require(DIR_TEMPLATE . 'avclub/template/common/header_default.tpl');
 				}
 				?>
