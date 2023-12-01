@@ -742,6 +742,8 @@ class ControllerMasterMaster extends Controller {
             $this->load->model('extension/module/seo_url_generator');
             $this->request->post['keyword'] = $this->model_extension_module_seo_url_generator->translit($this->request->post['keyword']);
         }
+
+
         // SEO URL Generator . end
 
         if (utf8_strlen($this->request->post['keyword']) > 0) {
@@ -749,24 +751,14 @@ class ControllerMasterMaster extends Controller {
 
             $url_alias_info = $this->model_catalog_url_alias->getUrlAlias($this->request->post['keyword']);
 
-            if ($url_alias_info && isset($this->request->get['event_id']) && $url_alias_info['query'] != 'event_id=' . $this->request->get['event_id']) {
+            if ($url_alias_info && isset($this->request->get['master_id']) && $url_alias_info['query'] != 'master_id=' . $this->request->get['master_id']) {
                 $this->error['keyword'] = sprintf($this->language->get('error_keyword'));
             }
 
-            if ($url_alias_info && !isset($this->request->get['event_id'])) {
+            if ($url_alias_info && !isset($this->request->get['master_id'])) {
                 $this->error['keyword'] = sprintf($this->language->get('error_keyword'));
             }
         }
-
-		/*if(isset($this->request->post['author_id'])) {
-			$this->load->model('visitor/visitor');
-			$author_info = $this->model_visitor_visitor->getVisitor($this->request->post['author_id']);
-			if(!$author_info) {
-				$this->error['author'] = $this->language->get('error_author');
-			}
-		}else{
-			$this->error['author'] = $this->language->get('error_author');
-		}*/
 		
 		if ($this->error && !isset($this->error['warning'])) {
 			$this->error['warning'] = $this->language->get('error_warning');

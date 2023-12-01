@@ -1,7 +1,7 @@
 <?php
 class ControllerMasterMaster extends Controller {
 	public function index() {
-		// $this->load->language('product/category');
+        $this->load->language('journal/journal');
 
 		$this->load->model('master/master');
 		$this->load->model('journal/journal');
@@ -18,8 +18,7 @@ class ControllerMasterMaster extends Controller {
 			'button'				=> $meta_info['master_button'],
 		);
 
-
-		if (isset($this->request->get['page'])) {
+        if (isset($this->request->get['page'])) {
 			$page = $this->request->get['page'];
 		} else {
 			$page = 1;
@@ -36,7 +35,7 @@ class ControllerMasterMaster extends Controller {
 		);
 
 		$data['breadcrumbs'][] = array(
-			'text' => $meta_info['meta_h1'],
+			'text' => $meta_info['bread'],
 			'href' => $this->url->link('master/master')
 		);
 
@@ -86,11 +85,13 @@ class ControllerMasterMaster extends Controller {
 				'time'       		=> $result['time'],
 				'author'       	=> $result['author'],
 				'exp'       		=> $result['exp'],
-				'href'        	=> $result['link'],
-                'href_to_landing'        	=> $this->url->link('master/master/info', 'master_id=' . $result['master_id']),
+				'link'        	=> $result['link'],
+                'href'        	=> $this->url->link('master/master/info', 'master_id=' . $result['master_id']),
                 'type'        	=> $result['type'],
 			);
 		}
+//        var_dump($data['masters'][0]['href']);
+//        die();
 
 		$data['types'] = array(
 			''	=> 'Все события'
@@ -240,6 +241,7 @@ class ControllerMasterMaster extends Controller {
                 'text' => $master_info['title'],
                 'href' => $this->url->link('master/master/info', 'master_id=' . $this->request->get['master_id'])
             );
+
 
             if ($master_info['meta_title']) {
                 $this->document->setTitle($master_info['meta_title']);

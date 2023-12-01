@@ -1063,17 +1063,12 @@ class ControllerRegisterEvent extends Controller
 
         // все ок, ошибок нет
         if (!$error) {
-//var_dump($this->session->data['register_user']['formChanged']);
-//            var_dump($this->session->data['register_user']['formChanged']);
 
             switch (true) {
 
                 /* данные не менялись */
                 case (!empty($user_data['old_user_id']) && $user_data['user_id'] == $user_data['old_user_id'] || !$this->session->data['register_user']['formChanged']):
                     $contact_id = $user_data['old_user_id'];
-//                    var_dump($contact_id);
-//                    die();
-                    //var_dump('1');
                     break;
 
                 /* данные поменялись */
@@ -1081,7 +1076,6 @@ class ControllerRegisterEvent extends Controller
                     $user_data['IsContactEdit'] = true;
                     $return_contact = $this->model_register_register->createContact($user_data);
                     $contact_id = $return_contact['id'];
-                    var_dump('2');
 
                     $this->model_register_register->addAlternateId($user_data['old_user_id'], $contact_id);
                     // $this->model_register_register->updateExpertID($user_data['old_user_id'], $contact_id);
@@ -1089,17 +1083,11 @@ class ControllerRegisterEvent extends Controller
 
                 /* новый контакт */
                 default:
-                    var_dump('3');
-//                    var_dump($user_data);
                     $user_data['IsContactEdit'] = true;
 
                     $return_contact = $this->model_register_register->createContact($user_data);
-//                    var_dump($return_contact['id']);
                     $contact_id = $return_contact['id'];
             }
-//die();
-
-            // $this->model_themeset_expert->getContactInfo($contact_id);
 
             if (!empty($return_contact)) {
                 $contact_info = $return_contact;

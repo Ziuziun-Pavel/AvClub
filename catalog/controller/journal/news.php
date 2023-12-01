@@ -102,6 +102,9 @@ class ControllerJournalNews extends Controller {
 		}
 
 
+//        var_dump($data['journals'][0]['href']);
+//        die();
+
 		// BANNER
 		$data['banner'] = array();
 		$banner_info = $this->model_themeset_themeset->getBanner('content');

@@ -87,7 +87,8 @@ class ControllerAveventEvent extends Controller {
 			);
 		}
 
-
+//        var_dump($data['events']);
+//        die();
 
 
 		$data['continue'] = $this->url->link('common/home');

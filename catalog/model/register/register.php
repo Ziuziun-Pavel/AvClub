@@ -493,9 +493,6 @@ class ModelRegisterRegister extends Model
             'b24_company_old_id' => $data['b24_company_old_id'],
         );
 
-//        var_dump($data);
-
-
         if (!empty($data['old_user_id'])) {
             $contact_info['old_id'] = $data['old_user_id'];
         }

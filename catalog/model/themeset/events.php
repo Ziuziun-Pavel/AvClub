@@ -470,6 +470,12 @@ class ModelThemesetEvents extends Model
             }
         }
 
+        if (isset($data['tags'])) {
+            foreach ($data['tags'] as $tag_id) {
+                $this->db->query("INSERT INTO " . DB_PREFIX . "master_tag SET master_id = '" . (int)$master_id . "', tag_id = '" . (int)$tag_id . "'");
+            }
+        }
+
         if (isset($data['keyword'])) {
             $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'master_id=" . (int)$master_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
         }
@@ -528,12 +534,12 @@ class ModelThemesetEvents extends Model
             }
         }
 
-//        $this->db->query("DELETE FROM " . DB_PREFIX . "master_tag WHERE master_id = '" . (int)$master_id . "'");
-//        if (isset($data['tag'])) {
-//            foreach ($data['tag'] as $tag_id) {
-//                $this->db->query("INSERT INTO " . DB_PREFIX . "master_tag SET master_id = '" . (int)$master_id . "', tag_id = '" . (int)$tag_id . "'");
-//            }
-//        }
+        $this->db->query("DELETE FROM " . DB_PREFIX . "master_tag WHERE master_id = '" . (int)$master_id . "'");
+        if (isset($data['tags'])) {
+            foreach ($data['tags'] as $tag_id) {
+                $this->db->query("INSERT INTO " . DB_PREFIX . "master_tag SET master_id = '" . (int)$master_id . "', tag_id = '" . (int)$tag_id . "'");
+            }
+        }
 
         if ($data['keyword']) {
             $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'master_id=" . (int)$master_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");

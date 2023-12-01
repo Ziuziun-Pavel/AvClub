@@ -335,6 +335,14 @@ class ControllerThemesetEvents extends Controller
                 }
             }
 
+            if (isset($this->request->post['tags'])) {
+                $master_info['tags'] = $this->request->post['tags'];
+            } elseif (isset($this->request->get['master_id'])) {
+                $master_info['tags'] = $this->model_master_master->getMasterTags($this->request->get['master_id']);
+            } else {
+                $master_info['tags'] = array();
+            }
+
             if ($data['master_db_id']) {
                 $this->model_themeset_events->editMaster($data['master_db_id'], $master_info);
                 $master_id = $data['master_db_id'];
@@ -343,7 +351,7 @@ class ControllerThemesetEvents extends Controller
             }
 
             if ($master_id) {
-                $json = ['status' => '200', 'message' => 'Список вебинаров успешно обновлен', 'id' => $master_id];
+                $json = ['status' => '200', 'message' => 'Список вебинаров успешно обновлен', 'id' => $master_id, 'b24_id' => $data['b24id']];
             } else {
                 $json = ['status' => '400', 'message' => 'Ошибка обнавления списка вебинаров',];
             }
