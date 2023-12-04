@@ -201,7 +201,7 @@ $(function () {
 
     })
 
-    $(document).on('click', '.expertnav__tabs a', function (e) {
+    $(document).on('click', '.expertnav__tab-tab', function (e) {
         e.preventDefault();
         if (!$(this).hasClass('active')) {
             var tab = $(this),
@@ -219,8 +219,8 @@ $(function () {
             if (type === 'events') {
                 $('.events__tabs').removeClass('d-none');
                 $('#navlist-bio').addClass('d-none');
-                $('.expertnav__tab.reg').addClass('active');
-                $('.expertnav__tab.fut_ev').removeClass('active');
+                $('.expertnav__tab-tab.reg').addClass('active');
+                $('.expertnav__tab-tab.fut_ev').removeClass('active');
 
                 $('#content-register').removeClass('d-none');
                 $('#content-register .expreg').removeClass('d-none');

@@ -313,4 +313,48 @@ class ModelMasterMaster extends Model {
         return $query->rows;
     }
 
+    public function getMasterTags($master_id) {
+        $master_tag_data = array();
+
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "master_tag mt LEFT JOIN " . DB_PREFIX . "tag_description td ON (mt.tag_id = td.tag_id) WHERE master_id = '" . (int)$master_id . "' ORDER BY td.title ASC");
+
+        foreach ($query->rows as $row) {
+            $master_tag_data[] = array(
+                'tag_id'	=> $row['tag_id'],
+                'tag'			=> $row['title']
+            );
+        }
+
+        return $master_tag_data;
+    }
+
+    public function getMasterTagsByB24Id($data) {
+        $master_tag_data = array();
+
+        if (!empty($data['tags'])) {
+            foreach ($data['tags'] as $tag_id) {
+                $query = $this->db->query("SELECT tag FROM " . DB_PREFIX . "b24_tags WHERE tag_id = '" . (int)$tag_id . "'");
+
+                if ($query->num_rows > 0) {
+                    $master_tag_data[] = $query->row['tag'];
+                }
+            }
+
+            $tag_ids = array();
+            foreach ($master_tag_data as $title) {
+                $tag_query = $this->db->query("SELECT tag_id FROM " . DB_PREFIX . "tag_description WHERE title = '" . $this->db->escape($title) . "'");
+
+                if ($tag_query->num_rows > 0) {
+                    $tag_ids[] = $tag_query->row['tag_id'];
+                }
+            }
+
+            return $tag_ids;
+        }
+    }
+
+
+
+
+
 }

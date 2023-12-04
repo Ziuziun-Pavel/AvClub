@@ -56,6 +56,7 @@ class ControllerExpertExpert extends Controller
             $data['alternate_count'] = $expert_info['alternate_count'];
 
             $data['edit_info'] = $status_logged ? $this->url->link('register/edit') : '';
+            $data['publication'] = $status_logged ? $this->url->link('register/publication') : '';
 
             $data['breadcrumbs'][] = array(
                 'text' => $expert_info['name'],
@@ -794,9 +795,9 @@ class ControllerExpertExpert extends Controller
         $expert_info = $this->model_visitor_expert->getExpert($expert_id, 0, false);
         $data['contact_id'] = $expert_info['b24id'];
 
-        if ($data && $this->visitor->getId() && $this->visitor->getId() == $expert_id) {
+        if ($data && $this->visitor->getId() && (int)$this->visitor->getId() == $expert_id) {
             $json = $this->model_visitor_expert->sendPublication($data);
-
+            var_dump($json);
             $return['message'] = $json["message"];
             $return['code'] = $json["code"];
         } else {

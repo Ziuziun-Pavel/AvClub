@@ -30,7 +30,7 @@
 					</a>
 				</div>
 				<div class="linetop--img">
-					<img src="<?php echo $image; ?>" alt="" style="width: 100%;height: 100%;">
+					<img src="<?php echo $image; ?>" alt="" style="width: 100%;">
 				</div>
 			</div>
 

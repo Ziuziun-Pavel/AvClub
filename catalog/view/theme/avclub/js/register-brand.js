@@ -16,6 +16,8 @@ $(function(){
 			error = true;
 		}
 
+		console.log(input.val())
+
 		if(!error) {
 			$.ajax({
 				type: "POST", 

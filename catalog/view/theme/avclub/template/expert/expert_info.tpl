@@ -95,45 +95,42 @@
                     <?php $active_tab = false; ?>
                     <div class="expertnav__tabs">
 
-
                         <?php if($tabs) { ?>
-                        <a href="#" class="expertnav__tab link <?php echo !$active_tab ? 'active' : ''; ?>"
+                        <a href="#" class="expertnav__tab expertnav__tab-tab expertnav__tab-tab link <?php echo !$active_tab ? 'active' : ''; ?>"
                            data-type="article">Мои выступления в АВ Клубе</a>
                         <?php $active_tab = true; ?>
                         <?php } ?>
 
                         <?php if(!$tabs) { ?>
-                        <a href="#" class="expertnav__tab bio link <?php echo !$active_tab ? 'active' : ''; ?>"
+                        <a href="#" class="expertnav__tab expertnav__tab-tab bio link <?php echo !$active_tab ? 'active' : ''; ?>"
                            data-type="bio">Биография</a>
                         <?php $active_tab = true; ?>
                         <?php } ?>
 
                         <?php if(!empty($event_list)) { ?>
-                        <a href="#" class="expertnav__tab events link <?php echo !$active_tab ? 'active' : ''; ?>"
+                        <a href="#" class="expertnav__tab expertnav__tab-tab events link <?php echo !$active_tab ? 'active' : ''; ?>"
                            data-type="events">Мероприятия</a>
                         <?php $active_tab = true; ?>
                         <?php } ?>
 
-                        <div class="events__tabs d-none">
-                            <?php if(!empty($event_list)) { ?>
-                            <a href="#" class="expertnav__tab reg link <?php echo !$active_tab ? 'active' : ''; ?>"
-                               data-type="register">ПРОШЕДШИЕ</a>
-                            <?php $active_tab = true; ?>
-                            <?php } ?>
-
-                            <?php if(!$tabs) { ?>
-                            <a href="#" class="expertnav__tab fut_ev link <?php echo !$active_tab ? 'active' : ''; ?>"
-                               data-type="future_events">БЛИЖАЙШИЕ</a>
-                            <?php $active_tab = true; ?>
-                            <?php } ?>
+                        <a href="/account/" class="expertnav__tab expertnav__tab-right link">Профиль</a>
+                        <div class="expertnav__tab drpd">
+                            <a href="#" class="link__outer drpd--btn">
+                                <span class="drpd--text link">Подать заявку</span>
+                                <span class="drpd--icon">
+										<svg class="ico"><use xlink:href="./img/sprite.svg#plus">
+										</use></svg>
+									</span>
+                            </a>
+                            <div class="drpd--list">
+                                <!--<a href="#" class="link">Добавить новую компанию</a>-->
+                                <a href="<?php echo $publication; ?>" class="link">Добавить публикацию в журнал</a>
+                                <!-- <a href="#" class="link">Добавить заявку на участие в форумах</a>-->
+                                 <!--<a href="#" class="link">Добавить заявку на участие в вебинаре</a>-->
+                            </div>
                         </div>
-
-                       <?php if($expert_id == 5090) { ?>
-                        <a href="#" class="expertnav__tab publication">Создать публикацию</a>
-                        <?php } ?>
-
-
                     </div>
+
                     <?php }else if(!empty($tabs)){ ?>
                     <div class="expertnav__capt">
                         Выступления эксперта в АВ Клубе
@@ -172,7 +169,18 @@
                     </div>
                     <?php $active_tab = true; ?>
                     <?php } ?>
-
+                    <div id="navlist-events" class="expertnav__list events__tabs">
+                        <ul class="list-hor">
+                            <?php if(!empty($event_list)) { ?>
+                            <li><a href="#" class="expertnav__change reg expertnav__tab-tab <?php echo !$active_tab ? 'active' : ''; ?>" data-type="register">ПРОШЕДШИЕ</a></li>
+                            <?php $active_tab = true; ?>
+                            <?php } ?>
+                            <?php if(!$tabs) { ?>
+                            <li><a href="#" class="expertnav__change fut_ev expertnav__tab-tab <?php echo !$active_tab ? 'active' : ''; ?>" data-type="future_events">БЛИЖАЙШИЕ</a></li>
+                            <?php $active_tab = true; ?>
+                            <?php } ?>
+                        </ul>
+                    </div>
                     <?php if(!$tabs && !empty($bio)) { ?>
                     <div id="navlist-bio" class="expertnav__list <?php echo !empty($active_tab) ? '' : 'active'; ?>">
                         <ul class="list-hor">
@@ -205,6 +213,7 @@
                     <?php } ?>
 
                 </div>
+
 
                 <div class="expertrow row">
 
@@ -394,7 +403,6 @@
 
     $(function () {
         var error_text = '<div class="expreg__message --loading">Ошибка загрузки данных.<br>Попробуйте обновить страницу или повторить попытку немного позже</div>';
-        console.log('<?php echo $expert_id; ?>')
 
         const data = {
             data: {
@@ -458,7 +466,7 @@
                 } else if (json['error']) {
                     $('#content-register').html(error_text);
                 }
-                if ($('.expertnav__tabs a.reg').hasClass('active')) {
+                if ($('.expertnav__change.reg').hasClass('active')) {
                     $('.expreg').removeClass('d-none');
                 }
             },
@@ -555,6 +563,9 @@
 
         });
     }
+
+
+
 </script>
 
 <style>

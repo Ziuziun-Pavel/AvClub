@@ -321,8 +321,6 @@ class ControllerMasterMaster extends Controller {
             $expert_list = $this->model_master_master->getAuthorsByMaster($master_id);
             $speakers = $this->model_master_master->getSpeakerByMaster($master_id);
 
-
-
             if($speakers[0]["author_id"]) {
                 foreach($speakers as $speaker) {
                     $data['speaker_list'][] = array(
@@ -336,7 +334,7 @@ class ControllerMasterMaster extends Controller {
                 }
             }
 
-            if($speakers[0]["author_id"]) {
+            if($expert_list[0]["author_id"]) {
                 foreach($expert_list as $speaker) {
                     $data['speaker_list'][] = array(
                         'author_id'		=> $speaker['author_id'],
@@ -348,6 +346,8 @@ class ControllerMasterMaster extends Controller {
                     );
                 }
             }
+
+
             $data['page_type'] = 'webinar';
 
             $data['column_left'] = $this->load->controller('common/column_left');

@@ -8,6 +8,7 @@ require(DIR_TEMPLATE . 'avclub/template/master/master_info_top.tpl');
 
 require(DIR_TEMPLATE . 'avclub/template/master/master_info_preview.tpl');
 
+
 if(!empty($speaker_list)) { require(DIR_TEMPLATE . 'avclub/template/master/master_info_speakers.tpl'); }
 
 if($brand_list) { require(DIR_TEMPLATE . 'avclub/template/master/master_info_brands.tpl'); }
