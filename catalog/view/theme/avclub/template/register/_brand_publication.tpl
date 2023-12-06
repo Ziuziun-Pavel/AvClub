@@ -1,6 +1,6 @@
 
 <div class="regbrand__start">
-	<div class="regform__name">Бренд о котором идет речь в публикациях</div>
+	<div class="regform__name">Бренд, о котором идет речь в публикации</div>
 	<div class="regbrand__start--inp">
 		<div class="regform__inp regform__inp-plh">
 			<input type="text" name="brand" value="<?php echo !empty($brand_search) ? $brand_search : ''; ?>" class="regform__input <?php echo !empty($brand_search) ? 'valid' : ''; ?>" data-input-change/>

@@ -797,7 +797,6 @@ class ControllerExpertExpert extends Controller
 
         if ($data && $this->visitor->getId() && (int)$this->visitor->getId() == $expert_id) {
             $json = $this->model_visitor_expert->sendPublication($data);
-            var_dump($json);
             $return['message'] = $json["message"];
             $return['code'] = $json["code"];
         } else {

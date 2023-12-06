@@ -222,7 +222,6 @@ class ControllerRegisterPublication extends Controller {
         }
     }
 
-
     public function saveData() {
 
 		$post = $this->request->post;
@@ -311,9 +310,6 @@ class ControllerRegisterPublication extends Controller {
 				$return['error_text'] = 'Произошла ошибка. Попробуйте повторить попытку позже';
 
 			}
-
-			
-
 		}
 
 		$this->response->addHeader('Content-Type: application/json');

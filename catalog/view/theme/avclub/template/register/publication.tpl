@@ -273,7 +273,7 @@
                 data: {
                     dealType: 'publication',
                     additionFiles: additionFiles,
-                    files: files,
+                    files: files[0],
                     company_id: +companyId,
                     title: title,
                     addition_info: additionalInfo
@@ -294,6 +294,7 @@
                 complete: function (json) {
                 },
                 success: function (json) {
+                    console.log(json['code'])
                     if (json['code'] === 200) {
                         showMessage('Заявка на размещение<br>публикации отправлена');
                     } else if (json['error']) {
