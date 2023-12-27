@@ -8,7 +8,17 @@
 					<h1><?php echo $heading_title; ?></h1>
 				</div>
 				<div class="tevent__attr clearfix">
-					<span><?php echo $date; ?></span>
+
+					<?php if($date == $date_stop) { ?>
+						<span><?php echo $date . ' ' . $date_month . ' ' . $date_year; ?></span>
+					<?php }
+					 elseif($date !== $date_stop && $date_month !== $date_stop_month) { ?>
+					<span><?php echo $date . ' ' . $date_month; ?> — <?php echo $date_stop . ' ' . $date_stop_month; ?><?php echo  ' ' . $date_year; ?></span>
+					<?php }
+					else { ?>
+						<span><?php echo $date; ?> — <?php echo $date_stop; ?><?php echo ' ' . $date_month . ' ' . $date_year; ?></span>
+					<?php } ?>
+
 					<span><?php echo $time_start; ?> — <?php echo $time_end; ?></span>
 					<span><?php echo $address_full; ?></span>
 				</div>
@@ -20,7 +30,7 @@
 			</div>
 			<div class="tevent__img col-md-5 col-lg-6">
 				<?php if($image) { ?>
-					<div class="tevent__image">
+					<div class="tevent__image" style="margin: 0">
 						<img src="<?php echo $image; ?>" alt="">
 					</div>
 				<?php } ?>

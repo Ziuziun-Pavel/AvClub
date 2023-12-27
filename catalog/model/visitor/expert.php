@@ -502,7 +502,13 @@ class ModelVisitorExpert extends Model
     {
         $fields = $data;
 
-        $ch_deal = curl_init($this->url_deal_create);
+        $url = $this->url_deal_create;
+
+        if ($data['deal_id']) {
+            $url = str_replace('{id}', $data['deal_id'], $this->url_deal_update);
+        }
+
+        $ch_deal = curl_init($url);
         curl_setopt($ch_deal, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch_deal, CURLOPT_TIMEOUT, 60);
         curl_setopt($ch_deal, CURLOPT_CUSTOMREQUEST, 'POST');

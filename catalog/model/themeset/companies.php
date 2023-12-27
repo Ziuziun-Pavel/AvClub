@@ -143,7 +143,7 @@ class ModelThemesetCompanies extends Model {
 			}
 		}
 
-        $company_info = array(
+		$company_info = array(
 			'b24id'					=> $company_id,
 			'title'					=> $name,
 			'alternate'			=> implode(" ", $alternate),
@@ -498,7 +498,7 @@ class ModelThemesetCompanies extends Model {
 				]
 			);
 
-			if(!empty($result['result'])) {
+			if(!empty($result['result']['ID'])) {
 				$company_data = $result;
 			}
 		}

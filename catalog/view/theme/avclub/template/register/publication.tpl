@@ -12,7 +12,7 @@
                     <a href="<?php echo $back; ?>" class="link__outer">
                         <span><span class="link">Назад</span></span>
                         <svg class="ico">
-                            <use xlink:href="./img/sprite.svg#long-arrow-left">
+                            <use xlink:href="catalog/view/theme/avclub/img/sprite.svg#long-arrow-left">
                         </svg>
                     </a>
                 </div>
@@ -21,6 +21,22 @@
                 </div>
 
                 <form action="#" class="publ--form row">
+
+                    <?php if($paidPublicationId): ?>
+                    <div class="regform__outer col-12" style="margin-top: 21px;">
+                        <div class="regform__name">Использовать одну из оплаченных публикаций для гарантированного размещения?</div>
+                        <div class="regform__inp-checkbox">
+                            <!-- Toggle Button Style 2 -->
+                            <label class="toggler-wrapper style-2">
+                                <input type="checkbox" id="usePaidPublication" name="usePaidPublication" value="ДА">
+                                <div class="toggler-slider">
+                                    <div class="toggler-knob"></div>
+                                </div>
+                            </label>
+                            <!-- End Toggle Button Style 2 -->
+                        </div>
+                    </div>
+                    <?php endif; ?>
 
                     <div class="regform__outer regform__outer-main col-12">
                         <div class="regform__name">Описание публикации <span>*</span></div>
@@ -43,14 +59,14 @@
                             <div class="regform__plh d-none d-md-block">Добавьте описание публикации и ссылки на
                                 материалы
                             </div>
-                            <div class="regform__limit">Осталось символов: 2000</div>
+                            <div class="regform__limit">Макс. символов: 2000</div>
                         </div>
                     </div>
 
                     <div class="regform__outer col-12">
                         <div class="regfile">
-                            <div class="regfile--name">Прикрепить файлы</div>
-                            <div class="regfile--text">Загрузите файл с публикацией. <br class="d-md-none">Формат файла:
+                            <div class="regfile--name">Прикрепить файл</div>
+                            <div class="regfile--text">Загрузите файл с текстом публикации. <br class="d-md-none">Формат файла:
                                 docx
                             </div>
                             <div class="regfile--media"></div>
@@ -78,39 +94,121 @@
                         <?php echo $company_template;  ?>
                     </div>
 
-                    <div class="regform__outer col-12">
-                        <div class="regform__agree">
-                            Нажимая на кнопку, я принимаю условия пользовательского
-                            соглашения и даю согласие на обработку моих персональных данных. *
-                        </div>
-                    </div>
-                    <div class="regform__btns regform__outer col-12">
-                        <button type="button" class="regform__btn btn btn-invert submit">
-                            <span>Отправить</span>
-                        </button>
-                    </div>
+                     <div class="regform__outer col-12">
+                         <div class="regform__agree">
+                             Нажимая на кнопку, я принимаю условия пользовательского
+                             соглашения и даю согласие на обработку моих персональных данных. *
+                         </div>
+                     </div>
+                     <div class="regform__btns regform__outer col-12">
+                         <button type="button" class="regform__btn btn btn-invert submit">
+                             <span>Отправить</span>
+                         </button>
+                     </div>
 
-                </form>
+                 </form>
 
-            </div>
+             </div>
 
-            <div class="edit__aside col-xl-3">
-                <?php if(!empty($banner)) { ?>
-                <div class="abanner__cont">
-                    <?php require(DIR_TEMPLATE . 'avclub/template/_include/journal-banner.tpl'); ?>
-                </div>
-                <?php } ?>
+             <div class="edit__aside col-xl-3">
+                 <?php if(!empty($banner)) { ?>
+                 <div class="abanner__cont">
+                     <?php require(DIR_TEMPLATE . 'avclub/template/_include/journal-banner.tpl'); ?>
+                 </div>
+                 <?php } ?>
 
-                <div class="expert__master expert__master-short">
-                    <?php require(DIR_TEMPLATE . 'avclub/template/_include/journal-master.tpl'); ?>
-                </div>
-            </div>
+                 <div class="expert__master expert__master-short">
+                     <?php require(DIR_TEMPLATE . 'avclub/template/_include/journal-master.tpl'); ?>
+                 </div>
+             </div>
 
-        </div>
+         </div>
 
-    </div>
-</section>
-<!--<?php require(DIR_TEMPLATE . 'avclub/template/register/_inc_fail.tpl'); ?>-->
+     </div>
+ </section>
+ <!--<?php require(DIR_TEMPLATE . 'avclub/template/register/_inc_fail.tpl'); ?>-->
+
+<style>
+    .toggler-wrapper {
+        display: block;
+        width: 45px;
+        height: 29px;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .toggler-wrapper input[type="checkbox"] {
+        display: none;
+    }
+
+    .toggler-wrapper input[type="checkbox"]:checked+.toggler-slider {
+        background-color: var(--red);
+    }
+
+    .toggler-wrapper .toggler-slider {
+        border: 1px solid #c3bfbf;
+        background-color: #ccc;
+        position: absolute;
+        border-radius: 100px;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        -webkit-transition: all 300ms ease;
+        transition: all 300ms ease;
+    }
+
+    .toggler-wrapper .toggler-knob {
+        position: absolute;
+        -webkit-transition: all 300ms ease;
+        transition: all 300ms ease;
+    }
+
+    .toggler-wrapper.style-2 {
+        width: 67.5px;
+    }
+
+    .toggler-wrapper.style-2 input[type="checkbox"]:checked+.toggler-slider .toggler-knob:before {
+        opacity: 0.4;
+    }
+
+    .toggler-wrapper.style-2 input[type="checkbox"]:checked+.toggler-slider .toggler-knob:after {
+        opacity: 1;
+    }
+
+    .toggler-wrapper.style-2 .toggler-knob {
+        position: relative;
+        height: 100%;
+    }
+
+    .toggler-wrapper.style-2 .toggler-knob:before {
+        content: 'Нет';
+        position: absolute;
+        top: 50%;
+        left: 5px;
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+        font-size: 75%;
+        text-transform: uppercase;
+        font-weight: 500;
+        color: white;
+    }
+
+    .toggler-wrapper.style-2 .toggler-knob:after {
+        content: 'Да';
+        position: absolute;
+        top: 50%;
+        right: 5px;
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+        font-size: 75%;
+        text-transform: uppercase;
+        font-weight: 500;
+        color: white;
+        opacity: 0.4;
+    }
+
+</style>
 
 <script>
     $(function () {
@@ -248,26 +346,7 @@
             const title = $('.regform__textarea:first').text();
             const additionalInfo = $('.regform__textarea-limit').text();
             const companyId = $('input[name="b24_company_id"]').val();
-
-            // const data = {
-            //     data: {
-            //         dealType: 'publication',
-            //         additionFiles: [
-            //             {
-            //                 url: 'https://www.avclub.pro/image/no_image.png',
-            //                 name: 'no_image.png'
-            //             },
-            //         ],
-            //         files: {
-            //             url: 'https://www.avclub.pro/image/no_image.png',
-            //             name: 'no_image.png'
-            //         },
-            //         company_id: 51625,
-            //         title: 'тест',
-            //         addition_info: 'дополнительная информация'
-            //     },
-            //     expert_id: '<?php echo $expert_id; ?>'
-            // }
+            const checkbox = document.getElementById('usePaidPublication');
 
             const data = {
                 data: {
@@ -278,7 +357,11 @@
                     title: title,
                     addition_info: additionalInfo
                 },
-                expert_id: '<?php echo $expert_id; ?>'
+                expert_id: +'<?php echo $expert_id; ?>'
+            }
+
+            if (checkbox.checked) {
+                data.deal_id = +'<?php echo $paidPublicationId; ?>';
             }
 
             console.log(data)
@@ -297,6 +380,8 @@
                     console.log(json['code'])
                     if (json['code'] === 200) {
                         showMessage('Заявка на размещение<br>публикации отправлена');
+                    } else if (json['error'] && json['code'] === 400) {
+                        showMessage('Ошибка размещения<br> публикации. Не все поля заполнены');
                     } else if (json['error']) {
                         showMessage('Ошибка размещения<br> публикации');
                     }

@@ -155,7 +155,7 @@ class ControllerJournalOpinion extends Controller {
 			foreach($results as $result) {
 				$data['master_list'][] = array(
 					'master_id'		=> $result['master_id'],
-					'href'        => $result['link'],
+					'href'        => $this->url->link('master/master/info', 'master_id=' . $result['master_id']),
 					'title'				=> $result['title'],
 					'author'			=> $result['author'],
 					'exp'					=> $result['exp'],

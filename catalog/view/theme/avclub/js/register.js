@@ -195,6 +195,7 @@ $(function () {
 
     $(document).on('click', '#button-save', function (e) {
         e.preventDefault();
+
         if (formChanged) {
             console.log('Form has changed!'); // Replace this with your desired action
         } else {
@@ -208,6 +209,7 @@ $(function () {
             $lastname = form.find('input[name="lastname"]'),
             $company = form.find('input[name="company"]'),
             $email = form.find('input[name="email"]'),
+            $post = form.find('input[name="post"]'),
             $rv_email = /^([a-zA-Z0-9_.-])+@([a-zA-Z0-9_.-])+\.([a-zA-Z])+([a-zA-Z])+/,
             error = false,
             error_company = false;
@@ -217,6 +219,13 @@ $(function () {
         if ($email.length) {
             if ($email.val().length < 1 || !$rv_email.test($email.val())) {
                 addInvalid($email.closest('.regform__inp'));
+                error = true;
+            }
+        }
+
+        if ($post.length) {
+            if ($post.val().length < 1) {
+                addInvalid($post.closest('.regform__inp'));
                 error = true;
             }
         }

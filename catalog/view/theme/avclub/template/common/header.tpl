@@ -110,9 +110,9 @@
 				</div>
 				<script>
 					$.ajax({
-						type: "POST", 
-						url: "index.php?route=themeset/themeset/updateBannerView", 
-						dataType: "json", 
+						type: "POST",
+						url: "index.php?route=themeset/themeset/updateBannerView",
+						dataType: "json",
 						data: {banner_id: <?php echo $branding['banner_id']; ?>}
 					});
 				</script>

@@ -16,11 +16,13 @@ class ModelRegisterRegister extends Model
     private $url_company_create = "http://clients.techin.by/avclub/site/api/v1/company/create";
     private $url_company_update = "http://clients.techin.by/avclub/site/api/v1/company/{id}/update";
     private $url_confirm_participation = "http://clients.techin.by/avclub/site/api/v1/deal/{id}/confirmParticipation";
+    private $url_get_paid_publications = "http://clients.techin.by/avclub/site/api/v1/deal/get-paid-publication";
+    private $url_get_pub_applications = "http://clients.techin.by/avclub/site/api/v1/deal/get-publication-list";
+    private $url_check_registration = "http://clients.techin.by/avclub/site/api/v1/deal/check-registration";
 
     private $url_deal = "http://clients.techin.by/avclub/site/api/v1/deal/create";
 
     private $debug = 0;
-
 
     public function sendSMS($phone = '')
     {
@@ -324,7 +326,6 @@ class ModelRegisterRegister extends Model
         return substr($name, 0, $half - $plus) . str_repeat('*', $half) . substr($name, $half - $plus + $half, strlen($name)) . "@" . end($em);
     }
 
-
     public function searchContactByPhone($phone = '')
     {
 
@@ -365,6 +366,7 @@ class ModelRegisterRegister extends Model
             'contact_id' => $contact_id,
             'type' => $type
         );
+
         $ch = curl_init($this->url_contact_visit);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, 60);
@@ -385,6 +387,88 @@ class ModelRegisterRegister extends Model
             foreach ($json['webinarList'] as &$event_item) {
                 $event_item['type_event'] = 'webinar';
                 $return_list[] = $event_item;
+            }
+        }
+
+        return $return_list;
+    }
+
+    public function checkRegistration($dealType, $eventId, $contact_ids = array(), $contact_fields = array())
+    {
+        if($contact_ids) {
+            $fields = array(
+                'dealType' => $dealType,
+                'event_id' => $eventId,
+                'contact_ids' => $contact_ids,
+            );
+        } else {
+            $fields = array(
+                'dealType' => $dealType,
+                'event_id' => $eventId,
+                'contact_name' => $contact_fields['contact_name'],
+                'contact_last_name' => $contact_fields['contact_last_name'],
+                'contact_phone' => $contact_fields['contact_phone'],
+                'contact_email' => $contact_fields['contact_email'],
+            );
+        }
+
+
+        $ch = curl_init($this->url_check_registration);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
+        $body = curl_exec($ch);
+        curl_close($ch);
+
+        $json = json_decode($body, true);
+
+        return $json['exist'];
+    }
+
+    public function getPaidPublications($contact_id = 0)
+    {
+        $return_list = array();
+
+        $fields = array(
+            'contact_id' => $contact_id,
+        );
+        $ch = curl_init($this->url_get_paid_publications);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
+        $body = curl_exec($ch);
+        curl_close($ch);
+
+        $json = json_decode($body, true);
+
+        if (!empty($json['list'])) {
+            foreach ($json['list'] as &$item) {
+                $return_list[] = $item;
+            }
+        }
+
+        return $return_list;
+    }
+
+    public function getPubApplications($contact_id = 0)
+    {
+        $return_list = array();
+
+        $fields = array(
+            'contact_id' => $contact_id,
+        );
+        $ch = curl_init($this->url_get_pub_applications);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
+        $body = curl_exec($ch);
+        curl_close($ch);
+
+        $json = json_decode($body, true);
+
+        if (!empty($json['list'])) {
+            foreach ($json['list'] as &$item) {
+                $return_list[] = $item;
             }
         }
 
@@ -439,6 +523,26 @@ class ModelRegisterRegister extends Model
         }
 
         return $contact_info;
+    }
+
+    public function getAlternateUsers($contact_id = 0)
+    {
+        $result_arr = [];
+
+        $vis_id = $this->getExpertId($contact_id);
+
+        $result_arr[] = $contact_id;
+
+        $query_expert = $this->db->query("SELECT DISTINCT va.b24id	 FROM " . DB_PREFIX . "visitor_alternate va 
+			WHERE va.visitor_id = '" . (int)$vis_id . "' AND va.b24id <> ''  AND va.b24id <> '0' ");
+
+        if ($query_expert->num_rows) {
+            foreach ($query_expert->rows as $val) {
+                $result_arr[] = (int)$val['b24id'];
+            }
+        }
+
+        return $result_arr;
     }
 
     public function updateExpertID($old_id = 0, $new_id = 0)

@@ -1,5 +1,7 @@
 <?php
 class ModelCompanyCompany extends Model {
+    private $url_deal_create = "http://clients.techin.by/avclub/site/api/v1/deal/create";
+    private $url_company_create = "http://clients.techin.by/avclub/site/api/v1/company/create";
 
 	public function getCompany($company_id = 0, $show_disabled = false) {
 		
@@ -615,6 +617,42 @@ class ModelCompanyCompany extends Model {
 		return $companies;
 	}
 
+    public function addCompanyProfile($data_company = array(), $data_deal= array())
+    {
+        $company_fields = $data_company;
+        $deal_fields = $data_deal;
+
+        $ch_company = curl_init($this->url_company_create);
+        curl_setopt($ch_company, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch_company, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch_company, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch_company, CURLOPT_POSTFIELDS, json_encode($company_fields));
+        curl_setopt($ch_company, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+
+        $company_body = curl_exec($ch_company);
+        curl_close($ch_company);
+
+        $company_json = json_decode($company_body, true);
+
+        if ($company_json && $company_json['id']) {
+            $deal_fields['company_id'] = (int)$company_json['id'];
+        }
+
+        $ch_deal = curl_init($this->url_deal_create);
+        curl_setopt($ch_deal, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch_deal, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch_deal, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch_deal, CURLOPT_POSTFIELDS, json_encode($deal_fields));
+        curl_setopt($ch_deal, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+
+        $deal_body = curl_exec($ch_deal);
+        curl_close($ch_deal);
+
+        $deal_json = json_decode($deal_body, true);
+        
+        return $deal_json;
+
+    }
 	
 	private function mb_ucfirst($string, $encoding = 'UTF-8'){
 		$strlen = mb_strlen($string, $encoding);

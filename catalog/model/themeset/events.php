@@ -545,5 +545,5 @@ class ModelThemesetEvents extends Model
 
         $this->cache->delete('master');
     }
-
+    
 }

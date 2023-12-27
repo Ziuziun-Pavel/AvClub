@@ -34,7 +34,6 @@ class ControllerThemesetEvents extends Controller
 
         $this->load->model('themeset/events');
         $this->load->model('themeset/themeset');
-//        print_r($data);
 
         if (!empty($data)) {
             $event_info = array(
@@ -227,8 +226,11 @@ class ControllerThemesetEvents extends Controller
             $response = file_get_contents('https://geocode-maps.yandex.ru/1.x/?' . http_build_query($parameters));
             $obj = json_decode($response, true);
 
-            $cord = str_replace(" ", ",", $obj['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos']);
-
+            $coordinates = $obj['response']['GeoObjectCollection']['featureMember'][0]['GeoObject']['Point']['pos'];
+            $coordinatesArray = explode(" ", $coordinates);
+            $reversedCoordinates = $coordinatesArray[1] . ',' . $coordinatesArray[0];
+            $cord = str_replace(" ", ",", $reversedCoordinates);
+            
             $event_info['coord'] = $cord;
 
             if ($data['event_db_id']) {

@@ -1,4 +1,5 @@
-<?php if(!empty($expert['href'])) { ?>
+<?php if(!empty($expert['href'])) {
+?>
 	<a href="<?php echo $expert['href']; ?>" class="opinion__item link__outer">
 		<span class="opinion__inner">
 			<span class="opinion__img">

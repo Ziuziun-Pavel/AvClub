@@ -5,6 +5,8 @@ class ControllerThemesetCompanies extends Controller {
 
 	private $b24_hook = 'https://avclub.bitrix24.ru/rest/669/2yt2mpuav23aqllx/';
 
+
+
 	public function index() {
 		// НЕ УДАЛЯТЬ!
 		// используется для локального приложениея
@@ -108,7 +110,6 @@ class ControllerThemesetCompanies extends Controller {
 		}
 
 	}
-
 	public function getLeadFields() {
 
 		$bitrixWebHook = $this->b24_hook;
@@ -123,7 +124,6 @@ class ControllerThemesetCompanies extends Controller {
 		print_r($result);
 		echo '</pre>';
 	}
-
 	public function getLeadList() {
 
 		$bitrixWebHook = $this->b24_hook;
@@ -145,6 +145,8 @@ class ControllerThemesetCompanies extends Controller {
 		print_r($result);
 		echo '</pre>';
 	}
+
+
 
 	public function getCompanyById($company_id = 0) {
 
@@ -216,6 +218,8 @@ class ControllerThemesetCompanies extends Controller {
 		$this->load->model('themeset/themeset');
 		$this->model_themeset_themeset->editSetting('themeset', array('themeset_bitrix_company_refresh_token'=>$refresh_token));
 	}
+
+
 
 	public function install() {
 		require_once(DIR_SYSTEM . 'library/crest/crest.php');

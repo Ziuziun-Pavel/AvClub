@@ -17,6 +17,7 @@ class ControllerRegisterEvent extends Controller
 
     public function index()
     {
+        $user_check_data = [];
 
         unset($this->session->data['register_code']);
         unset($this->session->data['register_phone']);
@@ -25,6 +26,7 @@ class ControllerRegisterEvent extends Controller
         unset($this->session->data['register_email']);
         unset($this->session->data['register_user']);
         unset($this->session->data['register_contact_id']);
+
 
         $bitrixWebHook = $this->b24_hook;
         require_once(DIR_SYSTEM . 'library/crest/crest.php');
@@ -73,6 +75,7 @@ class ControllerRegisterEvent extends Controller
                     'name' => $result['result'][0]['NAME'],
                     'city' => current($result['result'][0]['PROPERTY_479']),
                     'date' => current($result['result'][0]['PROPERTY_427']),
+                    'date_stop' => current($result['result'][0]['PROPERTY_665']),
                     'isClosed' => $isClosed,
                     'timezone' => current($result['result'][0]['PROPERTY_477']),
                     'address_1' => current($result['result'][0]['PROPERTY_473']),
@@ -86,6 +89,7 @@ class ControllerRegisterEvent extends Controller
                     'name' => $this->session->data['register_event']['name'],
                     'city' => $this->session->data['register_event']['city'],
                     'date' => $this->session->data['register_event']['date'],
+                    'date_stop' => $this->session->data['register_event']['date_stop'],
                     'isClosed' => $this->session->data['register_event']['isClosed'],
                     'timezone' => $this->session->data['register_event']['timezone'],
                     'price' => $this->session->data['register_event']['price'],
@@ -168,8 +172,21 @@ class ControllerRegisterEvent extends Controller
 
             if ($this->visitor->isLogged()) {
                 $contact_info = $this->model_register_register->getContactInfo($this->visitor->getB24id());
+
                 if (!empty($contact_info['ID']) && !empty($contact_info['PHONE'][0])) {
                     $email = '';
+
+                    $user_check_data['contact_id'] = $contact_info['ID'];
+                    $user_check_data['type'] = $this->request->get['webinar_id'] ? 'webinar' : 'forum';
+                    $user_check_data['event_id'] = $user_check_data['type'] === 'webinar' ?
+                        $this->request->get['webinar_id'] :
+                        $this->request->get['forum_id'];
+
+                    $user_check_data['contact_ids'] = $this->model_register_register->getAlternateUsers($user_check_data['contact_id']);
+
+                    $register_exists = $this->model_register_register->checkRegistration($user_check_data['type'], $user_check_data['event_id'], $user_check_data['contact_ids']);
+                    $data['register_exists'] = $register_exists;
+
                     $user_data = array(
                         'user_id' => $contact_info['ID'],
                         'old_user_id' => $contact_info['ID'],
@@ -256,7 +273,6 @@ class ControllerRegisterEvent extends Controller
             } else {
                 $data['template'] = $this->load->view('register/event_phone', $data);
             }
-
 
             $data['column_left'] = $this->load->controller('common/column_left');
             $data['column_right'] = $this->load->controller('common/column_right');
@@ -387,6 +403,15 @@ class ControllerRegisterEvent extends Controller
                 $contact_info = $this->model_register_register->getContactInfo($contact_id);
 
                 if (!empty($contact_info['ID'])) {
+                    $user_check_data['contact_id'] = $contact_info['ID'];
+                    $user_check_data['type'] = $this->session->data['register_event']['type'];
+                    $user_check_data['event_id'] = $this->session->data['register_event']['webinar_id'];
+
+                    $user_check_data['contact_ids'] = $this->model_register_register->getAlternateUsers($user_check_data['contact_id']);
+
+                    $register_exists = $this->model_register_register->checkRegistration($user_check_data['type'], $user_check_data['event_id'], $user_check_data['contact_ids']);
+                    $data['register_exists'] = $register_exists;
+
                     $user_data = array(
                         'user_id' => $contact_info['ID'],
                         'old_user_id' => $contact_info['ID'],
@@ -511,35 +536,44 @@ class ControllerRegisterEvent extends Controller
             $this->model_register_register->log($log, 'info');
         }
 
-        if (!$error && !empty($return['success'])) {
-            $this->session->data['register_hash'] = $this->model_register_register->hashCode($code);
-
-            $data['info_text'] = '';
-            if (!empty($email)) {
-                $email_hide = $this->model_register_register->hideEmail($email);
-                $data['info_text'] = 'Проверочный код отправлен на Ваш номер телефона и адрес электронной почты ' . $email_hide;
-                $this->model_register_register->sendCodeToEmail($code, $email);
-
-                $this->session->data['register_email'] = $email;
-            }
-
-
-            if ($this->write_log) {
-                $log = array(
-                    'step' => 'Ввод телефона -- SUCCESS',
-                    'session' => $sid,
-                    'browser' => $_SERVER['HTTP_USER_AGENT'],
-                    'phone' => $phone,
-                    'email' => $email,
-                    'code' => $code,
-                );
-                $this->model_register_register->log($log, 'info');
-            }
-
+        if ($data['register_exists']) {
+            $return['error'] = 'Пользователь уже зарегистрирован на это мероприятие.';
             $return['template'] = $this->load->view('register/event_code', $data);
+
+            $this->response->addHeader('Content-Type: application/json');
+            $this->response->setOutput(json_encode($return));
         } else {
-            unset($this->session->data['register_hash']);
+            if (!$error && !empty($return['success'])) {
+                $this->session->data['register_hash'] = $this->model_register_register->hashCode($code);
+
+                $data['info_text'] = '';
+                if (!empty($email)) {
+                    $email_hide = $this->model_register_register->hideEmail($email);
+                    $data['info_text'] = 'Проверочный код отправлен на Ваш номер телефона и адрес электронной почты ' . $email_hide;
+                    $this->model_register_register->sendCodeToEmail($code, $email);
+
+                    $this->session->data['register_email'] = $email;
+                }
+
+
+                if ($this->write_log) {
+                    $log = array(
+                        'step' => 'Ввод телефона -- SUCCESS',
+                        'session' => $sid,
+                        'browser' => $_SERVER['HTTP_USER_AGENT'],
+                        'phone' => $phone,
+                        'email' => $email,
+                        'code' => $code,
+                    );
+                    $this->model_register_register->log($log, 'info');
+                }
+
+                $return['template'] = $this->load->view('register/event_code', $data);
+            } else {
+                unset($this->session->data['register_hash']);
+            }
         }
+
 
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($return));
@@ -708,7 +742,7 @@ class ControllerRegisterEvent extends Controller
             );
 
             if ($user_data['company']) {
-                $data['company_template'] = $this->load->view('register/_brand_data', $data_company);
+                $data['company_template'] = $this->load->view('register/_brand_data_noedit', $data_company);
             } else {
                 $data['company_template'] = $this->load->view('register/_brand_main', $data_company);
             }
@@ -880,11 +914,18 @@ class ControllerRegisterEvent extends Controller
                 'formChanged' => $post["formChanged"]
             );
 
+            $user_check_data['fields'] = [
+                'contact_name' => $user_data['name'],
+                'contact_last_name' => $user_data['lastname'],
+                'contact_phone' => $this->session->data['register_phone'],
+                'contact_email' => $this->session->data['register_email'],
+            ];
 
+            $user_check_data['type'] = $this->session->data['register_event']['type'];
+            $user_check_data['event_id'] = $this->session->data['register_event']['webinar_id'];
 
-//            var_dump($post['formChanged'] );
-//           var_dump($this->session->data['register_user']);
-//            var_dump($user_data);
+            $register_exists = $this->model_register_register->checkRegistration($user_check_data['type'], $user_check_data['event_id'], $user_check_data['contact_ids'], $user_check_data['fields']);
+            $data['register_exists'] = $register_exists;
 
             $this->session->data['register_user'] = $user_data;
 
@@ -908,7 +949,6 @@ class ControllerRegisterEvent extends Controller
                 );
                 $this->model_register_register->log($log, 'info');
             }
-
         }
 
 
@@ -1028,9 +1068,6 @@ class ControllerRegisterEvent extends Controller
             $old_company["phone"] !== $this->session->data['register_user']['company_phone'] ||
             $old_company["activity"] !== $this->session->data['register_user']['company_activity'];
 
-//        var_dump($this->session->data['register_user']['formChanged']);
-//        die();
-
         $user_data = array(
             'user_id' => $this->session->data['register_user']['user_id'],
             'old_user_id' => $this->session->data['register_user']['old_user_id'],
@@ -1060,6 +1097,8 @@ class ControllerRegisterEvent extends Controller
             );
             $this->model_register_register->log($log, 'info');
         }
+
+
 
         // все ок, ошибок нет
         if (!$error) {
@@ -1189,7 +1228,7 @@ class ControllerRegisterEvent extends Controller
             }
 
         }
-//        die();
+
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($return));
     }

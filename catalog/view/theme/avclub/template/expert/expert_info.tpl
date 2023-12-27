@@ -109,7 +109,7 @@
 
                         <?php if(!empty($event_list)) { ?>
                         <a href="#" class="expertnav__tab expertnav__tab-tab events link <?php echo !$active_tab ? 'active' : ''; ?>"
-                           data-type="events">Мероприятия</a>
+                           data-type="events">Мои заявки</a>
                         <?php $active_tab = true; ?>
                         <?php } ?>
 
@@ -118,12 +118,12 @@
                             <a href="#" class="link__outer drpd--btn">
                                 <span class="drpd--text link">Подать заявку</span>
                                 <span class="drpd--icon">
-										<svg class="ico"><use xlink:href="./img/sprite.svg#plus">
+										<svg class="ico"><use xlink:href="image/icons/sprite.svg#plus">
 										</use></svg>
 									</span>
                             </a>
                             <div class="drpd--list">
-                                <!--<a href="#" class="link">Добавить новую компанию</a>-->
+                                <a href="<?php echo $company_add_href; ?>" class="link">Добавить новую компанию</a>
                                 <a href="<?php echo $publication; ?>" class="link">Добавить публикацию в журнал</a>
                                 <!-- <a href="#" class="link">Добавить заявку на участие в форумах</a>-->
                                  <!--<a href="#" class="link">Добавить заявку на участие в вебинаре</a>-->
@@ -403,52 +403,6 @@
 
     $(function () {
         var error_text = '<div class="expreg__message --loading">Ошибка загрузки данных.<br>Попробуйте обновить страницу или повторить попытку немного позже</div>';
-
-        const data = {
-            data: {
-                dealType: 'publication',
-                additionFiles: [
-                    {
-                        url: 'https://www.avclub.pro/image/no_image.png',
-                        name: 'no_image.png'
-                    },
-                ],
-                files: {
-                    url: 'https://www.avclub.pro/image/no_image.png',
-                    name: 'no_image.png'
-                },
-                company_id: 51625,
-                title: 'заголовок инфоповода',
-                addition_info: 'дополнительная информация'
-            },
-            expert_id: '<?php echo $expert_id; ?>'
-        }
-
-        $('.publication').on('click', function () {
-            console.log('click')
-            $.ajax({
-                type: "POST",
-                url: "index.php?route=expert/expert/sendPublication",
-                dataType: "json",
-                data: data,
-                beforeSend: function (json) {
-                },
-                complete: function (json) {
-                },
-                success: function (json) {
-                    if (json['code'] === 200) {
-                        alert('сделка успешно создана')
-                        $('#form-content').html(json['template']);
-                    } else if (json['error']) {
-                        $('#form-content').html(error_text);
-                    }
-                },
-                error: function (json) {
-                    $('#form-content').html(error_text);
-                    console.log('publication sendPublication error', json);
-                }
-            });
-        });
 
         $.ajax({
             type: "GET",

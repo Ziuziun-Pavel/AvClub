@@ -100,7 +100,7 @@ class ControllerStartupSeoUrl extends Controller {
 					}
 
 					unset($data[$key]);
-				}
+				} 
 			}
 		}
 

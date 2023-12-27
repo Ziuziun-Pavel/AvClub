@@ -118,22 +118,22 @@
 
                             <div class="regform__outer col-12">
                                 <div class="regform__inp regform__inp-plh">
-                                    <input type="text" name="city" value="<?php echo $user['city']; ?>"
-                                           class="regform__input" data-input-change/>
+                                    <input type="text" readonly name="city" value="<?php echo $user['city']; ?>"
+                                           class="regform__input" data-input-change />
                                     <div class="regform__plh">Город работы</div>
                                 </div>
                             </div>
                             <div class="regform__outer company--new col-12">
                                 <div class="regform__inp regform__inp-plh">
-                                    <input type="tel" name="company_phone" value="<?php echo $user['company_phone']; ?>"
-                                           class="regform__input" autocomplete="false" data-input-change/>
+                                    <input type="tel" readonly name="company_phone" value="<?php echo $user['company_phone']; ?>"
+                                           class="regform__input" autocomplete="false" data-input-change />
                                     <div class="regform__plh">Телефон компании</div>
                                 </div>
                             </div>
                             <div class="regform__outer company--new col-12">
                                 <div class="regform__inp regform__inp-plh">
-                                    <input type="text" name="company_site" value="<?php echo $user['company_site']; ?>"
-                                           class="regform__input" autocomplete="false" data-input-change/>
+                                    <input type="text" readonly name="company_site" value="<?php echo $user['company_site']; ?>"
+                                           class="regform__input" autocomplete="false" data-input-change />
                                     <div class="regform__plh">Сайт компании</div>
                                 </div>
                             </div>

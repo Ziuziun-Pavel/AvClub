@@ -4,23 +4,28 @@
         <div class="linemember--title">Участники онлайн-встречи</div>
         <div class="linemember--cont">
 
+            <div class="linemember--slide">
+                <svg>
+                    <use xlink:href="<?= $theme_dir ?>/img/sprite.svg#slide">
+                </svg>
+            </div>
+
             <div class="linemember--slider">
 
                 <?php foreach($speaker_list as $speaker) { ?>
-                <div class="slick-slide">
-                    <a href="<?= $speaker['href'] ?>" class="linemember__item">
+
+                <a href="<?= $speaker['href'] ?>" class="linemember__item">
 		                <span class="linemember__item--img">
                             <img src="<?php echo $speaker['image']; ?>" alt="">
                             <?php if ($speaker['moderator'] === true) {
                                     echo '<span>Модератор</span>';
-                        }
-                            ?>
-                        </span>
-                        <span class="linemember__item--name"><?php echo $speaker['name']; ?></span>
-                        <span class="linemember__item--exp"><?php echo $speaker['exp']; ?></span>
+                    }
+                    ?>
+                    </span>
+                    <span class="linemember__item--name"><?php echo $speaker['name']; ?></span>
+                    <span class="linemember__item--exp"><?php echo $speaker['exp']; ?></span>
 
-                    </a>
-                </div>
+                </a>
                 <?php } ?>
 
             </div>
@@ -32,7 +37,8 @@
                 <button type="button" class="nav__item nav__next nav__slide"><span><svg><use
                                     xlink:href="#arr-right"/></svg></span></button>
             </div>
-
+            <div class="linemember--slide">
+            </div>
         </div>
 
     </div>
@@ -47,7 +53,7 @@
             dots: true,
             appendDots: $('.linemember--nav .nav__dots2'),
             prevArrow: '.linemember--nav .nav__prev',
-            nextArrow: '.linemember--nav .nav__next',
+            nextArrow: '.linemember--nav .nav__next, .linemember--slide',
             responsive: [
                 {
                     breakpoint: 1200,

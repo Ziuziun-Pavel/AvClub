@@ -8,7 +8,7 @@ class ControllerThemesetExpert extends Controller {
 		// НЕ УДАЛЯТЬ!
 		// используется для локального приложения
 
-		return true;	
+		return true;
 	}
 
 	public function install() {
@@ -17,7 +17,7 @@ class ControllerThemesetExpert extends Controller {
 		$result = CRest::installApp();
 		return true;
 	}
-	
+
 
 	public function getContactsByPhone() {
 
@@ -124,9 +124,9 @@ class ControllerThemesetExpert extends Controller {
 
 			}
 
-			
+
 		}
-		
+
 
 	}
 
@@ -141,17 +141,17 @@ class ControllerThemesetExpert extends Controller {
 	/*
 	public function updateFirstLastName() {
 		$query_exp = $this->db->query("SELECT * FROM " . DB_PREFIX . "visitor v");
-		
+
 		foreach($query_exp->rows as $row) {
 			$name = explode(' ', $row['name'], 2);
 			$firstname = $name[0];
 			$lastname = !empty($name[1]) ? $name[1] : '';
 
-			$this->db->query("UPDATE " . DB_PREFIX . "visitor SET 
-				firstname = '" . $this->db->escape($firstname) . "', 
-				lastname = '" . $this->db->escape($lastname) . "' 
-				WHERE 
-				visitor_id = '" . (int)$row['visitor_id'] . "' 
+			$this->db->query("UPDATE " . DB_PREFIX . "visitor SET
+				firstname = '" . $this->db->escape($firstname) . "',
+				lastname = '" . $this->db->escape($lastname) . "'
+				WHERE
+				visitor_id = '" . (int)$row['visitor_id'] . "'
 				");
 		}
 	}

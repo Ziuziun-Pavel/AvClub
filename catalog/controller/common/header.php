@@ -97,7 +97,7 @@ class ControllerCommonHeader extends Controller {
 
 		$this->load->model('catalog/product');
 
-		
+
 
 		$categories = $this->model_catalog_category->getCategories(0);
 

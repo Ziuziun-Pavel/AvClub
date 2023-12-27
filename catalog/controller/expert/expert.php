@@ -57,6 +57,7 @@ class ControllerExpertExpert extends Controller
 
             $data['edit_info'] = $status_logged ? $this->url->link('register/edit') : '';
             $data['publication'] = $status_logged ? $this->url->link('register/publication') : '';
+            $data['company_add_href'] = $status_logged ? $this->url->link('register/company/companyProfile') : '';
 
             $data['breadcrumbs'][] = array(
                 'text' => $expert_info['name'],
@@ -302,36 +303,37 @@ class ControllerExpertExpert extends Controller
                     'image' => $this->model_themeset_themeset->resize_crop($banner_info['image_pc'], 100, 100),
                 );
             }
+            if ($this->request->get['route'] !== 'register/account') {
+                // master
+                $master_info = $this->config->get('av_master');
+                $data['master_info'] = array(
+                    'title' => $master_info['master_title'],
+                    'description' => $master_info['master_description'],
+                    'link' => $master_info['master_link'],
+                    'button' => $master_info['master_button'],
+                );
+                $data['master_all'] = $this->url->link('master/master');
+                $this->load->model('master/master');
+                $data['master_list'] = array();
 
-            // master
-            $master_info = $this->config->get('av_master');
-            $data['master_info'] = array(
-                'title' => $master_info['master_title'],
-                'description' => $master_info['master_description'],
-                'link' => $master_info['master_link'],
-                'button' => $master_info['master_button'],
-            );
-            $data['master_all'] = $this->url->link('master/master');
-            $this->load->model('master/master');
-            $data['master_list'] = array();
+                $filter_data = array(
+                    'start' => 0,
+                    'limit' => 3
+                );
 
-            $filter_data = array(
-                'start' => 0,
-                'limit' => 3
-            );
-
-            $results = $this->model_master_master->getMasters($filter_data);
-            if ($results) {
-                foreach ($results as $result) {
-                    $data['master_list'][] = array(
-                        'master_id' => $result['master_id'],
-                        'href' => $result['link'],
-                        'title' => $result['title'],
-                        'author' => $result['author'],
-                        'exp' => $result['exp'],
-                        'date' => $result['date'],
-                        'time' => $result['time'],
-                    );
+                $results = $this->model_master_master->getMasters($filter_data);
+                if ($results) {
+                    foreach ($results as $result) {
+                        $data['master_list'][] = array(
+                            'master_id' => $result['master_id'],
+                            'href' => $this->url->link('master/master/info', 'master_id=' . $result['master_id']),
+                            'title' => $result['title'],
+                            'author' => $result['author'],
+                            'exp' => $result['exp'],
+                            'date' => $result['date'],
+                            'time' => $result['time'],
+                        );
+                    }
                 }
             }
 
@@ -488,7 +490,7 @@ class ControllerExpertExpert extends Controller
 
                 switch ($event_item['type_event']) {
                     case 'webinar':
-                        $event_item_info['date'] .= ' ' . date('h:i', $time);
+                        $event_item_info['date'] .= ' ' . date('H:i', $time);
                         $event_item_info['url'] = $event_item['url'];
                         $event_item_info['type_text'] = $time < $now ? 'Прошедший вебинар' : 'Вебинар';
                         break;
@@ -792,13 +794,26 @@ class ControllerExpertExpert extends Controller
             $expert_id = 0;
         }
 
+        if (isset($this->request->post['deal_id'])) {
+            $deal_id = (int)$this->request->post['deal_id'];
+        } else {
+            $deal_id = 0;
+        }
+
         $expert_info = $this->model_visitor_expert->getExpert($expert_id, 0, false);
         $data['contact_id'] = $expert_info['b24id'];
+        $data['deal_id'] = $deal_id;
 
         if ($data && $this->visitor->getId() && (int)$this->visitor->getId() == $expert_id) {
             $json = $this->model_visitor_expert->sendPublication($data);
+
             $return['message'] = $json["message"];
             $return['code'] = $json["code"];
+
+            if ($return['code'] !== 200) {
+                $return['error'] = true;
+            }
+
         } else {
             $return['error'] = true;
         }

@@ -1,6 +1,6 @@
 <?php echo $header; ?>
 
-<?php 
+<?php
 $theme_dir = 'catalog/view/theme/avclub';
 
 require(DIR_TEMPLATE . 'avclub/template/avevent/event_info_top.tpl');

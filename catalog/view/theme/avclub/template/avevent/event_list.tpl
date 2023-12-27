@@ -42,7 +42,15 @@
 									<span><?php echo $event['city']; ?></span>
 								</span>
 								<span class="event__name"><span class="link"><?php echo $event['title']; ?></span></span>
-								<span class="event__address"><?php echo $event['date'] . ', ' . $event['time_start'] . ' - ' . $event['time_end'] . ', ' . $event['address']; ?></span>
+								<?php if($event['date'] == $event['date_stop']) { ?>
+									<span class="event__address"><?php echo $event['date'] . ' ' . $event['date_month'] . ', ' . $event['time_start'] . ' - ' . $event['time_end'] . ', ' . $event['address']; ?></span>
+								<?php }
+								elseif($event['date'] != $event['date_stop'] && $event['date'] == $event['date_stop']) { ?>
+									<span><?php echo $date . ' ' . $date_month; ?> — <?php echo $date_stop . ' ' . $date_stop_month; ?><?php echo  ' ' . $date_year; ?></span>
+								<?php }
+								else { ?>
+									<span class="event__address"><?php echo $event['date'] . ' - ' . $event['date_stop'] . ' ' . $event['date_month'] . ', ' . $event['time_start'] . ' - ' . $event['time_end'] . ', ' . $event['address']; ?></span>
+								<?php } ?>
 							</a>
 						<?php }else{ ?>
 							<span class="event__item ">
@@ -52,7 +60,12 @@
 									<span><?php echo $event['city']; ?></span>
 								</span>
 								<span class="event__name"><span class=""><?php echo $event['title']; ?></span></span>
-								<span class="event__address"><?php echo $event['date'] . ', ' . $event['time_start'] . ' - ' . $event['time_end'] . ', ' . $event['address']; ?></span>
+
+								<?php if($event['date'] == $event['date_end']) { ?>
+									<span class="event__address"><?php echo $event['date'] . ', ' . $event['time_start'] . ' - ' . $event['time_end'] . ', ' . $event['address']; ?></span>
+								<?php }else{ ?>
+									<span class="event__address"><?php echo $event['date'] . ' - ' . $event['date_stop'] . ', ' . $event['time_start'] . ' - ' . $event['time_end'] . ', ' . $event['address']; ?></span>
+								<?php } ?>
 							</span>
 						<?php } ?>
 						</div>

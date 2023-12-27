@@ -3,10 +3,15 @@
     <div class="expreg d-none">
         <div class="expreg__info">
             <div class="expreg__top">
+                <?php if($event['type_event'] === 'forum') { ?>
                 <div class="expreg__logo">
-                    <img src="catalog/view/theme/avclub/images/logo-expert-event.svg" alt="">
+                    <img src="catalog/view/theme/avclub/images/logo-expert-event.svg" alt="logo-expert-event">
                 </div>
-                <div class="expreg__type <?php echo $event['old'] ? '' : 'active'; ?>"><?php echo $event['type_text']; ?></div>
+                <div class="expreg__type --offline <?php echo $event['old'] ? '' : 'active'; ?>"><?php echo $event['type_text']; ?></div>
+                <?php } else { ?>
+                    <div class="expreg__type --online"><?php echo $event['type_text']; ?></div>
+                <?php } ?>
+
             </div>
             <div class="expreg__name"><?php echo $event['name']; ?></div>
             <div class="expreg__date">

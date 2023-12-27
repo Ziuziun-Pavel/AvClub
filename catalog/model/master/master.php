@@ -7,15 +7,17 @@ class ModelMasterMaster extends Model {
 	public function getMaster($master_id) {
 		$this->load->model('visitor/visitor');
 
-		$query = $this->db->query("SELECT DISTINCT *, md.title AS title, m.image 
-		FROM " . DB_PREFIX . "master m
-		LEFT JOIN " . DB_PREFIX . "visitor a ON (a.visitor_id = m.author_id)
-		LEFT JOIN " . DB_PREFIX . "master_description md ON (m.master_id = md.master_id)
-		WHERE 
-		m.master_id = '" . (int)$master_id . "' 
-		AND	md.language_id = '" . (int)$this->config->get('config_language_id') . "' 
-		AND m.status = '1' 
-		AND m.date_available > NOW()");
+        $query = $this->db->query("
+            SELECT DISTINCT *, md.title AS title, m.image 
+            FROM " . DB_PREFIX . "master m
+            LEFT JOIN " . DB_PREFIX . "visitor a ON (a.visitor_id = m.author_id)
+            LEFT JOIN " . DB_PREFIX . "master_description md ON (m.master_id = md.master_id)
+            WHERE 
+            m.master_id = '" . (int)$master_id . "' 
+            AND md.language_id = '" . (int)$this->config->get('config_language_id') . "' 
+            AND m.status = '1' 
+            AND DATE_ADD(m.date_available, INTERVAL 60 MINUTE) > NOW()
+        ");
 
 		if ($query->num_rows) {
 			$author_info = $this->model_visitor_visitor->getVisitor($query->row['author_id'], $query->row['author_exp']);
@@ -52,11 +54,11 @@ class ModelMasterMaster extends Model {
 			$sql .= " LEFT JOIN " . DB_PREFIX . "master_company mc ON (m.master_id = mc.master_id) ";
 		}
 
-		$sql .= " LEFT JOIN " . DB_PREFIX . "master_description md ON (m.master_id = md.master_id) 
-		WHERE 
-		md.language_id = '" . (int)$this->config->get('config_language_id') . "' 
-		AND m.status = '1' 
-		AND m.date_available > NOW() ";
+        $sql .= " LEFT JOIN " . DB_PREFIX . "master_description md ON (m.master_id = md.master_id) 
+          WHERE 
+          md.language_id = '" . (int)$this->config->get('config_language_id') . "' 
+          AND m.status = '1' 
+          AND DATE_ADD(m.date_available, INTERVAL 60 MINUTE) > NOW() ";
 
 		if (!empty($data['filter_company'])) {
 			$sql .= " AND mc.company_id = '" . (int)$data['filter_company'] . "'";
@@ -111,7 +113,6 @@ class ModelMasterMaster extends Model {
 		$sql .= " GROUP BY m.master_id";
 
 		$sql .= " ORDER BY m.date_available ASC, LCASE(md.title) ASC";
-
 
 		if (isset($data['start']) || isset($data['limit'])) {
 			if ($data['start'] < 0) {

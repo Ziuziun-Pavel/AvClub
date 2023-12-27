@@ -131,18 +131,20 @@ class ControllerExpertList extends Controller {
 
 			if($result['image'] && is_file(DIR_IMAGE . $result['image'])) {
 				$image = $this->model_themeset_image->crop($result['image'], 160, 160);
-			}else{
-				$image = $this->model_themeset_image->crop('user_no_avatar.png', 160, 160);
-			}
+                $data['experts'][] = array(
+                    'expert_id' 	 	=> $result['expert_id'],
+                    'thumb'     	  => $image,
+                    'name'       		=> $result['name'],
+                    'exp'       		=> $result['exp'],
+                    'href'        	=> $this->url->link('expert/expert', 'expert_id=' . $result['expert_id'])
+                );
+            }
+//            else{
+//				$image = $this->model_themeset_image->crop('user_no_avatar.png', 160, 160);
+//			}
 		
 
-			$data['experts'][] = array(
-				'expert_id' 	 	=> $result['expert_id'],
-				'thumb'     	  => $image,
-				'name'       		=> $result['name'],
-				'exp'       		=> $result['exp'],
-				'href'        	=> $this->url->link('expert/expert', 'expert_id=' . $result['expert_id'])
-			);
+
 		}
 
 		$pagination = new Pagination();
@@ -155,12 +157,14 @@ class ControllerExpertList extends Controller {
 
 		$data['filter'] = $filter_data;
 
+
+
         if($json) {
 			$data['template'] = $this->load->view('expert/expert_list_content', $data);
 			$this->response->addHeader('Content-Type: application/json');
 			$this->response->setOutput(json_encode($data));
 		}else{
-			return $this->load->view('expert/expert_list_content', $data);
+            return $this->load->view('expert/expert_list_content', $data);
 		}
 
 	}

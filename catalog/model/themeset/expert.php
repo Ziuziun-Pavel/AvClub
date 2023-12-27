@@ -100,7 +100,7 @@ class ModelThemesetExpert extends Model {
 			echo '</pre>';
 		}
 
-		$this->updateExpertConnection($info);		
+		$this->updateExpertConnection($info);
 
 		$expert_info['b24_expert_id'] = $contact_id;
 		$expert_info['expert'] = !empty($info['UF_CRM_1676312951']) ? 1 : 0;
@@ -141,9 +141,13 @@ class ModelThemesetExpert extends Model {
 
 			$photo = '';
 			if(!empty($info['PHOTO']['downloadUrl'])) {
+//                var_dump($contact_id);
 				$photo = $this->saveExpertPhoto($info['PHOTO']['downloadUrl'], $contact_id);
 			}
 			$expert_info['photo'] = $photo;
+
+//            var_dump($expert_info);
+//            die();
 
 			/* tags */
 			$filter_tag = array(
@@ -501,7 +505,9 @@ class ModelThemesetExpert extends Model {
 		$client_secret = $this->config->get('themeset_bitrix_company_client_secret');
 		$b24_url = $this->config->get('themeset_bitrix_url');
 
-		if(!$refresh_token || !$client_id || !$client_secret || !$b24_url) {return false;}
+
+
+        if(!$refresh_token || !$client_id || !$client_secret || !$b24_url) {return false;}
 
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

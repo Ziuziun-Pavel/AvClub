@@ -1,8 +1,5 @@
 <?php
 class ControllerRegisterPublication extends Controller {
-
-	private $url_send_mail = "http://clients.techin.by/avclub/site/api/v1/contact/{id}/addComment";
-
 	public function index() {
 		$this->load->language('expert/expert');
 
@@ -23,13 +20,16 @@ class ControllerRegisterPublication extends Controller {
 			exit();
 		}
 
-		$data['expert_id'] = $expert_id; 
+		$data['expert_id'] = $expert_id;
+        $data['deal_id'] = $_GET["id"];
 
-		$expert_info = $this->model_visitor_expert->getExpert($expert_id, 0, false);
+        $expert_info = $this->model_visitor_expert->getExpert($expert_id, 0, false);
 
 		if($expert_info) {
 
 			$data['alternate_count'] = $expert_info['alternate_count'];
+
+            $data['paidPublicationId'] = $this->getPaidPublications();
 
 			$contact_info = $this->model_register_register->getContactInfo($b24id);
 
@@ -97,14 +97,13 @@ class ControllerRegisterPublication extends Controller {
 				'web'									=> $user_data['company_site'],
 				'phone'								=> $user_data['company_phone'],
 				'activity'						=> $user_data['company_activity'],
-
 				'search'							=> $user_data['company'],
 			);
 
 			$data['company_template'] = $this->load->view('register/_brand_publication', $data_company);
 
 			// $data['back'] = $this->url->link('expert/expert', 'expert_id=' . $expert_id);
-			$data['back'] = $this->url->link('register/account');
+			$data['back'] = '/account/';
 
 			$data['company'] = array();
 			if($expert_info['company_id']) {
@@ -138,6 +137,7 @@ class ControllerRegisterPublication extends Controller {
 
 			// master
 			$master_info = $this->config->get('av_master');
+
 			$data['master_info'] = array(
 				'title'					=> $master_info['master_title'],
 				'description'		=> $master_info['master_description'],
@@ -158,7 +158,7 @@ class ControllerRegisterPublication extends Controller {
 				foreach($results as $result) {
 					$data['master_list'][] = array(
 						'master_id'		=> $result['master_id'],
-						'href'        => $result['link'],
+						'href'        => $this->url->link('master/master/info', 'master_id=' . $result['master_id']),
 						'title'				=> $result['title'],
 						'author'			=> $result['author'],
 						'exp'					=> $result['exp'],
@@ -222,97 +222,50 @@ class ControllerRegisterPublication extends Controller {
         }
     }
 
-    public function saveData() {
+    private function getPaidPublications()
+    {
+        $return = array();
+        $data = array();
 
-		$post = $this->request->post;
+        session_write_close();
 
-		$this->load->model('register/register');
-		$this->load->model('themeset/expert');
-		$this->load->model('themeset/image');
+        $this->load->language('expert/expert');
 
-		$return = array();
-		$data = array();
-		$error = false;
+        $this->load->model('company/company');
+        $this->load->model('tool/image');
+        $this->load->model('themeset/themeset');
+        $this->load->model('themeset/expert');
+        $this->load->model('register/register');
 
-		$expert_id = $this->visitor->getId();
+        $this->load->model('visitor/expert');
 
-		$b24id = $this->model_register_register->getB24Id($expert_id);//id первого пользователя
+        $expert_id = $this->visitor->getId();
+        $b24id = $this->visitor->getB24id();
 
-        if(!$b24id) {
-			$error = true;
+        $data['expert_id'] = $expert_id;
 
-			$return['redirect'] = $this->url->link('register/login');
-		}
+        $expert_info = $this->model_visitor_expert->getExpert($expert_id, 0, false);
 
-		// все ок, ошибок нет
-		if(!$error) {
+        $data['contact_id'] = $expert_info["b24id"];
 
-			$user_data = array(
-				'user_id'						=> $b24id,
-				'old_user_id'					=> $b24id,
-                'IsCompanyEdit'					=> true,
-                'IsCompanyChanged'				=> isset($post['isCompanyChanged']) && $post['isCompanyChanged'] === 'true' ? 1 : 0,
-                'IsContactEdit'					=> isset($post['isProfileEdit']) && $post['isProfileEdit'] === 'true' ? 1 : 0,
-                'name'							=> isset($post['name']) ? $post['name'] : '',
-				'lastname'						=> isset($post['lastname']) ? $post['lastname'] : '',
-				'post'							=> isset($post['post']) ? $post['post'] : '',
-				'b24_company_id'			    => isset($post['b24_company_id']) ? $post['b24_company_id'] : 0,
-				'b24_company_old_id'			=> isset($post['b24_company_old_id']) ? $post['b24_company_old_id'] : 0,
-				'company'						=> isset($post['company']) ? $post['company'] : '',
-				'company_status'			    => isset($post['company_status']) ? $post['company_status'] : '',
-				'company_phone'				    => isset($post['company_phone']) ? $post['company_phone'] : '',
-				'company_site'				    => isset($post['company_site']) ? $post['company_site'] : '',
-				'company_activity'		        => isset($post['company_activity']) ? $post['company_activity'] : array(),
-				'city'							=> isset($post['city']) ? $post['city'] : '',
-				'email'							=> isset($post['email']) ? $post['email'] : '',
-				'phone'							=> isset($post['telephone']) ? $post['telephone'] : '',
-				'expertise'						=> isset($post['expertise']) ? $post['expertise'] : '',
-				'useful'						=> isset($post['useful']) ? $post['useful'] : '',
-				'regalia'						=> isset($post['regalia']) ? $post['regalia'] : '',
-			);
+        if ($expert_info) {
 
-			if(!empty($post['photo']) && $post['photo'] !== 'delete') {
-				$savefile = fopen(DIR_IMAGE . 'catalog/experts/tmp-contact.png', 'w');
-				$image = explode(',', $post['photo']);
+            $paid_publications = $this->model_register_register->getPaidPublications($data['contact_id']);
 
-				fwrite($savefile, base64_decode($image[1]));
-				fclose($savefile);
+//            foreach ($paid_publications as $publication) {
+//                $data["paid_publications"][] = [
+//                    "id" => $publication['id'],
+//                    "title" => $publication['title'],
+//                    "link" => 'publication?' . 'id=' . $publication['id']
+//                ];
+//            }
+            $return = (int)$paid_publications[0]['id'];
+        } else {
+            $return = null;
+        }
 
-				$image_link = $this->model_themeset_image->original('catalog/experts/tmp-contact.png');
+        return $return;
 
-				$user_data['photo'] = $image_link;
-			}else if($post['photo'] === 'delete') {
-				$user_data['photo'] = '';
-			}
+    }
 
-			
-			// $return_contact = $this->model_register_register->updateContact($user_data);
-			$return_contact = $this->model_register_register->createContact($user_data);
-
-			if(!empty($return_contact['code']) && $return_contact['code'] == 200) {
-				$contact_id = $return_contact['id'];
-
-				$this->model_register_register->addAlternateId($b24id, $contact_id);
-
-				// $this->model_register_register->updateExpertID($b24id, $contact_id);
-
-				// $this->model_themeset_expert->getContactInfo($contact_id, false, true);
-
-				// $expert_id = $this->model_register_register->getExpertId($b24id);
-
-				$return['redirect'] = $this->url->link('register/account');
-				$this->session->data['edit_success'] = true;
-				
-			}else{
-
-				$return['contact'] = $return_contact;
-				$return['error'] = true;
-				$return['error_text'] = 'Произошла ошибка. Попробуйте повторить попытку позже';
-
-			}
-		}
-
-		$this->response->addHeader('Content-Type: application/json');
-		$this->response->setOutput(json_encode($return));
-	}
 }

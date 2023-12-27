@@ -4,10 +4,14 @@
 <div class="expreg expreg-fut-ev d-none">
     <div class="expreg__info expreg__info-fut-ev">
         <div class="expreg__top expreg__top-fut-ev">
+            <?php if($event['type_event'] === 'forum') { ?>
             <div class="expreg__logo">
-                <img src="catalog/view/theme/avclub/images/logo-expert-event.svg" alt="">
+                <img src="catalog/view/theme/avclub/images/logo-expert-event.svg" alt="logo-expert-event">
             </div>
-            <div class="expreg__type <?php echo $event['old'] ? '' : 'active'; ?>"><?php echo $event['type_text']; ?></div>
+            <div class="expreg__type --offline <?php echo $event['old'] ? '' : 'active'; ?>"><?php echo $event['type_text']; ?></div>
+            <?php } else { ?>
+            <div class="expreg__type --online"><?php echo $event['type_text']; ?></div>
+            <?php } ?>
         </div>
         <div class="expreg__name expreg__name-fut-ev"><?php echo $event['name']; ?></div>
         <div class="expreg__date expreg__date-fut-ev">
@@ -15,7 +19,7 @@
         </div>
         <div class="expreg__date expreg__date-fut-ev price">
             <?php if ($event['sum'] && $event['sum'] !== "0.00") { ?>
-                <span><?php var_dump($event['sum']); ?> ₽</span>
+                <span><?php echo $event['sum']; ?> ₽</span>
             <?php } else { ?>
                 <span>Бесплатно</span>
             <?php } ?>
@@ -27,6 +31,7 @@
         <div class="expreg__btns expreg__btns-fut-ev" style="font-size: 13px;">
             <a data-deal-id="<?php echo $event['id']; ?>" data-event-type="<?php echo $event['type_event']; ?>" class="btn btn-red invitation" style="width: 48%; min-width: 147px;" target="_blank">Принять приглашение</a>
             <a href="<?php echo $event['landing_url']; ?>" class="btn btn-red" style="width: 48%;min-width: 147px;" target="_blank">Подробнее</a>
+
             <!--<div class="expreg__qr"></div>-->
         </div>
         <!--<div class="expreg__bottom">Для посещения мероприятия предъявите распечатанный билет (бейдж)</div>-->

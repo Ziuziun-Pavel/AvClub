@@ -70,6 +70,11 @@ class ControllerAveventEvent extends Controller {
 
 			$date = strtotime($result['date']);
 
+            $date_stop = $result['date_stop'] ? strtotime($result['date_stop']) : $date;
+            $date_month = $month_list[(int)date('m', $date)];
+
+            $date_stop_month = $month_list[(int)date('m', $date_stop)];
+            $this->document->addLink($this->url->link('avevent/event/info', 'event_id=' . $result['event_id']), 'canonical');
 			$data['events'][] = array(
 				'event_id' 	 		=> $result['event_id'],
 				'show_event' 	 	=> $result['show_event'],
@@ -80,16 +85,17 @@ class ControllerAveventEvent extends Controller {
 				'city'       		=> $result['city'],
 				'type_id'       => $result['type_id'],
 				'city_id'       => $result['city_id'],
-				'date'       		=> date('d', $date) . '&nbsp;' . $month_list[(int)date('m', $date)],
-				'time_start'    => date('H:s', strtotime($result['time_start'])),
+				'date'       		=> date('d', $date),
+                'date_stop'       		=> date('d', $date_stop),
+                'date_month'       		=> $date_month,
+                'date_stop_month'       		=> $date_stop_month,
+                'time_start'    => date('H:s', strtotime($result['time_start'])),
 				'time_end'    	=> date('H:s', strtotime($result['time_end'])),
 				'href'        	=> $this->url->link('avevent/event/info', 'event_id=' . $result['event_id'])
 			);
 		}
 
-//        var_dump($data['events']);
-//        die();
-
+//        var_dump($this->url->link('avevent/event/info', 'event_id=279'));
 
 		$data['continue'] = $this->url->link('common/home');
 
@@ -138,8 +144,7 @@ class ControllerAveventEvent extends Controller {
 
 
 		$event_info = $this->model_avevent_event->getEvent($event_id);
-//        var_dump($event_info);
-//        die();
+
 		if ($event_info) {
 			$this->document->setTitle($event_info['title']);
 
@@ -196,9 +201,17 @@ class ControllerAveventEvent extends Controller {
 			$data['address_full'] = $event_info['address_full'];
 			$data['type'] = $event_info['type'];
 			$data['city'] = $event_info['city'];
-
+//            $data['testparam']  = 'проверка';
 			$date = strtotime($event_info['date']);
-			$data['date'] = date('d', $date) . '&nbsp;' . $month_list[(int)date('m', $date)] . '&nbsp;' . date('Y', $date);
+
+            $date_stop = $event_info['date_stop'] ? strtotime($event_info['date_stop']) : $date;
+
+            $data['date'] = date('d', $date);
+            $data['date_month'] = $month_list[(int)date('m', $date)];
+            $data['date_year'] = date('Y', $date);
+
+            $data['date_stop'] = date('d', $date_stop);
+            $data['date_stop_month'] = $month_list[(int)date('m', $date_stop)];
 
 			$time_start = strtotime($event_info['time_start']);
 			$time_end = strtotime($event_info['time_end']);
@@ -381,7 +394,6 @@ class ControllerAveventEvent extends Controller {
 			}
 
 			$data['template'] = $template;
-
 
 			$data['description'] = html_entity_decode($event_info['description'], ENT_QUOTES, 'UTF-8');
 

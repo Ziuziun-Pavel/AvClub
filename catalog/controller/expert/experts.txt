@@ -1,0 +1,195 @@
+2023-11-13 11:55:50 Array
+(
+    [experts] => Array
+        (
+            [0] => Array
+                (
+                    [expert_id] => 273
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/47661-160x160.png
+                    [name] => Антон Постников
+                    [exp] => Руководитель отдела продаж
+                    [href] => https://www.avclub.pro/anton-postnikov/
+                )
+
+            [1] => Array
+                (
+                    [expert_id] => 3881
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/331-160x160.png
+                    [name] => Ольга Саличко
+                    [exp] => Управляющий интернет проектами Auvix
+                    [href] => https://www.avclub.pro/olga-salichko/
+                )
+
+            [2] => Array
+                (
+                    [expert_id] => 2474
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/56039-160x160.png
+                    [name] => Наталья Нартова
+                    [exp] => Маркетолог
+                    [href] => https://www.avclub.pro/natalya-nartova/
+                )
+
+            [3] => Array
+                (
+                    [expert_id] => 2940
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/55177-160x160.png
+                    [name] => Денис Спиридонов
+                    [exp] => Генеральный директор
+                    [href] => https://www.avclub.pro/denis-spiridonov/
+                )
+
+            [4] => Array
+                (
+                    [expert_id] => 1756
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/39523-160x160.png
+                    [name] => Евгений Глинский
+                    [exp] => Директор по развитию
+                    [href] => https://www.avclub.pro/yevgeny-glinsky/
+                )
+
+            [5] => Array
+                (
+                    [expert_id] => 2528
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/38933-160x160.png
+                    [name] => Илья Мадорский
+                    [exp] => Генеральный директор
+                    [href] => https://www.avclub.pro/ilya-madorsky/
+                )
+
+            [6] => Array
+                (
+                    [expert_id] => 3113
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/45359-160x160.png
+                    [name] => Юрий Несветаев
+                    [exp] => Генеральный директор Mediavisor
+                    [href] => https://www.avclub.pro/yury-nesvetayev-1/
+                )
+
+            [7] => Array
+                (
+                    [expert_id] => 1292
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/46671-160x160.png
+                    [name] => Сергей Долматов
+                    [exp] => Директор  по развитию Эффорт Мультимедиа
+                    [href] => https://www.avclub.pro/sergey-dolmatov/
+                )
+
+            [8] => Array
+                (
+                    [expert_id] => 1266
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/54575-160x160.png
+                    [name] => Виктория Субботина
+                    [exp] => Коммерческий директор Christie в России
+                    [href] => https://www.avclub.pro/viktoriya-subbotina/
+                )
+
+            [9] => Array
+                (
+                    [expert_id] => 2331
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/55333-160x160.png
+                    [name] => Владислав Белов
+                    [exp] => Инженер
+                    [href] => https://www.avclub.pro/vladislav-belov/
+                )
+
+            [10] => Array
+                (
+                    [expert_id] => 5049
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/59587-160x160.png
+                    [name] => Артур Алеев
+                    [exp] => Вице-президент по техническому обеспечению
+                    [href] => https://www.avclub.pro/artur-aleyev-1/
+                )
+
+            [11] => Array
+                (
+                    [expert_id] => 4467
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/58617-160x160.png
+                    [name] => Руслан Мирзарахимов
+                    [exp] => Менеджер по работе с корпоративными партнерами
+                    [href] => https://www.avclub.pro/ruslan-mirzarahimov/
+                )
+
+            [12] => Array
+                (
+                    [expert_id] => 2494
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/55341-160x160.png
+                    [name] => Сергей Гурин
+                    [exp] => Менеджер по развитию ОЗО
+                    [href] => https://www.avclub.pro/sergey-gurin/
+                )
+
+            [13] => Array
+                (
+                    [expert_id] => 3008
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/55967-160x160.png
+                    [name] => Сергей Безбородов
+                    [exp] => Менеджер
+                    [href] => https://www.avclub.pro/sergey-bezborodov/
+                )
+
+            [14] => Array
+                (
+                    [expert_id] => 1280
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/56233-160x160.png
+                    [name] => Jubilee Bao
+                    [exp] => Специалист технической поддержки
+                    [href] => https://www.avclub.pro/jubilee-bao/
+                )
+
+            [15] => Array
+                (
+                    [expert_id] => 2109
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/55347-160x160.png
+                    [name] => Егор Леонов
+                    [exp] => Младший продакт-менеджер
+                    [href] => https://www.avclub.pro/yegor-leonov-1/
+                )
+
+            [16] => Array
+                (
+                    [expert_id] => 4506
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/52291-160x160.png
+                    [name] => Владимир Панфиленков
+                    [exp] => Менеджер по ключевым клиентам и развитию бизнеса, компания Bosch
+                    [href] => https://www.avclub.pro/vladimir-panfilenkov/
+                )
+
+            [17] => Array
+                (
+                    [expert_id] => 4452
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/85-160x160.png
+                    [name] => Роб ван ден Гурберг
+                    [exp] => Региональный директор Optoma Россия, СНГ 
+                    [href] => https://www.avclub.pro/rob-van-den-gurberg/
+                )
+
+            [18] => Array
+                (
+                    [expert_id] => 1106
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/54885-160x160.png
+                    [name] => Тарас Бажан
+                    [exp] => Руководитель отдела микрофонных и конгресс-систем
+                    [href] => https://www.avclub.pro/taras-bazhan/
+                )
+
+            [19] => Array
+                (
+                    [expert_id] => 271
+                    [thumb] => https://www.avclub.pro/image/cache/catalog/experts/53247-160x160.png
+                    [name] => Freya Lee
+                    [exp] => CEO
+                    [href] => https://www.avclub.pro/freya-lee/
+                )
+
+        )
+
+    [pagination] => <ul class="pagination"><li class="active"><span>1</span></li><li><a href="https://www.avclub.pro/personalii/?page=2">2</a></li><li><a href="https://www.avclub.pro/personalii/?page=3">3</a></li><li><a href="https://www.avclub.pro/personalii/?page=4">4</a></li><li><a href="https://www.avclub.pro/personalii/?page=5">5</a></li><li class="page__dots"><span>...</span></a></li><li><a href="https://www.avclub.pro/personalii/?page=11">11</a></li><li class="page__orig_next"><a href="https://www.avclub.pro/personalii/?page=2">&gt;</a></li></ul>
+    [filter] => Array
+        (
+            [start] => 0
+            [limit] => 20
+        )
+
+)
+

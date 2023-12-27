@@ -93,6 +93,21 @@ class ModelTagTag extends Model {
 		return $tag_data;
 	}
 
+    public function getB24IdByTagDescriptions($tag_title) {
+        $b24_tag_id = 0;
+
+        // Escape the single quote within the string
+        $escaped_tag_title = $this->db->escape($tag_title);
+
+        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "b24_tags WHERE tag = '" . $escaped_tag_title . "'");
+
+        foreach ($query->rows as $result) {
+            $b24_tag_id = (int)$result['tag_id'];
+        }
+
+        return $b24_tag_id;
+    }
+
 
 	public function getTagLayoutId($tag_id) {
 		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "tag_to_layout WHERE tag_id = '" . (int)$tag_id . "' AND store_id = '" . (int)$this->config->get('config_store_id') . "'");
