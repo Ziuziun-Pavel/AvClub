@@ -4,6 +4,7 @@ class ModelVisitorExpert extends Model
 {
     private $url_deal_create = "http://clients.techin.by/avclub/site/api/v1/deal/create";
     private $url_deal_update = "http://clients.techin.by/avclub/site/api/v1/deal/{id}/update";
+    private $url_get_registrations = "http://clients.techin.by/avclub/site/api/v1/deal/get-user-event-list";
 
     public function getExpert($expert_id, $exp_id = 0, $expert = true)
     {
@@ -819,6 +820,25 @@ class ModelVisitorExpert extends Model
         $query = $this->db->query($sql);
 
         return $query->rows;
+    }
+
+    public function getRegistrations($contact_id = 0, $type)
+    {
+        $fields = array(
+            'contact_id' => $contact_id,
+            'type' => $type
+        );
+
+        $ch = curl_init($this->url_get_registrations);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
+        $body = curl_exec($ch);
+        curl_close($ch);
+
+        $json = json_decode($body, true);
+
+        return $json;
     }
 
     private function mb_ucfirst($string, $encoding = 'UTF-8')

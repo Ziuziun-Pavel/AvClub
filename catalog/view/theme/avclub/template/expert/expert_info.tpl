@@ -96,19 +96,22 @@
                     <div class="expertnav__tabs">
 
                         <?php if($tabs) { ?>
-                        <a href="#" class="expertnav__tab expertnav__tab-tab expertnav__tab-tab link <?php echo !$active_tab ? 'active' : ''; ?>"
+                        <a href="#"
+                           class="expertnav__tab expertnav__tab-tab expertnav__tab-tab link <?php echo !$active_tab ? 'active' : ''; ?>"
                            data-type="article">Мои выступления в АВ Клубе</a>
                         <?php $active_tab = true; ?>
                         <?php } ?>
 
                         <?php if(!$tabs) { ?>
-                        <a href="#" class="expertnav__tab expertnav__tab-tab bio link <?php echo !$active_tab ? 'active' : ''; ?>"
+                        <a href="#"
+                           class="expertnav__tab expertnav__tab-tab bio link <?php echo !$active_tab ? 'active' : ''; ?>"
                            data-type="bio">Биография</a>
                         <?php $active_tab = true; ?>
                         <?php } ?>
 
                         <?php if(!empty($event_list)) { ?>
-                        <a href="#" class="expertnav__tab expertnav__tab-tab events link <?php echo !$active_tab ? 'active' : ''; ?>"
+                        <a href="#"
+                           class="expertnav__tab expertnav__tab-tab events link <?php echo !$active_tab ? 'active' : ''; ?>"
                            data-type="events">Мои заявки</a>
                         <?php $active_tab = true; ?>
                         <?php } ?>
@@ -126,7 +129,7 @@
                                 <a href="<?php echo $company_add_href; ?>" class="link">Добавить новую компанию</a>
                                 <a href="<?php echo $publication; ?>" class="link">Добавить публикацию в журнал</a>
                                 <!-- <a href="#" class="link">Добавить заявку на участие в форумах</a>-->
-                                 <!--<a href="#" class="link">Добавить заявку на участие в вебинаре</a>-->
+                                <!--<a href="#" class="link">Добавить заявку на участие в вебинаре</a>-->
                             </div>
                         </div>
                     </div>
@@ -172,13 +175,22 @@
                     <div id="navlist-events" class="expertnav__list events__tabs">
                         <ul class="list-hor">
                             <?php if(!empty($event_list)) { ?>
-                            <li><a href="#" class="expertnav__change reg expertnav__tab-tab <?php echo !$active_tab ? 'active' : ''; ?>" data-type="register">ПРОШЕДШИЕ</a></li>
+                            <li><a href="#"
+                                   class="expertnav__change reg expertnav__tab-tab <?php echo !$active_tab ? 'active' : ''; ?>"
+                                   data-type="webinars">ВЕБИНАРЫ</a></li>
                             <?php $active_tab = true; ?>
                             <?php } ?>
-                            <?php if(!$tabs) { ?>
-                            <li><a href="#" class="expertnav__change fut_ev expertnav__tab-tab <?php echo !$active_tab ? 'active' : ''; ?>" data-type="future_events">БЛИЖАЙШИЕ</a></li>
+                            <?php if(!empty($event_list)) { ?>
+                            <li><a href="#"
+                                   class="expertnav__change fut_ev expertnav__tab-tab <?php echo !$active_tab ? 'active' : ''; ?>"
+                                   data-type="future_events">ФОРУМЫ</a></li>
                             <?php $active_tab = true; ?>
                             <?php } ?>
+                            <li><a href="#"
+                                   class="expertnav__change publications expertnav__tab-tab <?php echo !$active_tab ? 'active' : ''; ?>"
+                                   data-type="publications">ПУБЛИКАЦИИ</a></li>
+                            <?php $active_tab = true; ?>
+
                         </ul>
                     </div>
                     <?php if(!$tabs && !empty($bio)) { ?>
@@ -262,20 +274,25 @@
                         <?php } ?>
 
                         <?php if(!empty($event_list)) { ?>
-                        <div id="content-register" class="expert__content d-none">
+                        <div id="content-webinars" class="expert__content d-none">
                             <div class="expreg__message ">
                                 <div class="expreg__message--preloader">
                                     <div class="cssload-clock"></div>
                                 </div>
                                 <div class="expreg__message--text">
-                                    Подождите, идет поиск регистраций...
+                                    Подождите, идет поиск мероприятий...
                                 </div>
                             </div>
                         </div>
                         <?php $active_tab = true; ?>
                         <?php } ?>
 
-                        <div id="content-events" class="expert__content d-none">
+                        <div id="content-events" class="expert__content <?php echo !empty($active_tab) ? '' : 'active'; ?> d-none">
+
+                        </div>
+                        <?php $active_tab = true; ?>
+
+                        <div id="publist" class="expert__content <?php echo !empty($active_tab) ? '' : 'active'; ?> d-none">
 
                         </div>
                         <?php $active_tab = true; ?>
@@ -396,7 +413,7 @@
     </div>
 </div>
 <?php } ?>
-
+<link rel="stylesheet" href="catalog/view/theme/avclub/css/publication.min.css">
 <?php if(!empty($event_list)) { ?>
 <script src="catalog/view/theme/avclub/js/qrcode.min.js"></script>
 <script>
@@ -406,9 +423,12 @@
 
         $.ajax({
             type: "GET",
-            url: "index.php?route=expert/expert/getVisited",
+            url: "index.php?route=expert/expert/getRegistrations",
             dataType: "json",
-            data: 'expert_id=<?php echo $expert_id; ?>',
+            data: {
+                'expert_id': '<?php echo $expert_id; ?>',
+                'event_type': 'webinar'
+            },
             beforeSend: function (json) {
             },
             complete: function (json) {
@@ -416,25 +436,28 @@
             success: function (json) {
 
                 if (json['template']) {
-                    $('#content-register').html(json['template']);
+                    $('#content-webinars').html(json['template']);
                 } else if (json['error']) {
-                    $('#content-register').html(error_text);
+                    $('#content-webinars').html(error_text);
                 }
                 if ($('.expertnav__change.reg').hasClass('active')) {
                     $('.expreg').removeClass('d-none');
                 }
             },
             error: function (json) {
-                $('#content-register').html(error_text);
+                $('#content-webinars').html(error_text);
                 console.log('expert getVisited error', json);
             }
         });
 
         $.ajax({
             type: "GET",
-            url: "index.php?route=expert/expert/getFutureEvents",
+            url: "index.php?route=expert/expert/getRegistrations",
             dataType: "json",
-            data: 'expert_id=<?php echo $expert_id; ?>',
+            data: {
+                'expert_id': '<?php echo $expert_id; ?>',
+                'event_type': 'forum'
+            },
             beforeSend: function (json) {
                 $('#content-events').html(`
                                             <div class="expreg__message ">
@@ -461,7 +484,6 @@
                     $('#navlist-bio').removeClass('active');
                 }
 
-                acceptInvitation();
             },
             error: function (json) {
                 $('#content-events').html(error_text);
@@ -469,6 +491,43 @@
             }
         });
 
+        $.ajax({
+            type: "GET",
+            url: "index.php?route=register/publications/getPubApplications",
+            dataType: "json",
+            data: 'expert_id=<?php echo $expert_id; ?>',
+            beforeSend: function (json) {
+                $('#publist').html(`
+                                            <div class="expreg__message ">
+                                <div class="expreg__message--preloader">
+                                    <div class="cssload-clock"></div>
+                                </div>
+                                <div class="expreg__message--text">
+                                    Подождите, идет поиск заявок...
+                                </div>
+                            </div>
+                `);
+            },
+            complete: function (json) {
+            },
+            success: function (json) {
+                if (json['template']) {
+                    $('#publist').html(json['template']);
+                } else if (json['error']) {
+                    $('#publist').html(error_text);
+                }
+                if ($('.expertnav__tabs a.publications').hasClass('active')) {
+                    $('.expreg').removeClass('d-none');
+                    $('.expert__content').removeClass('d-none');
+                    $('#navlist-bio').removeClass('active');
+                }
+
+            },
+            error: function (json) {
+                $('#publist').html(error_text);
+                console.log('expert getPubApplications error', json);
+            }
+        });
     })
 
     function acceptInvitation() {
@@ -517,7 +576,6 @@
 
         });
     }
-
 
 
 </script>

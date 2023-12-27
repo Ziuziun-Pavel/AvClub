@@ -221,24 +221,25 @@ $(function () {
                 $('#navlist-bio').addClass('d-none');
                 $('.expertnav__tab-tab.reg').addClass('active');
                 $('.expertnav__tab-tab.fut_ev').removeClass('active');
+                $('.expertnav__tab-tab.publications').removeClass('active');
 
-                $('#content-register').removeClass('d-none');
-                $('#content-register .expreg').removeClass('d-none');
-                $('#content-register.expert__content').css("display", "block");
+                $('#content-webinars').removeClass('d-none');
+                $('#content-webinars .expreg').removeClass('d-none');
+                $('#content-webinars.expert__content').css("display", "block");
             } else {
-                $('#content-register .expreg').addClass('d-none');
-                $('#content-register.expert__content').css("display", "none");
-                $('#content-register').addClass('d-none');
+                $('#content-webinars .expreg').addClass('d-none');
+                $('#content-webinars.expert__content').css("display", "none");
+                $('#content-webinars').addClass('d-none');
             }
 
-            if(type === 'register' || type === 'events') {
-                $('#content-register .expreg').removeClass('d-none');
-                $('#content-register.expert__content').css("display", "block");
-                $('#content-register').removeClass('d-none')
+            if(type === 'webinars' || type === 'events') {
+                $('#content-webinars .expreg').removeClass('d-none');
+                $('#content-webinars.expert__content').css("display", "block");
+                $('#content-webinars').removeClass('d-none')
             } else {
-                $('#content-register .expreg').addClass('d-none');
-                $('#content-register.expert__content').css("display", "none");
-                $('#content-register').addClass('d-none');
+                $('#content-webinars .expreg').addClass('d-none');
+                $('#content-webinars.expert__content').css("display", "none");
+                $('#content-webinars').addClass('d-none');
                 $('#navlist-bio').addClass('d-none')
             }
 
@@ -251,6 +252,17 @@ $(function () {
                 $('#content-events .expreg').addClass('d-none');
                 $('#content-events.expert__content').css("display", "none");
                 $('#content-events').addClass('d-none');
+            }
+
+            if(type === 'publications') {
+                $('#publist .expreg').removeClass('d-none');
+                $('#publist.expert__content').css("display", "block");
+                $('#publist').removeClass('d-none')
+                $('#navlist-bio').addClass('d-none')
+            } else {
+                $('#publist .expreg').addClass('d-none');
+                $('#publist.expert__content').css("display", "none");
+                $('#publist').addClass('d-none');
             }
 
             if (type === 'bio') {
