@@ -40,10 +40,8 @@ class ControllerThemesetEvents extends Controller
                 'event_id' => $data['event_id'],
                 'title' => $data['title'],
                 'date' => $data['date'],
-                'price' => $data['price'],
                 'image' => 'catalog/events/' . basename($data['image']),
                 'image_full' => 'catalog/events/' . basename($data['image']),
-                'count' => $data['count'],
                 'address' => $data['address'],
                 'address_full' => $data['address_full'],
                 'type' => $data['type'],
@@ -51,11 +49,10 @@ class ControllerThemesetEvents extends Controller
                 'show_event' => 1,
                 'keyword' => $data['type'] === 'AV Focus' ?
                     'avfocus' . date("y", strtotime($data['date'])) . $this->translit_sef($data['address']) :
-                    'webinar' . date("y", strtotime($data['date'])) . $this->translit_sef($data['address']),
+                    'master_class' . date("y", strtotime($data['date'])) . $this->translit_sef($data['address']),
                 'date_available' => $data['date'] . '9:00:00',
                 'time_start' => '9:00:00',
                 'time_end' => '17:00:00',
-                'link' => 'https://www.avclub.pro/event-register/?forum_id=' . $data['event_id'],
                 'old_type' => 'page',
                 'old_link' => '',
                 'video' => $data['video'],
@@ -72,6 +69,14 @@ class ControllerThemesetEvents extends Controller
                 'ask_title' => 'Вопросы и ответы',
             );
 
+            if ($data['type'] === "Мастер-класс") {
+                $event_info['link'] = 'https://www.avclub.pro/event-register/?forum_id=' . $data['forum_id'] . '&master_class_id=' . $data['event_id'];
+            } else {
+                $event_info['link'] = 'https://www.avclub.pro/event-register/?forum_id=' . $data['event_id'];
+                $event_info['price'] = $data['price'];
+                $event_info['count'] = $data['count'];
+            }
+
             $this->load->model('tool/image');
 
             $event_info['cities'] = $this->model_themeset_events->getCities();
@@ -84,6 +89,7 @@ class ControllerThemesetEvents extends Controller
             }
 
             $event_info['types'] = $this->model_themeset_events->getTypes();
+
 
             foreach ($event_info['types'] as $type) {
                 if ($event_info['type'] == $type["title"]) {
@@ -232,6 +238,7 @@ class ControllerThemesetEvents extends Controller
             $cord = str_replace(" ", ",", $reversedCoordinates);
             
             $event_info['coord'] = $cord;
+
 
             if ($data['event_db_id']) {
                 $this->model_themeset_events->editEvent($data['event_db_id'], $event_info);

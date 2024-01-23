@@ -60,6 +60,7 @@ class ControllerAveventEvent extends Controller {
 
 		$results = $this->model_avevent_event->getEvents($filter_data);
 
+
 		foreach ($results as $result) {
 
 			if ($result['image'] && is_file(DIR_IMAGE . $result['image'])) {

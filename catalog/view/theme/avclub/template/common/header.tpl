@@ -225,11 +225,14 @@
 
 				if(isset($type_page) && $type_page === 'event') {
 					require(DIR_TEMPLATE . 'avclub/template/common/header_event.tpl');
-				} elseif(strpos($_SERVER['REQUEST_URI'], 'master') !== false) {
+				} elseif(strpos($_SERVER['REQUEST_URI'], '/master/') !== false) {
+
 					require(DIR_TEMPLATE . 'avclub/template/common/header_master.tpl');
 				}
 				else{
 					require(DIR_TEMPLATE . 'avclub/template/common/header_default.tpl');
 				}
+
+
 				?>
 

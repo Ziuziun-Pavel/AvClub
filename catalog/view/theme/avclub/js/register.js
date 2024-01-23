@@ -201,6 +201,7 @@ $(function () {
         } else {
             console.log('Form is unchanged.');
         }
+
         initialFormState = $('#register-newuser').serialize();
         var
             form = $(this).closest('form'),
@@ -220,6 +221,7 @@ $(function () {
             if ($email.val().length < 1 || !$rv_email.test($email.val())) {
                 addInvalid($email.closest('.regform__inp'));
                 error = true;
+                console.log('error1');
             }
         }
 
@@ -227,6 +229,7 @@ $(function () {
             if ($post.val().length < 1) {
                 addInvalid($post.closest('.regform__inp'));
                 error = true;
+                console.log('error2');
             }
         }
 
@@ -244,10 +247,12 @@ $(function () {
             if (item.val().length < 2) {
                 addInvalid(item.closest('.regform__inp'));
                 error = true;
+                console.log('error3');
             }
         })
 
         if (!form.find('input[name="b24_company_old_id"]').length || !form.find('input[name="b24_company_id"]').length) {
+            console.log('error4');
             error = true;
             error_company = true;
         } else {
@@ -255,9 +260,10 @@ $(function () {
             company_arr.push(form.find('input[name="company_phone"]'));
             company_arr.push(form.find('input[name="company_site"]'));
             var company_activity = form.find('input[name="company_activity"]').closest('.regform__inp');
-            if (!form.find('input[name="company_activity"]:checked').length) {
+            if (!form.find('input[name="city"]').val()) {
                 addInvalid(company_activity);
                 error = true;
+                console.log('error5');
                 error_company = true;
             }
 
@@ -265,6 +271,7 @@ $(function () {
                 if (item.val().length < 2) {
                     addInvalid(item.closest('.regform__inp'));
                     error = true;
+                    console.log('error6');
                     error_company = true;
                 }
             })
@@ -301,6 +308,7 @@ $(function () {
         }*/
 
         if(!error) {
+            console.log(formChanged)
 
             // if (formChanged) {
                 $.ajax({

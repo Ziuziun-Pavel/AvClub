@@ -14,7 +14,7 @@
 
 
 <link href="/bitrix/js/intranet/intranet-common.min.css?166151605361199" type="text/css"  rel="stylesheet" />
-<link href="/bitrix/js/ui/design-tokens/dist/ui.design-tokens.min.css?166921294222029" type="text/css"  rel="stylesheet" />
+<link href="/bitrix/js/ui/design-tokens/dist/ui.design-tokens.min.css?169773190022911" type="text/css"  rel="stylesheet" />
 <link href="/bitrix/js/intranet/design-tokens/bitrix24/bitrix24-design-tokens.min.css?16854388541467" type="text/css"  rel="stylesheet" />
 <link href="/bitrix/js/ui/fonts/montserrat/ui.font.montserrat.min.css?16620208132209" type="text/css"  rel="stylesheet" />
 <link href="/bitrix/js/ui/fonts/opensans/ui.font.opensans.min.css?16620208132320" type="text/css"  rel="stylesheet" />
@@ -54,18 +54,24 @@ File not found				</div>
 		<td class="log-bottom-cell"><span class="log-bottom-cap"></span></td>
 	</tr>
 </table>
-<script type="text/javascript">if(!window.BX)window.BX={};if(!window.BX.message)window.BX.message=function(mess){if(typeof mess==='object'){for(let i in mess) {BX.message[i]=mess[i];} return true;}};</script>
-<script type="text/javascript">(window.BX||top.BX).message({'pull_server_enabled':'Y','pull_config_timestamp':'1645115399','pull_guest_mode':'N','pull_guest_user_id':'0'});(window.BX||top.BX).message({'PULL_OLD_REVISION':'Для продолжения корректной работы с сайтом необходимо перезагрузить страницу.'});</script>
-<script type="text/javascript">(window.BX||top.BX).message({'JS_CORE_LOADING':'Загрузка...','JS_CORE_NO_DATA':'- Нет данных -','JS_CORE_WINDOW_CLOSE':'Закрыть','JS_CORE_WINDOW_EXPAND':'Развернуть','JS_CORE_WINDOW_NARROW':'Свернуть в окно','JS_CORE_WINDOW_SAVE':'Сохранить','JS_CORE_WINDOW_CANCEL':'Отменить','JS_CORE_WINDOW_CONTINUE':'Продолжить','JS_CORE_H':'ч','JS_CORE_M':'м','JS_CORE_S':'с','JSADM_AI_HIDE_EXTRA':'Скрыть лишние','JSADM_AI_ALL_NOTIF':'Показать все','JSADM_AUTH_REQ':'Требуется авторизация!','JS_CORE_WINDOW_AUTH':'Войти','JS_CORE_IMAGE_FULL':'Полный размер'});</script><script type="text/javascript" src="/bitrix/js/main/core/core.min.js?1689784998220181"></script><script>BX.setJSList(['/bitrix/js/main/core/core_ajax.js','/bitrix/js/main/core/core_promise.js','/bitrix/js/main/polyfill/promise/js/promise.js','/bitrix/js/main/loadext/loadext.js','/bitrix/js/main/loadext/extension.js','/bitrix/js/main/polyfill/promise/js/promise.js','/bitrix/js/main/polyfill/find/js/find.js','/bitrix/js/main/polyfill/includes/js/includes.js','/bitrix/js/main/polyfill/matches/js/matches.js','/bitrix/js/ui/polyfill/closest/js/closest.js','/bitrix/js/main/polyfill/fill/main.polyfill.fill.js','/bitrix/js/main/polyfill/find/js/find.js','/bitrix/js/main/polyfill/matches/js/matches.js','/bitrix/js/main/polyfill/core/dist/polyfill.bundle.js','/bitrix/js/main/core/core.js','/bitrix/js/main/polyfill/intersectionobserver/js/intersectionobserver.js','/bitrix/js/main/lazyload/dist/lazyload.bundle.js','/bitrix/js/main/polyfill/core/dist/polyfill.bundle.js','/bitrix/js/main/parambag/dist/parambag.bundle.js']);
+<script>if(!window.BX)window.BX={};if(!window.BX.message)window.BX.message=function(mess){if(typeof mess==='object'){for(let i in mess) {BX.message[i]=mess[i];} return true;}};</script>
+<script>(window.BX||top.BX).message({'pull_server_enabled':'Y','pull_config_timestamp':'1703430968','pull_guest_mode':'N','pull_guest_user_id':'0'});(window.BX||top.BX).message({'PULL_OLD_REVISION':'Для продолжения корректной работы с сайтом необходимо перезагрузить страницу.'});</script>
+<script>(window.BX||top.BX).message({'JS_CORE_LOADING':'Загрузка...','JS_CORE_NO_DATA':'- Нет данных -','JS_CORE_WINDOW_CLOSE':'Закрыть','JS_CORE_WINDOW_EXPAND':'Развернуть','JS_CORE_WINDOW_NARROW':'Свернуть в окно','JS_CORE_WINDOW_SAVE':'Сохранить','JS_CORE_WINDOW_CANCEL':'Отменить','JS_CORE_WINDOW_CONTINUE':'Продолжить','JS_CORE_H':'ч','JS_CORE_M':'м','JS_CORE_S':'с','JSADM_AI_HIDE_EXTRA':'Скрыть лишние','JSADM_AI_ALL_NOTIF':'Показать все','JSADM_AUTH_REQ':'Требуется авторизация!','JS_CORE_WINDOW_AUTH':'Войти','JS_CORE_IMAGE_FULL':'Полный размер'});</script><script src="/bitrix/js/main/core/core.min.js?1702461428223197"></script><script>BX.Runtime.registerExtension({'name':'main.core','namespace':'BX','loaded':true});</script>
+<script>BX.setJSList(['/bitrix/js/main/core/core_ajax.js','/bitrix/js/main/core/core_promise.js','/bitrix/js/main/polyfill/promise/js/promise.js','/bitrix/js/main/loadext/loadext.js','/bitrix/js/main/loadext/extension.js','/bitrix/js/main/polyfill/promise/js/promise.js','/bitrix/js/main/polyfill/find/js/find.js','/bitrix/js/main/polyfill/includes/js/includes.js','/bitrix/js/main/polyfill/matches/js/matches.js','/bitrix/js/ui/polyfill/closest/js/closest.js','/bitrix/js/main/polyfill/fill/main.polyfill.fill.js','/bitrix/js/main/polyfill/find/js/find.js','/bitrix/js/main/polyfill/matches/js/matches.js','/bitrix/js/main/polyfill/core/dist/polyfill.bundle.js','/bitrix/js/main/core/core.js','/bitrix/js/main/polyfill/intersectionobserver/js/intersectionobserver.js','/bitrix/js/main/lazyload/dist/lazyload.bundle.js','/bitrix/js/main/polyfill/core/dist/polyfill.bundle.js','/bitrix/js/main/parambag/dist/parambag.bundle.js']);
 </script>
-<script type="text/javascript">(window.BX||top.BX).message({'LANGUAGE_ID':'ru','FORMAT_DATE':'DD.MM.YYYY','FORMAT_DATETIME':'DD.MM.YYYY HH:MI:SS','COOKIE_PREFIX':'BITRIX_SM','SERVER_TZ_OFFSET':'10800','UTF_MODE':'Y','SITE_ID':'s1','SITE_DIR':'/','USER_ID':'643','SERVER_TIME':'1695615672','USER_TZ_OFFSET':'0','USER_TZ_AUTO':'Y','bitrix_sessid':'75618b53a0ddffabcc4cec79d2a50833'});</script><script type="text/javascript" src="/bitrix/js/pull/protobuf/protobuf.min.js?159231549176433"></script>
-<script type="text/javascript" src="/bitrix/js/pull/protobuf/model.min.js?159231549114190"></script>
-<script type="text/javascript" src="/bitrix/js/main/core/core_promise.min.js?15551566002490"></script>
-<script type="text/javascript" src="/bitrix/js/rest/client/rest.client.min.js?16015491189240"></script>
-<script type="text/javascript" src="/bitrix/js/pull/client/pull.client.min.js?167843116848309"></script>
-<script type="text/javascript" src="/bitrix/js/main/popup/dist/main.popup.bundle.min.js?168130228565670"></script>
-<script type="text/javascript" src="/bitrix/js/main/core/core_fx.min.js?14909536449768"></script>
-<script type="text/javascript">if (Intl && Intl.DateTimeFormat) document.cookie="BITRIX_SM_TZ="+Intl.DateTimeFormat().resolvedOptions().timeZone+"; path=/; expires=Sun, 01 Sep 2024 00:00:00 +0300";</script>
+<script>BX.Runtime.registerExtension({'name':'ui.fonts.montserrat','namespace':'window','loaded':true});</script>
+<script>BX.Runtime.registerExtension({'name':'ui.fonts.opensans','namespace':'window','loaded':true});</script>
+<script>BX.Runtime.registerExtension({'name':'main.popup','namespace':'BX.Main','loaded':true});</script>
+<script>BX.Runtime.registerExtension({'name':'popup','namespace':'window','loaded':true});</script>
+<script>BX.Runtime.registerExtension({'name':'fx','namespace':'window','loaded':true});</script>
+<script>(window.BX||top.BX).message({'LANGUAGE_ID':'ru','FORMAT_DATE':'DD.MM.YYYY','FORMAT_DATETIME':'DD.MM.YYYY HH:MI:SS','COOKIE_PREFIX':'BITRIX_SM','SERVER_TZ_OFFSET':'10800','UTF_MODE':'Y','SITE_ID':'s1','SITE_DIR':'/','USER_ID':'677','SERVER_TIME':'1703698252','USER_TZ_OFFSET':'0','USER_TZ_AUTO':'Y','bitrix_sessid':'8bbcd161c0a147e579229a7f073faae3'});</script><script src="/bitrix/js/pull/protobuf/protobuf.min.js?159231549176433"></script>
+<script src="/bitrix/js/pull/protobuf/model.min.js?159231549114190"></script>
+<script src="/bitrix/js/main/core/core_promise.min.js?15551566002490"></script>
+<script src="/bitrix/js/rest/client/rest.client.min.js?16015491189240"></script>
+<script src="/bitrix/js/pull/client/pull.client.min.js?170237842249554"></script>
+<script src="/bitrix/js/main/popup/dist/main.popup.bundle.min.js?170185523765824"></script>
+<script src="/bitrix/js/main/core/core_fx.min.js?14909536449768"></script>
+<script type="text/javascript">if (Intl && Intl.DateTimeFormat) document.cookie="BITRIX_SM_TZ="+Intl.DateTimeFormat().resolvedOptions().timeZone+"; path=/; expires=Sun, 01 Dec 2024 00:00:00 +0300";</script>
 <script type="text/javascript">BX.bind(window, "load", function(){BX.PULL.start();});</script>
 
 

@@ -304,7 +304,7 @@ class ControllerExpertExpert extends Controller
                     'image' => $this->model_themeset_themeset->resize_crop($banner_info['image_pc'], 100, 100),
                 );
             }
-            if ($this->request->get['route'] !== 'register/account') {
+            if ($this->visitor->getId()) {
                 // master
                 $master_info = $this->config->get('av_master');
                 $data['master_info'] = array(
@@ -432,14 +432,19 @@ class ControllerExpertExpert extends Controller
             $event_list = [];
 
             if ($event_type === 'forum') {
-                $event_list = $this->model_visitor_expert->getRegistrations($expert_info['b24id'], 'forum');
+                $event_list = $this->model_visitor_expert->getRegistrations($expert_info['b24id'], 'forum')['list'];
             } else {
-                $event_list = $this->model_visitor_expert->getRegistrations($expert_info['b24id'], 'webinar');
+                $event_list = $this->model_visitor_expert->getRegistrations($expert_info['b24id'], 'webinar')['list'];
             }
+
+            $start_index = 0;
+            $length = 3;
+
+            $event_list = array_slice($event_list, $start_index, $length);
 
             $sort_forum = array();
 
-            foreach ($event_list['list'] as $event_item) {
+            foreach ($event_list as $event_item) {
 
                 $time = strtotime($event_item['date']);
 

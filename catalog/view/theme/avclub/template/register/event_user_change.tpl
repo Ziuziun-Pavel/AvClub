@@ -141,14 +141,11 @@
 <script>
 	var formChanged = false;
 
-	// Track changes in form inputs
 	$('#register-newuser .regform__input').on('input', function() {
-		console.log('1')
 		formChanged = true;
 	});
 
 	$('#register-newuser .regform__select--dropdown').on('click', function() {
-		console.log('2')
 		formChanged = true;
 	});
 </script>

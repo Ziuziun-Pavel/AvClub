@@ -6,6 +6,9 @@ class ControllerRegisterEvent extends Controller
     private $b24_hook = 'https://avclub.bitrix24.ru/rest/669/0nvck395h18aqtai/';
     private $b24_contacts = 'https://avclub.bitrix24.ru/rest/669/2yt2mpuav23aqllx/';
     private $forum_list_id = 77;
+
+    private $master_class_list_id = 117;
+
     private $webinar_list_id = 105;
 
     private $url_contact_create = "http://clients.techin.by/avclub/site/api/v1/contact/create";
@@ -26,7 +29,7 @@ class ControllerRegisterEvent extends Controller
         unset($this->session->data['register_email']);
         unset($this->session->data['register_user']);
         unset($this->session->data['register_contact_id']);
-
+        unset($this->session->data['register_code']);
 
         $bitrixWebHook = $this->b24_hook;
         require_once(DIR_SYSTEM . 'library/crest/crest.php');
@@ -48,9 +51,8 @@ class ControllerRegisterEvent extends Controller
         $data['attention_text'] = $this->attention_text;
 
         /* FORUM */
-        if (isset($this->request->get['forum_id']) && !$has_event) {
-            $forum_id = !empty($this->request->get['forum_id']) ? (int)$this->request->get['forum_id'] : 0;
-
+        if (isset($this->request->get['forum_id']) && !isset($this->request->get['master_class_id'])  && !$has_event) {
+          $forum_id = !empty($this->request->get['forum_id']) ? (int)$this->request->get['forum_id'] : 0;
             $result = CRest::call(
                 'lists.element.get',
                 [
@@ -167,6 +169,83 @@ class ControllerRegisterEvent extends Controller
         }
         /* # WEBINAR */
 
+        /* MASTER CLASS */
+        if (isset($this->request->get['master_class_id']) && isset($this->request->get['forum_id']) && !$has_event) {
+            $master_class_id = !empty($this->request->get['master_class_id']) ? (int)$this->request->get['master_class_id'] : 0;
+            $forum_id = !empty($this->request->get['forum_id']) ? (int)$this->request->get['forum_id'] : 0;
+
+            $result = CRest::callBatch([
+                'get_master_class' => [
+                    'method' => 'lists.element.get',
+                    'params' => [
+                        "IBLOCK_TYPE_ID" => "lists",
+                        "IBLOCK_ID" => $this->master_class_list_id,
+                        "filter" => array("=ID" => array($master_class_id))
+                    ]
+                ],
+                'get_forum' => [
+                    'method' => 'lists.element.get',
+                    'params' => [
+                        "IBLOCK_TYPE_ID" => "lists",
+                        "IBLOCK_ID" => $this->forum_list_id,
+                        "filter" => array("=ID" => array($forum_id))
+                    ]
+                ],
+            ]);
+
+            //название мастер-класса
+            $master_class_name = array_shift($result['result']['result']['get_master_class'][0]['PROPERTY_669']);
+
+            if (!empty($master_class_id) && !empty($result['result']['result']['get_forum'][0])) {
+
+                $timeToClose = 17 + current($result['result']['result']['get_forum'][0]['PROPERTY_477']) . ':00:00';
+
+                $isClosed = !(
+                    strtotime(date('d.m.Y')) < strtotime(current($result['result']['result']['get_forum'][0]['PROPERTY_427'])) ||
+                    strtotime(date('d.m.Y')) == strtotime(current($result['result']['result']['get_forum'][0]['PROPERTY_427'])) && time() <= strtotime($timeToClose)
+                );
+
+                $this->session->data['register_event'] = array(
+                    'type' => 'master_class',
+                    'forum_id' => $forum_id,
+                    'master_class_id' => $master_class_id,
+                    'name' => $master_class_name,
+                    'city' => current($result['result']['result']['get_forum'][0]['PROPERTY_479']),
+                    'date' => current($result['result']['result']['get_forum'][0]['PROPERTY_427']),
+                    'date_stop' => current($result['result']['result']['get_forum'][0]['PROPERTY_665']),
+                    'isClosed' => $isClosed,
+                    'timezone' => current($result['result']['result']['get_forum'][0]['PROPERTY_477']),
+                    'address_1' => current($result['result']['result']['get_forum'][0]['PROPERTY_473']),
+                    'address_2' => current($result['result']['result']['get_forum'][0]['PROPERTY_475']),
+                    'price' => !empty($result['result']['result']['get_forum'][0]['PROPERTY_547']) ? current($result['result']['result']['get_forum'][0]['PROPERTY_547']) : '',
+                );
+
+                $data['event_info'] = array(
+                    'type' => 'master_class',
+                    'title' => 'Регистрация на мастер-класс ' . $this->session->data['register_event']['name'],
+                    'name' => $this->session->data['register_event']['name'],
+                    'city' => $this->session->data['register_event']['city'],
+                    'date' => $this->session->data['register_event']['date'],
+                    'date_stop' => $this->session->data['register_event']['date_stop'],
+                    'isClosed' => $this->session->data['register_event']['isClosed'],
+                    'timezone' => $this->session->data['register_event']['timezone'],
+                    'price' => $this->session->data['register_event']['price'],
+                    'address' => array()
+                );
+
+                if ($this->session->data['register_event']['address_1']) {
+                    $data['event_info']['address'][] = $this->session->data['register_event']['address_1'];
+                }
+                if ($this->session->data['register_event']['address_2']) {
+                    $data['event_info']['address'][] = $this->session->data['register_event']['address_2'];
+                }
+
+                $has_event = true;
+            }
+
+        }
+        /* # MASTER CLASS */
+
 
         if (!empty($data['event_info'])) {
 
@@ -177,15 +256,32 @@ class ControllerRegisterEvent extends Controller
                     $email = '';
 
                     $user_check_data['contact_id'] = $contact_info['ID'];
-                    $user_check_data['type'] = $this->request->get['webinar_id'] ? 'webinar' : 'forum';
-                    $user_check_data['event_id'] = $user_check_data['type'] === 'webinar' ?
-                        $this->request->get['webinar_id'] :
-                        $this->request->get['forum_id'];
+                    $user_check_data['type'] = '';
+
+                    if ($this->request->get['webinar_id']) {
+                        $user_check_data['type'] = 'webinar';
+                    } elseif (isset($this->request->get['forum_id']) && !isset($this->request->get['master_class_id'])) {
+                        $user_check_data['type'] = 'forum';
+                    } else {
+                        $user_check_data['type'] = 'master_class';
+                    }
+
+                    $user_check_data['event_id'] = '';
+
+                    if ($user_check_data['type'] === 'webinar') {
+                        $user_check_data['event_id'] = $this->request->get['webinar_id'];
+                    } elseif ($user_check_data['type'] === 'forum') {
+                        $user_check_data['event_id'] = $this->request->get['forum_id'];
+                    } else {
+                        $user_check_data['event_id'] = $this->request->get['master_class_id'];
+                        $user_check_data['forum_id'] = $this->request->get['forum_id'];
+                    }
 
                     $user_check_data['contact_ids'] = $this->model_register_register->getAlternateUsers($user_check_data['contact_id']);
+                    $register_exists = $this->model_register_register->checkRegistration($user_check_data['type'], $user_check_data['event_id'], $user_check_data['forum_id'], $user_check_data['contact_ids'], $user_check_data['fields']);
 
-                    $register_exists = $this->model_register_register->checkRegistration($user_check_data['type'], $user_check_data['event_id'], $user_check_data['contact_ids']);
                     $data['register_exists'] = $register_exists;
+                    $this->session->data['register_event']['register_exists'] = $register_exists;
 
                     $user_data = array(
                         'user_id' => $contact_info['ID'],
@@ -398,19 +494,39 @@ class ControllerRegisterEvent extends Controller
 
             if ($exist && !empty($this->session->data['register_user'])) {
                 $user_data = $this->session->data['register_user'];
-
             } else {
                 $contact_info = $this->model_register_register->getContactInfo($contact_id);
 
                 if (!empty($contact_info['ID'])) {
                     $user_check_data['contact_id'] = $contact_info['ID'];
-                    $user_check_data['type'] = $this->session->data['register_event']['type'];
-                    $user_check_data['event_id'] = $this->session->data['register_event']['webinar_id'];
+                    $user_check_data['type'] = '';
+
+                    if ($this->session->data["register_event"]['webinar_id']) {
+                        $user_check_data['type'] = 'webinar';
+                    } elseif (isset($this->session->data["register_event"]['forum_id']) && !isset($this->session->data["register_event"]['master_class_id'])) {
+                        $user_check_data['type'] = 'forum';
+                    } else {
+                        $user_check_data['type'] = 'master_class';
+                    }
+
+                    $user_check_data['event_id'] = '';
+
+                    if ($user_check_data['type'] === 'webinar') {
+                        $user_check_data['event_id'] = $this->session->data["register_event"]['webinar_id'];
+                    } elseif ($user_check_data['type'] === 'forum') {
+                        $user_check_data['event_id'] = $this->session->data["register_event"]['forum_id'];
+                    } else {
+                        $user_check_data['event_id'] = $this->session->data["register_event"]['master_class_id'];
+                        $user_check_data['forum_id'] = $this->session->data["register_event"]['forum_id'];
+                    }
+
 
                     $user_check_data['contact_ids'] = $this->model_register_register->getAlternateUsers($user_check_data['contact_id']);
 
-                    $register_exists = $this->model_register_register->checkRegistration($user_check_data['type'], $user_check_data['event_id'], $user_check_data['contact_ids']);
+                    $register_exists = $this->model_register_register->checkRegistration($user_check_data['type'], $user_check_data['event_id'], $user_check_data['forum_id'], $user_check_data['contact_ids'], $user_check_data['fields']);
+
                     $data['register_exists'] = $register_exists;
+                    $this->session->data['register_event']['register_exists'] = $register_exists;
 
                     $user_data = array(
                         'user_id' => $contact_info['ID'],
@@ -486,24 +602,66 @@ class ControllerRegisterEvent extends Controller
                         'email' => !empty($this->session->data['register_email']) ? $this->session->data['register_email'] : '',
                         'avatar' => $this->model_themeset_image->original('user_no_avatar.png'),
                     );
+
+                    $user_check_data['contact_id'] = $contact_info['ID'];
+                    $user_check_data['type'] = '';
+
+                    if ($this->session->data["register_event"]['webinar_id']) {
+                        $user_check_data['type'] = 'webinar';
+                    } elseif (isset($this->session->data["register_event"]['forum_id']) && !isset($this->session->data["register_event"]['master_class_id'])) {
+                        $user_check_data['type'] = 'forum';
+                    } else {
+                        $user_check_data['type'] = 'master_class';
+                    }
+
+                    $user_check_data['event_id'] = '';
+
+                    if ($user_check_data['type'] === 'webinar') {
+                        $user_check_data['event_id'] = $this->session->data["register_event"]['webinar_id'];
+                    } elseif ($user_check_data['type'] === 'forum') {
+                        $user_check_data['event_id'] = $this->session->data["register_event"]['forum_id'];
+                    } else {
+                        $user_check_data['event_id'] = $this->session->data["register_event"]['master_class_id'];
+                        $user_check_data['forum_id'] = $this->session->data["register_event"]['forum_id'];
+                    }
+                    $user_check_data['fields'] = [
+                        'contact_name' => $user_data['name'],
+                        'contact_last_name' => $user_data['lastname'],
+                        'contact_phone' => $this->session->data['register_phone'],
+                        'contact_email' => $this->session->data['register_email'],
+                    ];
+
+                    $user_check_data['contact_ids'] = $this->model_register_register->getAlternateUsers($user_check_data['contact_id']);
+
+                    $register_exists = $this->model_register_register->checkRegistration($user_check_data['type'], $user_check_data['event_id'], $user_check_data['forum_id'], $user_check_data['contact_ids'], $user_check_data['fields']);
+
+                    $data['register_exists'] = $register_exists;
+                    $this->session->data['register_event']['register_exists'] = $register_exists;
+
                 }
 
             }
 
+            if ($data['register_exists']) {
+                $return['error'] = 'Пользователь уже зарегистрирован на это мероприятие.';
+                $return['template'] = $this->load->view('register/event_code', $data);
 
-            if (!empty($user_data['email'])) {
-                $email = $user_data['email'];
-            } else if (empty($email)) {
-                $return['error'] = 'Введите адрес электронной почты';
-                $return['show_email'] = true;
-                $error = true;
+                $this->response->addHeader('Content-Type: application/json');
+                $this->response->setOutput(json_encode($return));
+            } else {
+                if (!empty($user_data['email'])) {
+                    $email = $user_data['email'];
+                } else if (empty($email)) {
+                    $return['error'] = 'Введите адрес электронной почты';
+                    $return['show_email'] = true;
+                    $error = true;
+                }
+
+                $this->session->data['register_email'] = !empty($email) ? $email : '';
+                $user_data['email'] = $this->session->data['register_email'];
+
+                $this->session->data['register_user'] = $user_data;
             }
-
-            $this->session->data['register_email'] = !empty($email) ? $email : '';
-            $user_data['email'] = $this->session->data['register_email'];
-
-            $this->session->data['register_user'] = $user_data;
-
         }
 
         if (!$error) {
@@ -888,11 +1046,15 @@ class ControllerRegisterEvent extends Controller
         // все ок, ошибок нет
         if (!$error) {
 
+
             if ($post['formChanged'] === "true") {
                 $post['formChanged'] = true;
             } else {
                 $post['formChanged'] = false;
             }
+            $this->session->data['register_user']['formChanged'] = $post['formChanged'];
+            $this->session->data['register_user']['company'] !== $post["company"] ? $post['formChanged'] = true : $post['formChanged'] = false;
+            $this->session->data['register_user']['formChanged'];
 
             $user_data = array(
                 //'user_id'					=> $this->session->data['register_user']['user_id'],
@@ -908,11 +1070,20 @@ class ControllerRegisterEvent extends Controller
                 'company_phone' => isset($post['company_phone']) ? $post['company_phone'] : '',
                 'company_site' => isset($post['company_site']) ? $post['company_site'] : '',
                 'company_activity' => isset($post['company_activity']) ? $post['company_activity'] : '',
+                'company_country' => isset($this->session->data["register_event"]['company_country']) ? $this->session->data["register_event"]['company_country'] : '',
+                'company_inn' => isset($this->session->data["register_event"]['company_inn']) ? $this->session->data["register_event"]['company_inn'] : '',
                 'city' => isset($post['city']) ? $post['city'] : '',
                 'email' => isset($post['email']) ? $post['email'] : '',
                 'avatar' => $this->session->data['register_user']['avatar'],
-                'formChanged' => $post["formChanged"]
+                'formChanged' => $this->session->data['register_user']['formChanged']
             );
+
+            if ($this->session->data['register_user']['company'] !== $user_data['company']) {
+                $user_data['formChanged'] = true;
+                $this->session->data['register_user']['formChanged'] = true;
+                $user_data['companyDataChanged'] = true;
+                $this->session->data['register_user']['companyDataChanged'] = true;
+            }
 
             $user_check_data['fields'] = [
                 'contact_name' => $user_data['name'],
@@ -921,11 +1092,34 @@ class ControllerRegisterEvent extends Controller
                 'contact_email' => $this->session->data['register_email'],
             ];
 
-            $user_check_data['type'] = $this->session->data['register_event']['type'];
-            $user_check_data['event_id'] = $this->session->data['register_event']['webinar_id'];
+            $user_check_data['type'] = '';
 
-            $register_exists = $this->model_register_register->checkRegistration($user_check_data['type'], $user_check_data['event_id'], $user_check_data['contact_ids'], $user_check_data['fields']);
+            if ($this->session->data["register_event"]['webinar_id']) {
+                $user_check_data['type'] = 'webinar';
+            } elseif (isset($this->session->data["register_event"]['forum_id']) && !isset($this->session->data["register_event"]['master_class_id'])) {
+                $user_check_data['type'] = 'forum';
+            } else {
+                $user_check_data['type'] = 'master_class';
+            }
+
+            $user_check_data['event_id'] = '';
+
+            if ($user_check_data['type'] === 'webinar') {
+                $user_check_data['event_id'] = $this->session->data["register_event"]['webinar_id'];
+            } elseif ($user_check_data['type'] === 'forum') {
+                $user_check_data['event_id'] = $this->session->data["register_event"]['forum_id'];
+            } else {
+                $user_check_data['event_id'] = $this->session->data["register_event"]['master_class_id'];
+                $user_check_data['forum_id'] = $this->session->data["register_event"]['forum_id'];
+            }
+
+
+            $user_check_data['contact_ids'] = $this->model_register_register->getAlternateUsers($user_check_data['contact_id']);
+//            var_dump($user_check_data);
+//            die();
+            $register_exists = $this->model_register_register->checkRegistration($user_check_data['type'], $user_check_data['event_id'], $user_check_data['forum_id'], $user_check_data['contact_ids'], $user_check_data['fields']);
             $data['register_exists'] = $register_exists;
+            $this->session->data['register_event']['register_exists'] = $register_exists;
 
             $this->session->data['register_user'] = $user_data;
 
@@ -964,7 +1158,9 @@ class ControllerRegisterEvent extends Controller
             case 'webinar':
                 $this->register();
                 break;
-
+            case 'master_class':
+                $this->session->data['register_event']['register_exists']['deal_id'] ? $this->register() : $this->showPromo();
+                break;
             default:
                 $this->showPromo();
         }
@@ -1032,7 +1228,6 @@ class ControllerRegisterEvent extends Controller
 
     public function register()
     {
-
         $this->load->model('register/register');
         $this->load->model('themeset/expert');
 
@@ -1063,11 +1258,10 @@ class ControllerRegisterEvent extends Controller
 
         $old_company = $this->model_register_register->getCompanyByB24id(!empty($this->session->data['register_user']['b24_company_old_id']) ? $this->session->data['register_user']['b24_company_old_id'] : 0);
 
-        $isCompanyEdit = $old_company["city"] !== $this->session->data['register_user']['city'] ||
+        $isCompanyEdit = !empty($old_company) && ($old_company["city"] !== $this->session->data['register_user']['city'] ||
             $old_company["web"] !== $this->session->data['register_user']['company_site'] ||
             $old_company["phone"] !== $this->session->data['register_user']['company_phone'] ||
-            $old_company["activity"] !== $this->session->data['register_user']['company_activity'];
-
+            $old_company["activity"] !== $this->session->data['register_user']['company_activity']);
         $user_data = array(
             'user_id' => $this->session->data['register_user']['user_id'],
             'old_user_id' => $this->session->data['register_user']['old_user_id'],
@@ -1078,10 +1272,13 @@ class ControllerRegisterEvent extends Controller
             'post' => $this->session->data['register_user']['post'],
             'company' => $this->session->data['register_user']['company'],
             'IsCompanyEdit' => $isCompanyEdit,
+            'companyDataChanged' => $this->session->data['register_user']['companyDataChanged'],
             'company_status' => $this->session->data['register_user']['company_status'],
             'company_phone' => $this->session->data['register_user']['company_phone'],
             'company_site' => $this->session->data['register_user']['company_site'],
             'company_activity' => $this->session->data['register_user']['company_activity'],
+            'company_country' => isset($this->session->data["register_event"]['company_country']) ? $this->session->data["register_event"]['company_country'] : '',
+            'company_inn' => isset($this->session->data["register_event"]['company_inn']) ? $this->session->data["register_event"]['company_inn'] : '',
             'city' => $this->session->data['register_user']['city'],
             'b24_company_id' => !empty($this->session->data['register_user']['b24_company_id']) ? $this->session->data['register_user']['b24_company_id'] : 0,
             'b24_company_old_id' => !empty($this->session->data['register_user']['b24_company_old_id']) ? $this->session->data['register_user']['b24_company_old_id'] : 0,
@@ -1097,31 +1294,45 @@ class ControllerRegisterEvent extends Controller
             );
             $this->model_register_register->log($log, 'info');
         }
-
-
+        var_dump(!empty($user_data['old_user_id']) && $user_data['user_id'] == $user_data['old_user_id']);
+        var_dump(!$this->session->data['register_user']['formChanged']);
+        var_dump(!$this->session->data['register_user']['companyDataChanged']);
 
         // все ок, ошибок нет
         if (!$error) {
-
             switch (true) {
 
                 /* данные не менялись */
-                case (!empty($user_data['old_user_id']) && $user_data['user_id'] == $user_data['old_user_id'] || !$this->session->data['register_user']['formChanged']):
+                case (
+                    !empty($user_data['old_user_id']) && $user_data['user_id'] == $user_data['old_user_id'] ||
+                    !$this->session->data['register_user']['formChanged'] ||
+                    !$this->session->data['register_user']['companyDataChanged']):
+                    var_dump('1');
+                die();
                     $contact_id = $user_data['old_user_id'];
                     break;
 
                 /* данные поменялись */
-                case (!empty($user_data['old_user_id']) && $user_data['user_id'] != $user_data['old_user_id'] || $this->session->data['register_user']['formChanged']):
+                case (
+                    !empty($user_data['old_user_id']) && $user_data['user_id'] != $user_data['old_user_id'] ||
+                    $this->session->data['register_user']['formChanged'] ||
+                    $this->session->data['register_user']['companyDataChanged']):
+                    var_dump('2');
+                    die();
                     $user_data['IsContactEdit'] = true;
                     $return_contact = $this->model_register_register->createContact($user_data);
                     $contact_id = $return_contact['id'];
 
-                    $this->model_register_register->addAlternateId($user_data['old_user_id'], $contact_id);
+                    if ($user_data['old_user_id'] !== $contact_id) {
+                        $this->model_register_register->addAlternateId($user_data['old_user_id'], $contact_id);
+                    }
                     // $this->model_register_register->updateExpertID($user_data['old_user_id'], $contact_id);
                     break;
 
                 /* новый контакт */
                 default:
+                    var_dump('3');
+                    die();
                     $user_data['IsContactEdit'] = true;
 
                     $return_contact = $this->model_register_register->createContact($user_data);
@@ -1134,7 +1345,6 @@ class ControllerRegisterEvent extends Controller
                 $contact_info = $this->model_register_register->getContactInfo($contact_id);
             }
 
-
             $log = array(
                 'step' => 'Создание контакта',
                 'session' => $sid,
@@ -1144,6 +1354,8 @@ class ControllerRegisterEvent extends Controller
                 'contact_info' => $contact_info,
             );
             $this->model_register_register->log($log, 'info');
+            $master_class_info = [];
+//            var_dump($this->session->data['register_event']['type']);
 
             switch ($this->session->data['register_event']['type']) {
                 case 'webinar':
@@ -1155,7 +1367,24 @@ class ControllerRegisterEvent extends Controller
                     );
                     $type_text = 'вебинар';
                     break;
+                case 'master_class':
+                    $event_info = array(
+                        'company_id' => $contact_info['COMPANY_ID'] ? $contact_info['COMPANY_ID'] : $contact_info['company_id'],
+                        'contact_id' => $contact_id,
+                        'dealType' => 'forum',
+                        'forum_id' => $this->session->data['register_event']['forum_id'],
+                        'promocode' => $hasPromo && !empty($promo) ? $promo : ''
+                    );
 
+                    $master_class_info = array(
+                        'company_id' => $contact_info['COMPANY_ID'] ? $contact_info['COMPANY_ID'] : $contact_info['company_id'],
+                        'contact_id' => $contact_id,
+                        'dealType' => 'master_class',
+                        'forum_id' => $this->session->data['register_event']['forum_id'],
+                        'master_class_id' => $this->session->data['register_event']['master_class_id'],
+                    );
+                    $type_text = 'мастер-класс';
+                    break;
                 default:
                     $event_info = array(
                         'company_id' => $contact_info['COMPANY_ID'] ? $contact_info['COMPANY_ID'] : $contact_info['company_id'],
@@ -1167,50 +1396,124 @@ class ControllerRegisterEvent extends Controller
                     $type_text = 'форум';
             }
 
-            $deal_info = $this->model_register_register->createDeal($event_info);
+            $deal_info = [];
+            $smart_proccess_info = [];
+//            var_dump($this->session->data['register_event']['type']);
 
-            if ($deal_info['code'] == 200) {
-                $return['old_id'] = $this->session->data['register_user']['user_id'];
-                $return['new_id'] = $contact_id;
-                $return['contact_info'] = $contact_info;
-                $return['deal_info'] = $deal_info;
-
-                if (isset($deal_info['sum'])) {
-                    $data['promocode'] = $deal_info['sum'] > 0 && $hasPromo ? $promo : '';
-                    $data['price'] = (float)$deal_info['sum'] > 0 ? $deal_info['sum'] . ' руб.' : '';
+            if ($this->session->data['register_event']['type'] === 'master_class') {
+                if ($this->session->data['register_event']['register_exists']['deal_id']) {
+                    $master_class_info['deal_id'] = $this->session->data['register_event']['register_exists']['deal_id'];
                 } else {
-                    $data['price'] = !empty($this->session->data['register_event']['price']) ? $this->session->data['register_event']['price'] . ' руб.' : '';
-                    $data['promocode'] = '';
+                    $deal_info = $this->model_register_register->createDeal($event_info);
+                    $master_class_info['deal_id'] = $deal_info['id'];
                 }
+//                var_dump($master_class_info);
 
-                $data['type'] = $this->session->data['register_event']['type'];
+                $smart_proccess_info = $this->model_register_register->createSmartProccess($master_class_info);
+//                var_dump($smart_proccess_info);
 
-                if (!empty($deal_info['message']) && $deal_info['message'] === 'Exists') {
-                    $data['title'] = $this->session->data['register_user']['name'] . ', Ваша заявка на модерации.';
-                } else {
-
-                    $data['title'] = 'Ваша заявка на участие успешно подана. <br>Инструкции для посещения мы вышлем на указанный e-mail.';
-                }
             } else {
-                $data['title'] = 'Произошла ошибка. Регистрация не завершена';
-
-                $error_text .= "REGISTER TYPE: " . $this->session->data['register_event']['type'];
-                $error_text .= "\nCONTACT_ID: " . $contact_id;
-                $error_text .= "\nCOMPANY_ID: " . $contact_info['COMPANY_ID'];
-
-                switch ($this->session->data['register_event']['type']) {
-                    case 'webinar':
-                        $error_text .= "\nWEBINAR_ID: " . $this->session->data['register_event']['webinar_id'];
-                        break;
-                    case 'forum':
-                        $error_text .= "\nFORUM_ID: " . $this->session->data['register_event']['forum_id'];
-                        break;
-                }
-                $error_text .= "\nRETURN: " . json_encode($deal_info);
-                $this->model_register_register->log($error_text);
-
+                $deal_info = $this->model_register_register->createDeal($event_info);
             }
+//            var_dump($this->session->data['register_event']['type']);
+//            var_dump($deal_info);
+//
+//            var_dump($master_class_info);
+//
+//            var_dump($smart_proccess_info);
 
+//            die();
+            if (($this->session->data['register_event']['type'] === 'master_class' && $smart_proccess_info['code'] == 200)) {
+                if ($deal_info['code'] == 200 ||$master_class_info['deal_id']) {
+                    $return['old_id'] = $this->session->data['register_user']['user_id'];
+                    $return['new_id'] = $contact_id;
+                    $return['contact_info'] = $contact_info;
+
+                    if (!empty($deal_info)) {
+                        $return['deal_info'] = $deal_info;
+                        $return['smart_proccess_info'] = $smart_proccess_info;
+                    } else {
+                        $return['smart_proccess_info'] = $smart_proccess_info;
+                    }
+
+                    if (isset($deal_info['sum'])) {
+                        $data['promocode'] = $deal_info['sum'] > 0 && $hasPromo ? $promo : '';
+                        $data['price'] = (float)$deal_info['sum'] > 0 ? $deal_info['sum'] . ' руб.' : '';
+                    } else {
+                        $data['price'] = !empty($this->session->data['register_event']['price']) ? $this->session->data['register_event']['price'] . ' руб.' : '';
+                        $data['promocode'] = '';
+                    }
+
+                    $data['type'] = $this->session->data['register_event']['type'];
+
+                    if (!empty($deal_info['message']) && $deal_info['message'] === 'Exists') {
+                        $data['title'] = $this->session->data['register_user']['name'] . ', Ваша заявка на модерации.';
+                    } else {
+
+                        $data['title'] = 'Ваша заявка на участие успешно подана. <br>Инструкции для посещения мы вышлем на указанный e-mail.';
+                    }
+                } else {
+                    $data['title'] = 'Произошла ошибка. Регистрация не завершена';
+
+                    $error_text .= "REGISTER TYPE: " . $this->session->data['register_event']['type'];
+                    $error_text .= "\nCONTACT_ID: " . $contact_id;
+                    $error_text .= "\nCOMPANY_ID: " . $contact_info['COMPANY_ID'];
+
+                    switch ($this->session->data['register_event']['type']) {
+                        case 'webinar':
+                            $error_text .= "\nWEBINAR_ID: " . $this->session->data['register_event']['webinar_id'];
+                            break;
+                        case 'forum':
+                            $error_text .= "\nFORUM_ID: " . $this->session->data['register_event']['forum_id'];
+                            break;
+                    }
+                    $error_text .= "\nRETURN: " . json_encode($deal_info);
+                    $this->model_register_register->log($error_text);
+
+                }
+            } else  {
+                if ($deal_info['code'] == 200) {
+                    $return['old_id'] = $this->session->data['register_user']['user_id'];
+                    $return['new_id'] = $contact_id;
+                    $return['contact_info'] = $contact_info;
+                    $return['deal_info'] = $deal_info;
+
+                    if (isset($deal_info['sum'])) {
+                        $data['promocode'] = $deal_info['sum'] > 0 && $hasPromo ? $promo : '';
+                        $data['price'] = (float)$deal_info['sum'] > 0 ? $deal_info['sum'] . ' руб.' : '';
+                    } else {
+                        $data['price'] = !empty($this->session->data['register_event']['price']) ? $this->session->data['register_event']['price'] . ' руб.' : '';
+                        $data['promocode'] = '';
+                    }
+
+                    $data['type'] = $this->session->data['register_event']['type'];
+
+                    if (!empty($deal_info['message']) && $deal_info['message'] === 'Exists') {
+                        $data['title'] = $this->session->data['register_user']['name'] . ', Ваша заявка на модерации.';
+                    } else {
+
+                        $data['title'] = 'Ваша заявка на участие успешно подана. <br>Инструкции для посещения мы вышлем на указанный e-mail.';
+                    }
+                } else {
+                    $data['title'] = 'Произошла ошибка. Регистрация не завершена';
+
+                    $error_text .= "REGISTER TYPE: " . $this->session->data['register_event']['type'];
+                    $error_text .= "\nCONTACT_ID: " . $contact_id;
+                    $error_text .= "\nCOMPANY_ID: " . $contact_info['COMPANY_ID'];
+
+                    switch ($this->session->data['register_event']['type']) {
+                        case 'webinar':
+                            $error_text .= "\nWEBINAR_ID: " . $this->session->data['register_event']['webinar_id'];
+                            break;
+                        case 'forum':
+                            $error_text .= "\nFORUM_ID: " . $this->session->data['register_event']['forum_id'];
+                            break;
+                    }
+                    $error_text .= "\nRETURN: " . json_encode($deal_info);
+                    $this->model_register_register->log($error_text);
+
+                }
+            }
 
             $return['template'] = $this->load->view('register/event_success', $data);
 

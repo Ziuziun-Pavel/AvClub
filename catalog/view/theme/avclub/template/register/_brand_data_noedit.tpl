@@ -7,7 +7,7 @@
             <div class="regbrand__result--title"><?php echo $company_info['search']; ?></div>
         </div>
         <div class="regbrand__result--change">
-            <a href="#" class="link" id="regbrand-change" data-search="<?php echo $company_info['search']; ?>">+ Изменить</a>
+            <a href="#" class="link" id="regbrand-change" data-search='<?php echo $company_info["search"]; ?>'>+ Изменить</a>
         </div>
     </div>
 
@@ -42,7 +42,7 @@
             <div class="regform__plh">Активность в proAV</div>
 
         </div>
-        <input type="hidden" name="company" value="<?php echo $company_info['search']; ?>">
+        <input type="hidden" name="company" value='<?php echo $company_info["search"]; ?>'>
         <input type="hidden" name="b24_company_old_id" value="<?php echo $company_info['b24_company_old_id']; ?>">
         <input type="hidden" name="b24_company_id" value="<?php echo $company_info['b24_company_id']; ?>">
     </div>

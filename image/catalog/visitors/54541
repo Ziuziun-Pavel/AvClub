@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="robots" content="noindex, nofollow" />
+		<meta name="apple-itunes-app" content="app-id=561683423">
+	<link rel="apple-touch-icon-precomposed" href="/images/iphone/57x57.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/images/iphone/72x72.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/images/iphone/114x114.png" />
+	<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/images/iphone/144x144.png" />
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<script type="text/javascript" data-skip-moving="true">(function(w, d, n) {var cl = "bx-core";var ht = d.documentElement;var htc = ht ? ht.className : undefined;if (htc === undefined || htc.indexOf(cl) !== -1){return;}var ua = n.userAgent;if (/(iPad;)|(iPhone;)/i.test(ua)){cl += " bx-ios";}else if (/Windows/i.test(ua)){cl += ' bx-win';}else if (/Macintosh/i.test(ua)){cl += " bx-mac";}else if (/Linux/i.test(ua) && !/Android/i.test(ua)){cl += " bx-linux";}else if (/Android/i.test(ua)){cl += " bx-android";}cl += (/(ipad|iphone|android|mobile|touch)/i.test(ua) ? " bx-touch" : " bx-no-touch");cl += w.devicePixelRatio && w.devicePixelRatio >= 2? " bx-retina": " bx-no-retina";var ieVersion = -1;if (/AppleWebKit/.test(ua)){cl += " bx-chrome";}else if (/Opera/.test(ua)){cl += " bx-opera";}else if (/Firefox/.test(ua)){cl += " bx-firefox";}ht.className = htc ? htc + " " + cl : cl;})(window, document, navigator);</script>
+
+
+<link href="/bitrix/js/intranet/intranet-common.min.css?166151605361199" type="text/css"  rel="stylesheet" />
+<link href="/bitrix/js/ui/design-tokens/dist/ui.design-tokens.min.css?169773190022911" type="text/css"  rel="stylesheet" />
+<link href="/bitrix/js/intranet/design-tokens/bitrix24/bitrix24-design-tokens.min.css?16854388541467" type="text/css"  rel="stylesheet" />
+<link href="/bitrix/js/ui/fonts/montserrat/ui.font.montserrat.min.css?16620208132209" type="text/css"  rel="stylesheet" />
+<link href="/bitrix/js/ui/fonts/opensans/ui.font.opensans.min.css?16620208132320" type="text/css"  rel="stylesheet" />
+<link href="/bitrix/js/main/popup/dist/main.popup.bundle.min.css?168130229626598" type="text/css"  rel="stylesheet" />
+<link href="/bitrix/templates/login/template_styles.min.css?166151605348291" type="text/css"  data-template-style="true"  rel="stylesheet" />
+
+
+
+
+
+
+
+</head>
+<body>
+<table class="log-main-table">
+	<tr>
+		<td class="log-top-cell">
+			<a class="main-logo main-logo-ru" href="/" title="Bitrix24"></a>
+		</td>
+	</tr>
+	<tr>
+		<td class="log-main-cell">
+			<div class="log-popup-wrap " id="login-popup-wrap">
+				<div class="log-popup" id="login-popup">
+File not found				</div>
+				<div class="log-popup-caption-wrap">
+					<div class="log-popup-caption">
+													<div id="language-box" class="language-box ru">
+								<span id="language-arrow" class="language-flag"><span class="arrow"></span></span>
+							</div>
+												&copy; 2001-2024 &laquo;Битрикс&raquo;, &laquo;1С-Битрикс&raquo;. Объединяем компанию с <a href="http://www.bitrix24.ru/" target="_blank">&laquo;1С-Битрикс24&raquo;</a>					</div>
+				</div>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="log-bottom-cell"><span class="log-bottom-cap"></span></td>
+	</tr>
+</table>
+<script>if(!window.BX)window.BX={};if(!window.BX.message)window.BX.message=function(mess){if(typeof mess==='object'){for(let i in mess) {BX.message[i]=mess[i];} return true;}};</script>
+<script>(window.BX||top.BX).message({'pull_server_enabled':'Y','pull_config_timestamp':'1702495317','pull_guest_mode':'N','pull_guest_user_id':'0'});(window.BX||top.BX).message({'PULL_OLD_REVISION':'Для продолжения корректной работы с сайтом необходимо перезагрузить страницу.'});</script>
+<script>(window.BX||top.BX).message({'JS_CORE_LOADING':'Загрузка...','JS_CORE_NO_DATA':'- Нет данных -','JS_CORE_WINDOW_CLOSE':'Закрыть','JS_CORE_WINDOW_EXPAND':'Развернуть','JS_CORE_WINDOW_NARROW':'Свернуть в окно','JS_CORE_WINDOW_SAVE':'Сохранить','JS_CORE_WINDOW_CANCEL':'Отменить','JS_CORE_WINDOW_CONTINUE':'Продолжить','JS_CORE_H':'ч','JS_CORE_M':'м','JS_CORE_S':'с','JSADM_AI_HIDE_EXTRA':'Скрыть лишние','JSADM_AI_ALL_NOTIF':'Показать все','JSADM_AUTH_REQ':'Требуется авторизация!','JS_CORE_WINDOW_AUTH':'Войти','JS_CORE_IMAGE_FULL':'Полный размер'});</script><script src="/bitrix/js/main/core/core.min.js?1702461428223197"></script><script>BX.Runtime.registerExtension({'name':'main.core','namespace':'BX','loaded':true});</script>
+<script>BX.setJSList(['/bitrix/js/main/core/core_ajax.js','/bitrix/js/main/core/core_promise.js','/bitrix/js/main/polyfill/promise/js/promise.js','/bitrix/js/main/loadext/loadext.js','/bitrix/js/main/loadext/extension.js','/bitrix/js/main/polyfill/promise/js/promise.js','/bitrix/js/main/polyfill/find/js/find.js','/bitrix/js/main/polyfill/includes/js/includes.js','/bitrix/js/main/polyfill/matches/js/matches.js','/bitrix/js/ui/polyfill/closest/js/closest.js','/bitrix/js/main/polyfill/fill/main.polyfill.fill.js','/bitrix/js/main/polyfill/find/js/find.js','/bitrix/js/main/polyfill/matches/js/matches.js','/bitrix/js/main/polyfill/core/dist/polyfill.bundle.js','/bitrix/js/main/core/core.js','/bitrix/js/main/polyfill/intersectionobserver/js/intersectionobserver.js','/bitrix/js/main/lazyload/dist/lazyload.bundle.js','/bitrix/js/main/polyfill/core/dist/polyfill.bundle.js','/bitrix/js/main/parambag/dist/parambag.bundle.js']);
+</script>
+<script>BX.Runtime.registerExtension({'name':'ui.fonts.montserrat','namespace':'window','loaded':true});</script>
+<script>BX.Runtime.registerExtension({'name':'ui.fonts.opensans','namespace':'window','loaded':true});</script>
+<script>BX.Runtime.registerExtension({'name':'main.popup','namespace':'BX.Main','loaded':true});</script>
+<script>BX.Runtime.registerExtension({'name':'popup','namespace':'window','loaded':true});</script>
+<script>BX.Runtime.registerExtension({'name':'fx','namespace':'window','loaded':true});</script>
+<script>(window.BX||top.BX).message({'LANGUAGE_ID':'ru','FORMAT_DATE':'DD.MM.YYYY','FORMAT_DATETIME':'DD.MM.YYYY HH:MI:SS','COOKIE_PREFIX':'BITRIX_SM','SERVER_TZ_OFFSET':'10800','UTF_MODE':'Y','SITE_ID':'s1','SITE_DIR':'/','USER_ID':'677','SERVER_TIME':'1705467524','USER_TZ_OFFSET':'0','USER_TZ_AUTO':'Y','bitrix_sessid':'952c5b9f46b11f20bd636408919eb3e6'});</script><script src="/bitrix/js/pull/protobuf/protobuf.min.js?159231549176433"></script>
+<script src="/bitrix/js/pull/protobuf/model.min.js?159231549114190"></script>
+<script src="/bitrix/js/main/core/core_promise.min.js?15551566002490"></script>
+<script src="/bitrix/js/rest/client/rest.client.min.js?16015491189240"></script>
+<script src="/bitrix/js/pull/client/pull.client.min.js?170237842249554"></script>
+<script src="/bitrix/js/main/popup/dist/main.popup.bundle.min.js?170185523765824"></script>
+<script src="/bitrix/js/main/core/core_fx.min.js?14909536449768"></script>
+<script type="text/javascript">if (Intl && Intl.DateTimeFormat) document.cookie="BITRIX_SM_TZ="+Intl.DateTimeFormat().resolvedOptions().timeZone+"; path=/; expires=Wed, 01 Jan 2025 00:00:00 +0300";</script>
+<script type="text/javascript">BX.bind(window, "load", function(){BX.PULL.start();});</script>
+
+
+
+<script type="text/javascript">var _ba = _ba || []; _ba.push(["aid", "bc2cad9153cb418bb2dfd5602c3c3754"]); _ba.push(["host", "avclub.bitrix24.ru"]); (function() {var ba = document.createElement("script"); ba.type = "text/javascript"; ba.async = true;ba.src = (document.location.protocol == "https:" ? "https://" : "http://") + "bitrix.info/ba.js";var s = document.getElementsByTagName("script")[0];s.parentNode.insertBefore(ba, s);})();</script>
+
+
+<script type="text/javascript">
+	BX.ready(function(){
+		var lang_toggle = BX('language-box');
+		BX.bind(lang_toggle, 'click', function(){
+			BX.PopupMenu.show('feed-filter-popup', lang_toggle, [
+				{text : "Русский", className : "language-box-item ru", onclick : function() { reloadPage("ru"); }},
+				{text : "Английский", className : "language-box-item en", onclick : function() { reloadPage("en"); }},
+				{text : "Немецкий", className : "language-box-item de", onclick : function() { reloadPage("de"); }},
+				{text : "Украинский", className : "language-box-item ua", onclick : function() { reloadPage("ua"); }},
+				{text : "Испанский", className : "language-box-item la", onclick : function() { reloadPage("la"); }}
+			],
+					{   offsetTop:10,
+						offsetLeft:0,
+						angle:{offset: 33}
+					}
+			);
+		})
+	});
+	function reloadPage(lang)
+	{
+		var url = window.location.href;
+		url = url.replace(/(\?|\&)user_lang=[A-Za-z]{2}/, "");
+		url += (url.indexOf("?") == -1 ? "?" : "&") + "user_lang=" + lang;
+		window.location.href = url;
+	}
+</script>
+
+</body>
+</html>

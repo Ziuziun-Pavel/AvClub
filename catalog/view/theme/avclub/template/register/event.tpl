@@ -25,7 +25,7 @@
 
             <? } else { ?>
                 <?php
-                if ($register_exists) { ?>
+                if ($register_exists && is_bool($register_exists) || $register_exists['registration_id']) { ?>
                 <div class="reginfo">
                     <div class="reginfo__logo">
                         <img src="catalog/view/theme/avclub/images/logo-register.svg" alt="">
@@ -79,6 +79,33 @@
                                 </div>
                                 <?php } ?>
                                 <?php /* # FORUM */ ?>
+
+                                <?php /* MASTER CLASS */ ?>
+                                <?php if($event_info['type'] === 'master_class') { ?>
+                                <?php
+                                        $infos = array();
+                                        if(!empty($event_info['price'])) {
+                                            $infos[] = $event_info['price'] . ' р.';
+                                        }
+                                        $infos[] = 'Бесплатно для резидентов Клуба при указании промокода';
+                                        ?>
+                                <div class="reginfo__price"><?php echo implode(' / ', $infos); ?> </div>
+                                <div class="reginfo__text">
+                                    <?php if(!empty($event_info['address'])) { ?>
+                                    <span><?php echo implode(', ', $event_info['address']); ?></span>
+                                    <?php } ?>
+                                    <?php if($event_info['date_stop']) { ?>
+                                    <span><?php echo $event_info['date']; ?> - <?php echo $event_info['date_stop']; ?></span>
+                                    <?php } else { ?>
+                                    <span><?php echo $event_info['date']; ?></span>
+                                    <? } ?>
+                                    <?php
+                                            if ($event_info['isClosed']) { ?>
+                                    <span>Регистрация на мастер-класс закрыта</span>
+                                    <? } ?>
+                                </div>
+                                <?php } ?>
+                                <?php /* # MASTER CLASS */ ?>
 
                                 <?php /* WEBINAR */ ?>
                                 <?php if($event_info['type'] === 'webinar') { ?>

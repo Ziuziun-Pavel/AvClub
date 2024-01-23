@@ -6,13 +6,15 @@ class ControllerExtensionModuleJournalOpinion extends Controller {
 		$this->load->model('themeset/themeset');
 		$this->load->model('visitor/visitor');
 
-		$master_info = $this->config->get('av_master');
-		$data['master_info'] = array(
-			'title'					=> $master_info['master_title'],
-			'description'		=> $master_info['master_description'],
-			'link'					=> $master_info['master_link'],
-			'button'				=> $master_info['master_button'],
-		);
+        if ($this->visitor->getId()) {
+            $master_info = $this->config->get('av_master');
+            $data['master_info'] = array(
+                'title' => $master_info['master_title'],
+                'description' => $master_info['master_description'],
+                'link' => $master_info['master_link'],
+                'button' => $master_info['master_button'],
+            );
+        }
 
 		$data['heading_title'] = $this->config->get('journal_opinion_title');
 

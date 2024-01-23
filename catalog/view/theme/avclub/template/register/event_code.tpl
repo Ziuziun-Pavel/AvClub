@@ -1,7 +1,7 @@
 <?php require(DIR_TEMPLATE . 'avclub/template/register/_inc_attention.tpl'); ?>
 
 <?php
-  if ($register_exists) { ?>
+  if ($register_exists && is_bool($register_exists) || $register_exists['registration_id']) { ?>
 
 <div class="regdata__text">Регистрация недоступна. Пользователь уже зарегистрирован.</div>
 

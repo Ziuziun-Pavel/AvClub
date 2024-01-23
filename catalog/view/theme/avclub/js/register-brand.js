@@ -10,20 +10,25 @@ $(function(){
 
 		var 
 		input = $(this).closest('.regbrand__start--inp').find('input[name="brand"]'),
+		selectedCountry = $('#country:checked'),
 		error = false;
 
-		if(input.val().length < 1) {
+		if(input.val().length < 1 || !selectedCountry.val()) {
 			error = true;
 		}
 
-		console.log(input.val())
+		console.log(input.val());
+		console.log(selectedCountry.val());
 
 		if(!error) {
 			$.ajax({
 				type: "POST", 
 				url: "index.php?route=register/company/searchCompanies", 
-				dataType: "json", 
-				data: 'company_name=' + input.val(),
+				dataType: "json",
+				data: {
+					company_name: input.val(),
+					country: selectedCountry.val()
+				},
 				beforeSend: function(json) { $('.reg__load').fadeIn(); },
 				complete: function(json) { $('.reg__load').fadeOut(); },
 				success: function(json){
@@ -35,6 +40,20 @@ $(function(){
 					console.log('brand search error', json);
 				}
 			});
+		} else {
+			$('.regbrand__country--subtitle__error, .regbrand__company--subtitle__error').hide();
+
+			if (!selectedCountry.val() && input.val().length > 1) {
+				console.log('1')
+				$('.regbrand__country--subtitle__error').text('Выберите название страны').show();
+			}else if(input.val().length < 1 && selectedCountry.val()){
+				console.log('2')
+				$('.regbrand__company--subtitle__error').text('Введите название компании').show();
+			}else{
+				console.log('3')
+				$('.regbrand__company--subtitle__error').text('Введите название компании').show();
+				$('.regbrand__country--subtitle__error').text('Выберите название страны').show();
+			}
 		}
 
 	})
@@ -49,7 +68,9 @@ $(function(){
 			type: "POST", 
 			url: "index.php?route=register/company/changeSearch", 
 			dataType: "json", 
-			data: 'search=' + search,
+			data: {
+				'search': search
+			},
 			beforeSend: function(json) { $('.reg__load').fadeIn(); },
 			complete: function(json) { $('.reg__load').fadeOut(); },
 			success: function(json){
@@ -69,13 +90,19 @@ $(function(){
 
 		var 
 		btn = $(this),
-		b24id = $(this).attr('data-id');
+		b24id = $(this).attr('data-id'),
+		company_name = $(this).attr('data-name'),
+		company_inn = $(this).attr('data-inn');
 
 		$.ajax({
 			type: "POST", 
 			url: "index.php?route=register/company/chooseCompany", 
 			dataType: "json", 
-			data: 'b24id=' + b24id,
+			data: {
+				'b24id': b24id,
+				'company_name': company_name,
+				'company_inn': company_inn,
+			},
 			beforeSend: function(json) { $('.reg__load').fadeIn(); },
 			complete: function(json) { $('.reg__load').fadeOut(); },
 			success: function(json){

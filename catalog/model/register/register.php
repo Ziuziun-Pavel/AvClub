@@ -20,6 +20,8 @@ class ModelRegisterRegister extends Model
     private $url_get_pub_applications = "http://clients.techin.by/avclub/site/api/v1/deal/get-publication-list";
     private $url_check_registration = "http://clients.techin.by/avclub/site/api/v1/deal/check-registration";
 
+    private $url_create_smart_proccess = "http://clients.techin.by/avclub/site/api/v1/smart-process/create";
+
     private $url_deal = "http://clients.techin.by/avclub/site/api/v1/deal/create";
 
     private $debug = 0;
@@ -240,7 +242,6 @@ class ModelRegisterRegister extends Model
 
     public function getCompanyNames($data = array())
     {
-
         $show_disabled = !empty($data['filter_disabled']) ? true : false;
 
         $sql = "SELECT * FROM " . DB_PREFIX . "company_names c ";
@@ -259,6 +260,8 @@ class ModelRegisterRegister extends Model
             $words = explode(' ', trim(preg_replace('/\s+/', ' ', $data['filter_name'])));
 
             foreach ($words as $word) {
+                $word = str_replace('&quot;', '', $word);
+                $word = trim($word);
                 $implode[] = "(c.title LIKE '%" . $this->db->escape($word) . "%' OR c.alternate LIKE '%" . $this->db->escape($word) . "%')";
             }
 
@@ -290,8 +293,8 @@ class ModelRegisterRegister extends Model
         $query = $this->db->query($sql);
 
         foreach ($query->rows as &$row) {
-
             $name = explode('/', $row['title']);
+
             $row['name'] = $name[0];
 
             $company_data[] = $row;
@@ -393,25 +396,46 @@ class ModelRegisterRegister extends Model
         return $return_list;
     }
 
-    public function checkRegistration($dealType, $eventId, $contact_ids = array(), $contact_fields = array())
+    public function checkRegistration($dealType, $eventId, $master_class_forum_id = 0, $contact_ids = array(), $contact_fields = array())
     {
-        if($contact_ids) {
-            $fields = array(
-                'dealType' => $dealType,
-                'event_id' => $eventId,
-                'contact_ids' => $contact_ids,
-            );
-        } else {
-            $fields = array(
-                'dealType' => $dealType,
-                'event_id' => $eventId,
-                'contact_name' => $contact_fields['contact_name'],
-                'contact_last_name' => $contact_fields['contact_last_name'],
-                'contact_phone' => $contact_fields['contact_phone'],
-                'contact_email' => $contact_fields['contact_email'],
-            );
-        }
 
+        if ($master_class_forum_id) {
+            if($contact_ids[0]) {
+                $fields = array(
+                    'dealType' => $dealType,
+                    'master_class_id' => $eventId,
+                    'forum_id' => $master_class_forum_id,
+                    'contact_ids' => $contact_ids,
+                );
+            } else {
+                $fields = array(
+                    'dealType' => $dealType,
+                    'master_class_id' => $eventId,
+                    'forum_id' => $master_class_forum_id,
+                    'contact_name' => $contact_fields['contact_name'],
+                    'contact_last_name' => $contact_fields['contact_last_name'],
+                    'contact_phone' => $contact_fields['contact_phone'],
+                    'contact_email' => $contact_fields['contact_email'],
+                );
+            }
+        } else {
+            if($contact_ids[0]) {
+                $fields = array(
+                    'dealType' => $dealType,
+                    'event_id' => $eventId,
+                    'contact_ids' => $contact_ids,
+                );
+            } else {
+                $fields = array(
+                    'dealType' => $dealType,
+                    'event_id' => $eventId,
+                    'contact_name' => $contact_fields['contact_name'],
+                    'contact_last_name' => $contact_fields['contact_last_name'],
+                    'contact_phone' => $contact_fields['contact_phone'],
+                    'contact_email' => $contact_fields['contact_email'],
+                );
+            }
+        }
 
         $ch = curl_init($this->url_check_registration);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -421,8 +445,14 @@ class ModelRegisterRegister extends Model
         curl_close($ch);
 
         $json = json_decode($body, true);
-
-        return $json['exist'];
+        if ($master_class_forum_id) {
+            return [
+                'deal_id' => $json['deal_id'],
+                'registration_id' => $json['registration_id'],
+            ];
+        } else {
+            return $json['exist'];
+        }
     }
 
     public function getPaidPublications($contact_id = 0)
@@ -560,11 +590,12 @@ class ModelRegisterRegister extends Model
 
     public function createContact($data = array())
     {
-        return $this->updateContactInfo($data, true);
+        return $this->updateContactInfo($data, false);
     }
 
     private function updateContactInfo($data = array(), $new = false)
     {
+
         /*{
             'old_id' : <старый id контакта, если данные поменялись>,
             'name' : <имя>,
@@ -580,6 +611,7 @@ class ModelRegisterRegister extends Model
              'company_activity': <массив активностей в proAV>,
 
          }*/
+
         $contact_info = array(
             'name' => $data['name'],
             'last_name' => $data['lastname'],
@@ -588,17 +620,19 @@ class ModelRegisterRegister extends Model
             'phone' => $data['phone'],
             'IsCompanyEdit' => $data["IsCompanyEdit"],
             'IsContactEdit' => $data["IsContactEdit"],
-            'IsCompanyChanged' => $data["IsCompanyChanged"],
             'company_name' => htmlspecialchars_decode($data['company']),
             'company_city' => $data['city'],
             'company_phone' => $data['company_phone'],
             'company_site' => $data['company_site'],
+            'company_country' => $data['company_country'],
+            'company_inn' => $data['company_inn'],
             'company_activity' => array($data['company_activity']),
             'b24_company_old_id' => $data['b24_company_old_id'],
         );
 
         if (!empty($data['old_user_id'])) {
             $contact_info['old_id'] = $data['old_user_id'];
+            $new = false;
         }
 
         if (!empty($data['b24_company_id'])) {
@@ -613,6 +647,8 @@ class ModelRegisterRegister extends Model
                     'company_city' => $contact_info['company_city'],
                     'company_phone' => $contact_info['company_phone'],
                     'company_site' => $contact_info['company_site'],
+                    'company_country' => $contact_info['company_country'],
+                    'company_inn' => $contact_info['company_inn'],
                     'company_activity' => $contact_info['company_activity'],
                 );
 
@@ -652,8 +688,12 @@ class ModelRegisterRegister extends Model
                     'company_city' => $contact_info['company_city'],
                     'company_phone' => $contact_info['company_phone'],
                     'company_site' => $contact_info['company_site'],
+                    'company_country' => $contact_info['company_country'],
+                    'company_inn' => $contact_info['company_inn'],
                     'company_activity' => $contact_info['company_activity'],
                 );
+
+
                 if (!empty($contact_info['b24_company_old_id'])) {
                     $company_fields['old_id'] = $contact_info['b24_company_old_id'];
                 }
@@ -699,18 +739,32 @@ class ModelRegisterRegister extends Model
         }else{
             $contact_info['company_name'] = $data['company'];
         }*/
+        if ($data['IsContactEdit']) {
+            $new = false;
+        }
+        if ($data['companyDataChanged']) {
+            $new = true;
+        }
+        var_dump('new: ' . $new);
 
-        if ($contact_info['IsContactEdit'] || $contact_info['IsCompanyChanged']) {
+        var_dump($contact_info);
+        die();
+        if ($contact_info['IsContactEdit'] || $contact_info['IsCompanyEdit']) {
             if ($new) {
                 $url = $this->url_contact_create;
             } else {
-                $url = str_replace('{id}', $data['user_id'], $this->url_contact_update);
+                $url = str_replace('{id}', $data['old_user_id'], $this->url_contact_update);
             }
 
             if ($this->debug) {
                 $contact_info['debug'] = 1;
             }
 
+            var_dump('new: ' . $new);
+
+            var_dump('url: ' . $url);
+            var_dump($contact_info);
+            die();
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_TIMEOUT, 60);
@@ -796,6 +850,52 @@ class ModelRegisterRegister extends Model
 
         return $json;
     }
+
+    public function createSmartProccess($data = array())
+    {
+
+        /*{
+            spType: <master_class>
+            contact_id
+            company_id
+            forum_id
+            master_class_id
+            deal_id
+        }*/
+
+        $fields = [
+            'spType' => 'master_class',
+            'contact_id' => $data['contact_id'],
+            'company_id' => $data['company_id'],
+            'forum_id' => $data['forum_id'],
+            'master_class_id' => $data['master_class_id'],
+            'deal_id' => $data['deal_id']
+        ];
+
+        if ($this->debug) {
+            $data['debug'] = 1;
+        }
+
+        $ch = curl_init($this->url_create_smart_proccess);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
+        $body = curl_exec($ch);
+        curl_close($ch);
+
+        $json = json_decode($body, true);
+
+
+        if (empty($json['code']) || $json['code'] != 200) {
+            $error_text = "Создание смарт-процесса";
+            $error_text .= "\nINPUT: " . json_encode($data);
+            $error_text .= "\nRETURN: " . json_encode($json);
+            $this->log($error_text);
+        }
+
+        return $json;
+    }
+
 
     public function getExpertId($b24id = 0)
     {
