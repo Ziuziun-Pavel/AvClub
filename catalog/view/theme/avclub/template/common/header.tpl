@@ -220,13 +220,19 @@
 
 			<?php echo $fixed; ?>
 
-			<div class="page__outer">
+			<div class="page__outer"
+				<?php if(isset($type_page) && strpos($_SERVER['REQUEST_URI'], '/event-register') !== false) { ?>
+				style="padding-top: 10px"
+				<?php } elseif(strpos($_SERVER['REQUEST_URI'], '/event-register') !== false) { ?>
+				style=""
+				<?php } else { ?>
+				style="padding-top: 48px"
+				<?php } ?>>
 				<?php
 
 				if(isset($type_page) && $type_page === 'event') {
 					require(DIR_TEMPLATE . 'avclub/template/common/header_event.tpl');
-				} elseif(strpos($_SERVER['REQUEST_URI'], '/master/') !== false) {
-
+				} elseif(isset($type_page) && $type_page === 'master') {
 					require(DIR_TEMPLATE . 'avclub/template/common/header_master.tpl');
 				}
 				else{

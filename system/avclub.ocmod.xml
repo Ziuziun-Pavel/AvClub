@@ -229,7 +229,15 @@
 				$data['register'] = $event_info['link'];
 
 				$date = strtotime($event_info['date']);
-				$data['date'] = date('d', $date) . '&nbsp;' . $month_list[(int)date('m', $date)] . '&nbsp;' . date('Y', $date);
+
+				$date_stop = $event_info['date_stop'] ? strtotime($event_info['date_stop']) : $date;
+
+				$data['date'] = date('d', $date);
+				$data['date_month'] = $month_list[(int)date('m', $date)];
+				$data['date_year'] = date('Y', $date);
+
+				$data['date_stop'] = date('d', $date_stop);
+				$data['date_stop_month'] = $month_list[(int)date('m', $date_stop)];
 
 				$time_start = strtotime($event_info['time_start']);
 				$time_end = strtotime($event_info['time_end']);
@@ -240,6 +248,16 @@
 				$data['type_page'] = 'event';
 				}
 				}
+ 				if (isset($this->request->get['master_id'])) {
+					$this->load->model('master/master');
+
+					$data['type_page'] = 'master';
+					$master_info = $this->model_master_master->getMaster($this->request->get['master_id']);
+					if ($master_info) {
+						$data['register'] = $master_info['link'];
+					}
+
+       			}
 				]]>
 			</add>
 		</operation>
@@ -346,6 +364,8 @@
 				$this->request->get['route'] = 'tag/tag/info';
 				} elseif (isset($this->request->get['event_id'])) {
 				$this->request->get['route'] = 'avevent/event/info';
+				} elseif (isset($this->request->get['master_id'])) {
+				$this->request->get['route'] = 'master/master/info';
 				} elseif (isset($this->request->get['journal_id'])) {
 				$type = $this->getTypeByJournal($this->request->get['journal_id']);
 				$this->request->get['route'] = 'journal/' . $type . '/info';
@@ -382,6 +402,13 @@
 
 				case 'event_id':
 				$queries[] = 'avevent/event';
+				$queries[] = $key . '=' . $value;
+				unset($data[$key]);
+				$postfix = 1;
+				break;
+
+				case 'master_id':
+				$queries[] = 'master/master';
 				$queries[] = $key . '=' . $value;
 				unset($data[$key]);
 				$postfix = 1;

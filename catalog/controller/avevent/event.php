@@ -202,7 +202,7 @@ class ControllerAveventEvent extends Controller {
 			$data['address_full'] = $event_info['address_full'];
 			$data['type'] = $event_info['type'];
 			$data['city'] = $event_info['city'];
-//            $data['testparam']  = 'проверка';
+
 			$date = strtotime($event_info['date']);
 
             $date_stop = $event_info['date_stop'] ? strtotime($event_info['date_stop']) : $date;

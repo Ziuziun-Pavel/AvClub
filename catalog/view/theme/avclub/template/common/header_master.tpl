@@ -13,7 +13,11 @@
 			<div class="ehead__logo">
 				<a href="https://www.avclub.pro/"><img src="<?= $theme_dir ?>/images/logo.svg" title="АВ Клуб" alt="АВ Клуб"></a>
 			</div>
-
+			<div class="ehead__btn">
+				<a href="<?php echo $register; ?>" class="btn btn-red" target="_blank" onclick="yaGoal('clik_zaregestrirovatsy');">
+					<span>Зарегистрироваться</span>
+				</a>
+			</div>
 		</div>
 	</div>
 </section>

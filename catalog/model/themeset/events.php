@@ -385,8 +385,6 @@ class ModelThemesetEvents extends Model
     {
         $companyValues = implode("', '", $city_b24ids);
 
-//        var_dump($companyValues);
-//        die();
         $sql = "SELECT company_id FROM " . DB_PREFIX . "company WHERE b24id IN ('$companyValues') ORDER BY company_id ASC";
 
         $query = $this->db->query($sql);
@@ -394,8 +392,6 @@ class ModelThemesetEvents extends Model
         $companyIDs = array_map(function ($row) {
             return (int)$row['company_id'];
         }, $query->rows);
-//        var_dump($query->rows);
-//        die();
         return $companyIDs;
     }
 

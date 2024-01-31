@@ -146,9 +146,6 @@ class ModelThemesetExpert extends Model {
 			}
 			$expert_info['photo'] = $photo;
 
-//            var_dump($expert_info);
-//            die();
-
 			/* tags */
 			$filter_tag = array(
 				'expert'	=> !empty($info['UF_CRM_1676473306']) ? $info['UF_CRM_1676473306'] : array(),

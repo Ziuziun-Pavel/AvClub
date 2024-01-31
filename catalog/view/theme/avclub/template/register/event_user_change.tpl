@@ -139,13 +139,13 @@
 <?php // require(DIR_TEMPLATE . 'avclub/template/register/script-change.tpl'); ?>
 
 <script>
-	var formChanged = false;
+	var userFieldsChanged = false;
 
 	$('#register-newuser .regform__input').on('input', function() {
-		formChanged = true;
+		userFieldsChanged = true;
 	});
 
-	$('#register-newuser .regform__select--dropdown').on('click', function() {
-		formChanged = true;
-	});
+	// $('#register-newuser .regform__select--dropdown').on('click', function() {
+	// 	formChanged = true;
+	// });
 </script>

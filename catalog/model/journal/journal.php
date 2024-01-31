@@ -226,9 +226,6 @@ class ModelJournalJournal extends Model {
 		LIMIT 0,8";
 	
 		$query = $this->db->query($sql);
-//
-//        var_dump($query->rows);
-//        die();
 		return $query->rows;
 	}
 

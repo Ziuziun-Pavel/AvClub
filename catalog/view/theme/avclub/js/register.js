@@ -196,10 +196,10 @@ $(function () {
     $(document).on('click', '#button-save', function (e) {
         e.preventDefault();
 
-        if (formChanged) {
-            console.log('Form has changed!'); // Replace this with your desired action
+        if (userFieldsChanged) {
+            console.log('Данные пользователя изменились!');
         } else {
-            console.log('Form is unchanged.');
+            console.log('Данные пользователя НЕ изменились');
         }
 
         initialFormState = $('#register-newuser').serialize();
@@ -308,14 +308,13 @@ $(function () {
         }*/
 
         if(!error) {
-            console.log(formChanged)
+            console.log(userFieldsChanged)
 
-            // if (formChanged) {
                 $.ajax({
                     type: "POST",
                     url: "index.php?route=register/event/saveData",
                     dataType: "json",
-                    data: form.serialize() + '&formChanged=' + formChanged,
+                    data: form.serialize() + '&userFieldsChanged=' + userFieldsChanged,
                     beforeSend: function(json) { $('.reg__load').fadeIn(); },
                     complete: function(json) { $('.reg__load').fadeOut(); },
                     success: function(json){
@@ -335,9 +334,6 @@ $(function () {
                         console.log('save data', json);
                     }
                 });
-            // } else {
-            //
-            // }
         }
     })
 

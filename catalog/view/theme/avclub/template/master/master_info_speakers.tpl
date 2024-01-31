@@ -10,7 +10,7 @@
                 </svg>
             </div>
 
-            <div class="linemember--slider">
+            <div class="linemember--slider" <?php if(count($speaker_list) ===1) { ?> style="max-width: none;" <?php } ?>>
 
                 <?php foreach($speaker_list as $speaker) { ?>
 

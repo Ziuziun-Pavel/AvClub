@@ -2,7 +2,9 @@
 
     <div class="regbrand__result--top">
         <div class="regbrand__result--left">
-            <div class="regbrand__result--title">Результаты поиска</div>
+            <div class="regbrand__result--title">
+                <?php echo $second_choice ?  'По вашим введенным данным найдено несколько компаний. Проверьте, пожалуйста, еще раз. Нет ли её в предложенных.' : 'Результаты поиска' ?>
+            </div>
         </div>
     </div>
 
@@ -22,7 +24,11 @@
             <div class="regbrand__list--list">
                 <?php foreach($companies as $company) { ?>
                 <?php if ($dadata): ?>
-                <div style="padding: .5rem;" class="btn company__block--item regbrand--choose" data-name='<?php echo $company["title"]; ?>' data-inn='<?php echo implode(", ", array_filter([$company["inn"], $company["unp"], $company["bik"]], "strlen")); ?>' >
+                <div style="padding: .5rem;" class="btn company__block--item regbrand--choose"
+                     data-name='<?php echo $company["title"]; ?>'
+                     data-inn='<?php echo implode(", ", array_filter([$company["inn"], $company["unp"], $company["bik"]], "strlen")); ?>'
+                     data-address='<?php echo $company["address"]; ?>'
+                >
                     <div style="text-align: left"><span style="font-size: .9rem; font-weight: 500">Название компании: </span><?php echo ' ' . $company['title']; ?></div>
                     <?php if ($company['manager']): ?>
                         <div style="text-align: left"><span style="font-size: .9rem; font-weight: 500">Директор: </span><?php echo ' ' . $company['manager']; ?></div>
@@ -49,11 +55,11 @@
             </div>
             <div class="regbrand__list--line"></div>
             <div class="regbrand__list--title">
-                Если вашей компании нет в списке, <br>
-                вы можете добавить новую компанию
+                <?php echo $second_choice ? 'Если вашей компании всё же нет в списке, то вы можете добавить новую компанию' : 'Если вашей компании нет в списке, вы можете добавить новую компанию' ?>
+
             </div>
             <div class="regbrand__list--add">
-                <button type="button" class="btn btn-invert" id="regbrand-add" data-search="<?php echo $search; ?>">
+                <button type="button" class="btn btn-invert" id="regbrand-add" data-search="<?php echo $search; ?>" data-choice="<?php echo $company_second_choice; ?>">
                     Добавить компанию <?php echo $search; ?>
                 </button>
             </div>

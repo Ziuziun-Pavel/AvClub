@@ -90,9 +90,6 @@ class ControllerMasterMaster extends Controller {
                 'type'        	=> $result['type'],
 			);
 		}
-//        var_dump($data['masters'][0]['href']);
-//        die();
-
 		$data['types'] = array(
 			''	=> 'Все события'
 		);

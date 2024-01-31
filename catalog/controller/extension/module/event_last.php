@@ -46,8 +46,6 @@ class ControllerExtensionModuleEventLast extends Controller {
 			array_multisort($sort, SORT_DESC, $data['events']);
 		}
 
-//        var_dump($data['events'][0]);
-//        die();
 		if($data['events']) {
 			return $this->load->view('extension/module/event_last', $data);
 		}

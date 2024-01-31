@@ -1,12 +1,12 @@
 <div class="master__item">
 	<div class="master__img">
 		<div class="master__left">
-			<div class="master__image">
+			<a href="<?php echo $master['href']; ?>" class="master__image">
 				<?php /* if(!empty($master['logo'])) { ?>
 					<img src="<?php echo $master['logo']; ?>" alt="" class="master__logo">
 				<?php } */ ?>
 				<img src="<?php echo $master['image']; ?>" alt="">
-			</div>
+			</a>
 			<a href="<?php echo $master['link']; ?>" class="btn btn-red master__reg" target="_blank">
 				<span>Зарегистрироваться</span>
 			</a>

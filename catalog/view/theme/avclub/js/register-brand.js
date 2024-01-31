@@ -10,7 +10,7 @@ $(function(){
 
 		var 
 		input = $(this).closest('.regbrand__start--inp').find('input[name="brand"]'),
-		selectedCountry = $('#country:checked'),
+		selectedCountry = $('input[name="company_country"]:checked'),
 		error = false;
 
 		if(input.val().length < 1 || !selectedCountry.val()) {
@@ -92,6 +92,7 @@ $(function(){
 		btn = $(this),
 		b24id = $(this).attr('data-id'),
 		company_name = $(this).attr('data-name'),
+		company_address = $(this).attr('data-address'),
 		company_inn = $(this).attr('data-inn');
 
 		$.ajax({
@@ -101,6 +102,7 @@ $(function(){
 			data: {
 				'b24id': b24id,
 				'company_name': company_name,
+				'company_address': company_address,
 				'company_inn': company_inn,
 			},
 			beforeSend: function(json) { $('.reg__load').fadeIn(); },
@@ -122,13 +124,14 @@ $(function(){
 
 		var 
 		btn = $(this),
-		search = $(this).attr('data-search');
+		search = $(this).attr('data-search'),
+		company_second_choice = $(this).attr('data-choice');
 
 		$.ajax({
 			type: "POST", 
 			url: "index.php?route=register/company/addNewCompany", 
 			dataType: "json", 
-			data: 'search=' + search,
+			data: 'search=' + search + '&company_second_choice=' + company_second_choice ,
 			beforeSend: function(json) { $('.reg__load').fadeIn(); },
 			complete: function(json) { $('.reg__load').fadeOut(); },
 			success: function(json){

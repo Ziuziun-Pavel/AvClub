@@ -60,6 +60,7 @@ $(function(){
 
 		if($email.length){
 			if($email.val().length < 1 || !$rv_email.test($email.val())){
+				console.log('error1')
 				addInvalid($email.closest('.regform__inp'));
 				error = true;		
 			}
@@ -74,12 +75,14 @@ $(function(){
 
 		$.each(input_arr, function(key, item){
 			if(item.val().length < 2 ){
+				console.log('error2')
 				addInvalid(item.closest('.regform__inp'));
 				error = true;		
 			}
 		})
 
 		if(!form.find('input[name="b24_company_old_id"]').length || !form.find('input[name="b24_company_id"]').length) {
+			console.log('error3')
 			error = true;
 			error_company = true;		
 		}else{
@@ -87,7 +90,8 @@ $(function(){
 			company_arr.push(form.find('input[name="company_phone"]'));
 			company_arr.push(form.find('input[name="company_site"]'));
 			var company_activity = form.find('input[name="company_activity"]').closest('.regform__inp');
-			if(!form.find('input[name="company_activity"]:checked').length) {
+			if(!form.find('input[name="city"]').length) {
+				console.log('error4')
 				addInvalid(company_activity);
 				error = true;
 				error_company = true;		
@@ -95,6 +99,7 @@ $(function(){
 
 			$.each(company_arr, function(key, item){
 				if(item.val().length < 2 ){
+					console.log('error4')
 					addInvalid(item.closest('.regform__inp'));
 					error = true;		
 					error_company = true;		

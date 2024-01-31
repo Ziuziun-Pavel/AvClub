@@ -126,7 +126,6 @@ class ControllerRegisterCompany extends Controller
                     'web' => '',
                     'phone' => '',
                     'activity' => '',
-
                     'search' => $company_name
                 );
                 $return['template'] = $this->load->view('register/_brand_data', $data);
@@ -139,11 +138,12 @@ class ControllerRegisterCompany extends Controller
 
     public function changeSearch()
     {
+        $this->load->model('company/company');
 
         $return = array();
         $data = array();
 
-        $data['countries'] = ['Россия', 'Беларусь', 'Казахстан', 'Узбекистан'];
+        $data['countries'] = $this->model_company_company->getListOfCountries();
 
         $data['brand_search'] = !empty($this->request->post['search']) ? $this->request->post['search'] : '';
 
@@ -165,6 +165,8 @@ class ControllerRegisterCompany extends Controller
         $b24id = !empty($this->request->post['b24id']) ? $this->request->post['b24id'] : '';
         $company_name = !empty($this->request->post['company_name']) ? $this->request->post['company_name'] : '';
         $company_inn = !empty($this->request->post['company_inn']) ? $this->request->post['company_inn'] : '';
+        $company_address = !empty($this->request->post['company_address']) ? $this->request->post['company_address'] : '';
+        $site = substr(strstr($this->session->data["register_user"]["email"], '@'), 1);
 
         $this->session->data["register_event"]['company_inn'] = $company_inn;
 
@@ -181,6 +183,9 @@ class ControllerRegisterCompany extends Controller
             $filter_data['filter_b24id'] = $b24id;
         } else {
             $filter_data['filter_name'] = $company_name;
+            $filter_data['filter_inn'] = $company_inn;
+            $filter_data['filter_address'] = $company_address;
+            $filter_data['filter_site'] = $site;
         }
 
         $results = $this->model_register_register->getCompanyNames($filter_data);
@@ -200,19 +205,22 @@ class ControllerRegisterCompany extends Controller
                 'search' => $company_info['name'],
             );
 
+            $return['template'] = $this->load->view('register/_brand_data_noedit', $data);
+
         } else {
             $data['activity'] = $this->company_activity;
-            $data['company_info'] = array(
-                'b24_company_old_id' => 0,
-                'b24_company_id' => 0,
-                'city' => '',
-                'web' => '',
-                'phone' => '',
-                'activity' => '',
-                'search' => $company_name
-            );
+                $data['company_info'] = array(
+                    'b24_company_old_id' => 0,
+                    'b24_company_id' => 0,
+                    'city' => '',
+                    'web' => '',
+                    'phone' => '',
+                    'activity' => '',
+                    'search' => $company_name
+                );
+            $return['template'] = $this->load->view('register/_brand_data', $data);
+
         }
-        $return['template'] = $this->load->view('register/_brand_data_noedit', $data);
 
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($return));
@@ -229,6 +237,7 @@ class ControllerRegisterCompany extends Controller
         $error = false;
 
         $company_name = !empty($this->request->post['search']) ? $this->request->post['search'] : '';
+        $company_second_choice = !empty($this->request->post['company_second_choice']) ? true : false;
 
         if (!$company_name) {
             $error = true;
@@ -249,6 +258,22 @@ class ControllerRegisterCompany extends Controller
 
                 'search' => $company_name
             );
+
+            $user_data = $this->session->data["register_user"];
+
+            if ($company_second_choice) {
+                $data['company_info'] = array(
+                    'b24_company_old_id' => 0,
+                    'b24_company_id' => 0,
+                    'city' => $user_data['city'],
+                    'web' => $user_data['company_site'],
+                    'phone' => $user_data['company_phone'],
+                    'activity' => $user_data['company_activity'],
+                    'search' => $company_name
+                );
+                $data['isCompanyChanged'] = true;
+            }
+
             $return['template'] = $this->load->view('register/_brand_data', $data);
 
         }

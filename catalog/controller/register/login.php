@@ -322,10 +322,6 @@ class ControllerRegisterLogin extends Controller {
 
 		$post = $this->request->post;
 
-
-//        var_dump($post);
-//        die();
-
 		$this->load->model('register/register');
 		$this->load->model('themeset/expert');
 		$this->load->model('themeset/image');

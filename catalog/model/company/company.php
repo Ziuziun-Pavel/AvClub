@@ -2,6 +2,7 @@
 class ModelCompanyCompany extends Model {
     private $url_deal_create = "http://clients.techin.by/avclub/site/api/v1/deal/create";
     private $url_company_create = "http://clients.techin.by/avclub/site/api/v1/company/create";
+    private $company_countries = ['Россия', 'Беларусь', 'Казахстан', 'Узбекистан'];
 
 	public function getCompany($company_id = 0, $show_disabled = false) {
 		
@@ -187,6 +188,7 @@ class ModelCompanyCompany extends Model {
 
 		return $company_brand_data;
 	}
+
 	public function getBranchesByCompany($company_id = 0) {
 		$company_branch_data = array();
 
@@ -216,8 +218,6 @@ class ModelCompanyCompany extends Model {
 
 		return $company_branch_data;
 	}
-
-
 
 	public function getCompanies($data = array()) {
 
@@ -397,7 +397,6 @@ class ModelCompanyCompany extends Model {
 		return $query->row['total'];
 	}
 
-
 	public function getExperts($data = array()) {
 		$this->load->model('visitor/visitor');
 		
@@ -567,8 +566,6 @@ class ModelCompanyCompany extends Model {
 		return $query->rows;
 	}
 
-
-
 	public function getCompanyCategories() {
 		$category_data = $this->cache->get('company.category.companies.' . (int)$this->config->get('config_language_id'));
 
@@ -660,5 +657,48 @@ class ModelCompanyCompany extends Model {
 		$then = mb_substr($string, 1, $strlen - 1, $encoding);
 		return mb_strtoupper($firstChar, $encoding) . $then;
 	}
+
+    public function getListOfCountries()
+    {
+        $api_url = 'https://restcountries.com/v3.1/region/europe';
+
+        $ch = curl_init($api_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $response = curl_exec($ch);
+
+        if (curl_errno($ch)) {
+            echo 'Ошибка при выполнении запроса: ' . curl_error($ch);
+        } else {
+            $countries = json_decode($response, true);
+
+            if ($countries) {
+                $filtered_countries = $this->filterCountries($countries);
+                $final_country_list = array_merge($this->company_countries, $filtered_countries);
+
+                return $final_country_list;
+            } else {
+                echo 'Ошибка при декодировании JSON';
+            }
+        }
+
+        curl_close($ch);
+    }
+
+    private function filterCountries($countries)
+    {
+        $filtered_countries = array_filter($countries, function ($country) {
+            return isset($country['translations']['rus']['common']);
+        });
+
+        $filtered_country_names = array_map(function ($country) {
+            return $country['translations']['rus']['common'];
+        }, $filtered_countries);
+
+        // Убираем страны, которые уже есть в $company_countries
+        $filtered_country_names = array_diff($filtered_country_names, $this->company_countries);
+
+        return $filtered_country_names;
+    }
 
 }

@@ -260,8 +260,7 @@ class ModelRegisterRegister extends Model
             $words = explode(' ', trim(preg_replace('/\s+/', ' ', $data['filter_name'])));
 
             foreach ($words as $word) {
-                $word = str_replace('&quot;', '', $word);
-                $word = trim($word);
+                $word = htmlspecialchars_decode($word);
                 $implode[] = "(c.title LIKE '%" . $this->db->escape($word) . "%' OR c.alternate LIKE '%" . $this->db->escape($word) . "%')";
             }
 
@@ -270,6 +269,19 @@ class ModelRegisterRegister extends Model
             }
 
             $sql .= ")";
+        }
+
+        if (!empty($data['filter_address'])) {
+            $city = $this->db->escape($data['filter_address']);
+            $sql .= " AND ('" . $city . "' LIKE CONCAT('%', c.city, '%'))";
+        }
+
+        if (!empty($data['filter_inn'])) {
+            $sql .= " AND c.inn = '" . (int)$data['filter_inn'] . "'";
+        }
+
+        if (!empty($data['filter_site'])) {
+            $sql .= " AND c.web = '" . $data['filter_site'] . "'";
         }
 
         $sql .= " GROUP BY c.b24id";
@@ -288,7 +300,6 @@ class ModelRegisterRegister extends Model
 
             $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
         }
-
 
         $query = $this->db->query($sql);
 
@@ -539,7 +550,6 @@ class ModelRegisterRegister extends Model
         $ch = curl_init($this->url_contact . $id);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-
         $body = curl_exec($ch);
         curl_close($ch);
 
@@ -618,10 +628,11 @@ class ModelRegisterRegister extends Model
             'post' => $data['post'],
             'email' => $data['email'],
             'phone' => $data['phone'],
-            'IsCompanyEdit' => $data["IsCompanyEdit"],
-            'IsContactEdit' => $data["IsContactEdit"],
-            'company_name' => htmlspecialchars_decode($data['company']),
+            'userFieldsChanged' => $data["userFieldsChanged"] ?? false,
+            'isCompanyChanged' => $data["isCompanyChanged"] ?? false,
+            'IsCompanyEdit' => $data["IsCompanyEdit"] ?? false,
             'company_city' => $data['city'],
+            'company_name' => $data['company'],
             'company_phone' => $data['company_phone'],
             'company_site' => $data['company_site'],
             'company_country' => $data['company_country'],
@@ -681,10 +692,11 @@ class ModelRegisterRegister extends Model
                 }
                 /* # EDIT COMPANY */
             } else {
+
                 /* CREATE NEW COMPANY */
                 $company_fields = array(
                     'company_id' => $contact_info['company_name'],
-                    'company_name' => $contact_info['company_name'],
+                    'company_name' => htmlspecialchars_decode($contact_info['company_name']),
                     'company_city' => $contact_info['company_city'],
                     'company_phone' => $contact_info['company_phone'],
                     'company_site' => $contact_info['company_site'],
@@ -692,7 +704,6 @@ class ModelRegisterRegister extends Model
                     'company_inn' => $contact_info['company_inn'],
                     'company_activity' => $contact_info['company_activity'],
                 );
-
 
                 if (!empty($contact_info['b24_company_old_id'])) {
                     $company_fields['old_id'] = $contact_info['b24_company_old_id'];
@@ -739,17 +750,14 @@ class ModelRegisterRegister extends Model
         }else{
             $contact_info['company_name'] = $data['company'];
         }*/
-        if ($data['IsContactEdit']) {
+        if ($contact_info['userFieldsChanged']) {
             $new = false;
         }
-        if ($data['companyDataChanged']) {
+        if ($contact_info['isCompanyChanged']) {
             $new = true;
         }
-        var_dump('new: ' . $new);
 
-        var_dump($contact_info);
-        die();
-        if ($contact_info['IsContactEdit'] || $contact_info['IsCompanyEdit']) {
+        if ($contact_info['userFieldsChanged'] || $contact_info['isCompanyChanged'] || $contact_info['IsCompanyEdit']) {
             if ($new) {
                 $url = $this->url_contact_create;
             } else {
@@ -760,11 +768,6 @@ class ModelRegisterRegister extends Model
                 $contact_info['debug'] = 1;
             }
 
-            var_dump('new: ' . $new);
-
-            var_dump('url: ' . $url);
-            var_dump($contact_info);
-            die();
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_TIMEOUT, 60);
@@ -807,6 +810,12 @@ class ModelRegisterRegister extends Model
         $visitor_id = $this->getExpertId($main_id);
 
         if (!$visitor_id) {
+            return;
+        }
+
+        $existingRecord = $this->db->query("SELECT * FROM " . DB_PREFIX . "visitor_alternate WHERE visitor_id = '" . (int)$visitor_id . "' AND b24id = '" . (int)$new_id . "'");
+
+        if ($existingRecord->num_rows) {
             return;
         }
 

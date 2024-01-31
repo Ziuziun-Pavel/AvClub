@@ -17,7 +17,7 @@
 			<div class="ehead__attr">
 				<span><?php echo $type; ?> <?php echo $city; ?></span>
 				<?php if($date == $date_stop) { ?>
-					<span><?php echo $date . ' ' . $date_month . ' ' . $date_year; ?></span>
+				<span><?php echo $date . ' ' . $date_month . ' ' . $date_year; ?></span>
 				<?php }
 					 elseif($date !== $date_stop && $date_month !== $date_stop_month) { ?>
 				<span><?php echo $date . ' ' . $date_month; ?> — <?php echo $date_stop . ' ' . $date_stop_month; ?><?php echo  ' ' . $date_year; ?></span>

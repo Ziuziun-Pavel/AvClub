@@ -67,13 +67,12 @@
                                     <?php if(!empty($event_info['address'])) { ?>
                                     <span><?php echo implode(', ', $event_info['address']); ?></span>
                                     <?php } ?>
-                                    <?php if($event_info['date_stop']) { ?>
+                                    <?php if($event_info['date_stop'] && $event_info['date'] !== $event_info['date_stop']) { ?>
                                     <span><?php echo $event_info['date']; ?> - <?php echo $event_info['date_stop']; ?></span>
                                     <?php } else { ?>
                                     <span><?php echo $event_info['date']; ?></span>
                                     <? } ?>
-                                    <?php
-                                            if ($event_info['isClosed']) { ?>
+                                    <?php if ($event_info['isClosed']) { ?>
                                     <span>Регистрация на форум закрыта</span>
                                     <? } ?>
                                 </div>

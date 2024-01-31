@@ -28,7 +28,7 @@
 
 		<?php 
 		$main_activity = '';
-		foreach($activity as $item) { 
+		foreach($activity as $item) {
 			if(mb_strtolower($item) === mb_strtolower($company_info['activity'])) {
 				$main_activity = $item;
 				break;
@@ -55,7 +55,9 @@
 			<input type="hidden" name="company" value='<?php echo $company_info["search"]; ?>'>
 			<input type="hidden" name="b24_company_old_id" value="<?php echo $company_info['b24_company_old_id']; ?>">
 			<input type="hidden" name="b24_company_id" value="<?php echo $company_info['b24_company_id']; ?>">
-		</div>
+			<input type="hidden" name="isCompanyChanged" value='<?php echo $isCompanyChanged; ?>'>
+
+	</div>
 
 	</div>
 

@@ -24,7 +24,7 @@
 				</div>
 				<div class="tevent__btn">
 					<a href="<?php echo $link; ?>" class="btn btn-red" target="_blank" onclick="yaGoal('clik_zaregestrirovatsy');">
-						<span>Бесплатная регистрация</span>
+						<span>Регистрация</span>
 					</a>
 				</div>
 			</div>
@@ -36,7 +36,7 @@
 				<?php } ?>
 				<div class="tevent__btn">
 					<a href="<?php echo $link; ?>" class="btn btn-red" target="_blank">
-						<span>Бесплатная регистрация</span>
+						<span>Регистрация</span>
 					</a>
 				</div>
 			</div>

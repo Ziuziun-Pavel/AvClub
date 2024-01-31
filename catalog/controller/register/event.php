@@ -246,11 +246,11 @@ class ControllerRegisterEvent extends Controller
         }
         /* # MASTER CLASS */
 
-
         if (!empty($data['event_info'])) {
 
             if ($this->visitor->isLogged()) {
                 $contact_info = $this->model_register_register->getContactInfo($this->visitor->getB24id());
+
 
                 if (!empty($contact_info['ID']) && !empty($contact_info['PHONE'][0])) {
                     $email = '';
@@ -743,6 +743,7 @@ class ControllerRegisterEvent extends Controller
         $this->load->model('register/register');
         $this->load->model('themeset/expert');
         $this->load->model('themeset/image');
+        $this->load->model('company/company');
 
         $return = array();
         $data = array();
@@ -795,7 +796,7 @@ class ControllerRegisterEvent extends Controller
 
             $data['user'] = $user_data;
             $data['phone'] = $this->session->data['register_phone'];
-
+            $data['countries'] = $this->model_company_company->getListOfCountries();
             if (!empty($user_data['user_id'])) {
                 /* КОНТАКТ НАЙДЕН */
 
@@ -815,8 +816,7 @@ class ControllerRegisterEvent extends Controller
                 $data['show_name'] = false;
                 $data['show_notme'] = false;
                 $data['show_name_fields'] = true;
-
-                $data['company_template'] = $this->load->view('register/_brand_main', array());
+                $data['company_template'] = $this->load->view('register/_brand_main', $data);
 
                 $return['template'] = $this->load->view('register/event_user_change', $data);
                 /* # НЕТ КОНТАКТА */
@@ -845,6 +845,7 @@ class ControllerRegisterEvent extends Controller
     {
 
         $this->load->model('register/register');
+        $this->load->model('company/company');
 
         $return = array();
         $data = array();
@@ -898,6 +899,7 @@ class ControllerRegisterEvent extends Controller
 
                 'search' => $user_data['company'],
             );
+            $data_company['countries'] = $this->model_company_company->getListOfCountries();
 
             if ($user_data['company']) {
                 $data['company_template'] = $this->load->view('register/_brand_data_noedit', $data_company);
@@ -930,6 +932,7 @@ class ControllerRegisterEvent extends Controller
 
         $this->load->model('register/register');
         $this->load->model('themeset/image');
+        $this->load->model('company/company');
 
         $return = array();
         $data = array();
@@ -982,13 +985,14 @@ class ControllerRegisterEvent extends Controller
 
             $data['user'] = $user_data;
             $data['phone'] = $this->session->data['register_phone'];
+            $data['countries'] = $this->model_company_company->getListOfCountries();
 
             $data['title'] = 'Укажите корректные данные и сохраните изменения';
             $data['show_name'] = false;
             $data['show_notme'] = false;
             $data['show_name_fields'] = true;
 
-            $data['company_template'] = $this->load->view('register/_brand_main', array());
+            $data['company_template'] = $this->load->view('register/_brand_main', $data);
 
             $return['template'] = $this->load->view('register/event_user_change', $data);
 
@@ -1016,6 +1020,7 @@ class ControllerRegisterEvent extends Controller
         $this->load->model('register/register');
         $this->load->model('themeset/expert');
         $this->load->model('themeset/image');
+        $this->load->model('themeset/themeset');
 
         $return = array();
         $data = array();
@@ -1025,7 +1030,8 @@ class ControllerRegisterEvent extends Controller
         $data['session'] = $sid;
         $data['attention'] = $this->attention;
         $data['attention_text'] = $this->attention_text;
-
+        $data['second_choice'] = false
+        ;
         // нет хэша
         if (empty($this->session->data['register_user'])) {
             $error = true;
@@ -1043,18 +1049,27 @@ class ControllerRegisterEvent extends Controller
             $this->model_register_register->log($log, 'info');
         }
 
+//        $filter_data = array(
+//            'filter_start' => 0,
+//            'filter_limit' => 1
+//        );
+//        $site = substr(strstr($post["email"], '@'), 1);
+//
+//        $filter_data['filter_name'] = $post["company"];
+//        $filter_data['filter_address'] = $post["city"];
+//        $filter_data['filter_site'] = $site;
+//        $results = $this->model_register_register->getCompanyNames($filter_data);
+//
+//        var_dump($results);
+
+
         // все ок, ошибок нет
         if (!$error) {
+            //если поля email и должность были изменены, то true
+            $this->session->data['register_user']['userFieldsChanged'] = $post['userFieldsChanged'] === "true";
 
-
-            if ($post['formChanged'] === "true") {
-                $post['formChanged'] = true;
-            } else {
-                $post['formChanged'] = false;
-            }
-            $this->session->data['register_user']['formChanged'] = $post['formChanged'];
-            $this->session->data['register_user']['company'] !== $post["company"] ? $post['formChanged'] = true : $post['formChanged'] = false;
-            $this->session->data['register_user']['formChanged'];
+            //показывает сменил ли пользователь компанию
+            $this->session->data['register_user']['isCompanyChanged'] = isset($post['isCompanyChanged']) ? true : $this->session->data['register_user']['company'] !== $post["company"];
 
             $user_data = array(
                 //'user_id'					=> $this->session->data['register_user']['user_id'],
@@ -1075,15 +1090,9 @@ class ControllerRegisterEvent extends Controller
                 'city' => isset($post['city']) ? $post['city'] : '',
                 'email' => isset($post['email']) ? $post['email'] : '',
                 'avatar' => $this->session->data['register_user']['avatar'],
-                'formChanged' => $this->session->data['register_user']['formChanged']
+                'userFieldsChanged' => $this->session->data['register_user']['userFieldsChanged'],
+                'isCompanyChanged' => $this->session->data['register_user']['isCompanyChanged']
             );
-
-            if ($this->session->data['register_user']['company'] !== $user_data['company']) {
-                $user_data['formChanged'] = true;
-                $this->session->data['register_user']['formChanged'] = true;
-                $user_data['companyDataChanged'] = true;
-                $this->session->data['register_user']['companyDataChanged'] = true;
-            }
 
             $user_check_data['fields'] = [
                 'contact_name' => $user_data['name'],
@@ -1113,10 +1122,8 @@ class ControllerRegisterEvent extends Controller
                 $user_check_data['forum_id'] = $this->session->data["register_event"]['forum_id'];
             }
 
-
             $user_check_data['contact_ids'] = $this->model_register_register->getAlternateUsers($user_check_data['contact_id']);
-//            var_dump($user_check_data);
-//            die();
+
             $register_exists = $this->model_register_register->checkRegistration($user_check_data['type'], $user_check_data['event_id'], $user_check_data['forum_id'], $user_check_data['contact_ids'], $user_check_data['fields']);
             $data['register_exists'] = $register_exists;
             $this->session->data['register_event']['register_exists'] = $register_exists;
@@ -1130,8 +1137,44 @@ class ControllerRegisterEvent extends Controller
 
             $data['show_name'] = true;
             $data['show_notme'] = false;
+            $data['search'] = $data["user"]["company"];
 
-            $return['template'] = $this->load->view('register/event_user_main', $data);
+            $filter_data = array(
+                'filter_start' => 0,
+                'filter_limit' => 10
+            );
+
+            $filter_data['filter_name'] = $data["user"]["company"];
+            $filter_data['filter_address'] = $data["user"]["city"];
+            $filter_data['filter_site'] = $data["user"]["company_site"];
+
+            $results = [];
+
+            $results = $this->model_register_register->getCompanyNames($filter_data);
+            if (!empty($results)) {
+                $data['dadata'] = false;
+                foreach ($results as $result) {
+                    $data['companies'][] = array(
+                        'b24id' => !empty($result['b24id']) ? $result['b24id'] : 0,
+                        'id' => !empty($result['b24id']) ? $result['b24id'] : 'new',
+                        'title' => $result['name']
+                    );
+                }
+            }
+
+            if ($data['companies'] && !$this->session->data['register_event']['company_second_choice']) {
+                $data['second_choice'] = true;
+                $this->session->data['register_event']['company_second_choice'] = true;
+
+                $data['company_second_choice'] = $this->session->data['register_event']['company_second_choice'];
+
+                $data['text_result'] = 'По запросу <strong>“' . $data["user"]["company"] . '”</strong> ' . $this->model_themeset_themeset->trueText(count($data['companies']), 'найдена', 'найдено', 'найдено') . ' ' . count($data['companies']) . ' ' . $this->model_themeset_themeset->trueText(count($data['companies']), 'компания', 'компании', 'компаний');
+                $data['company_template'] = $this->load->view('register/_brand_results', $data);
+
+                $return['template'] = $this->load->view('register/event_user_change', $data);
+            } else {
+                $return['template'] = $this->load->view('register/event_user_main', $data);
+            }
 
 
             if ($this->write_log) {
@@ -1258,10 +1301,11 @@ class ControllerRegisterEvent extends Controller
 
         $old_company = $this->model_register_register->getCompanyByB24id(!empty($this->session->data['register_user']['b24_company_old_id']) ? $this->session->data['register_user']['b24_company_old_id'] : 0);
 
-        $isCompanyEdit = !empty($old_company) && ($old_company["city"] !== $this->session->data['register_user']['city'] ||
-            $old_company["web"] !== $this->session->data['register_user']['company_site'] ||
-            $old_company["phone"] !== $this->session->data['register_user']['company_phone'] ||
-            $old_company["activity"] !== $this->session->data['register_user']['company_activity']);
+//        $isCompanyEdit = !empty($old_company) && ($old_company["city"] !== $this->session->data['register_user']['city'] ||
+//            $old_company["web"] !== $this->session->data['register_user']['company_site'] ||
+//            $old_company["phone"] !== $this->session->data['register_user']['company_phone'] ||
+//            $old_company["activity"] !== $this->session->data['register_user']['company_activity']);
+
         $user_data = array(
             'user_id' => $this->session->data['register_user']['user_id'],
             'old_user_id' => $this->session->data['register_user']['old_user_id'],
@@ -1270,9 +1314,9 @@ class ControllerRegisterEvent extends Controller
             'lastname' => $this->session->data['register_user']['lastname'],
             'email' => $this->session->data['register_user']['email'],
             'post' => $this->session->data['register_user']['post'],
-            'company' => $this->session->data['register_user']['company'],
-            'IsCompanyEdit' => $isCompanyEdit,
-            'companyDataChanged' => $this->session->data['register_user']['companyDataChanged'],
+            'company' => htmlspecialchars_decode($this->session->data['register_user']['company']),
+            'userFieldsChanged' => $this->session->data['register_user']['userFieldsChanged'],
+            'isCompanyChanged' => $this->session->data['register_user']['isCompanyChanged'],
             'company_status' => $this->session->data['register_user']['company_status'],
             'company_phone' => $this->session->data['register_user']['company_phone'],
             'company_site' => $this->session->data['register_user']['company_site'],
@@ -1294,32 +1338,18 @@ class ControllerRegisterEvent extends Controller
             );
             $this->model_register_register->log($log, 'info');
         }
-        var_dump(!empty($user_data['old_user_id']) && $user_data['user_id'] == $user_data['old_user_id']);
-        var_dump(!$this->session->data['register_user']['formChanged']);
-        var_dump(!$this->session->data['register_user']['companyDataChanged']);
 
         // все ок, ошибок нет
         if (!$error) {
             switch (true) {
-
                 /* данные не менялись */
-                case (
-                    !empty($user_data['old_user_id']) && $user_data['user_id'] == $user_data['old_user_id'] ||
-                    !$this->session->data['register_user']['formChanged'] ||
-                    !$this->session->data['register_user']['companyDataChanged']):
-                    var_dump('1');
-                die();
+                case (!$user_data['userFieldsChanged'] && !$user_data['isCompanyChanged'] && $user_data['old_user_id']):
                     $contact_id = $user_data['old_user_id'];
                     break;
 
                 /* данные поменялись */
-                case (
-                    !empty($user_data['old_user_id']) && $user_data['user_id'] != $user_data['old_user_id'] ||
-                    $this->session->data['register_user']['formChanged'] ||
-                    $this->session->data['register_user']['companyDataChanged']):
-                    var_dump('2');
-                    die();
-                    $user_data['IsContactEdit'] = true;
+                case (($user_data['userFieldsChanged'] || $user_data['isCompanyChanged']) && $user_data['old_user_id']):
+
                     $return_contact = $this->model_register_register->createContact($user_data);
                     $contact_id = $return_contact['id'];
 
@@ -1331,10 +1361,6 @@ class ControllerRegisterEvent extends Controller
 
                 /* новый контакт */
                 default:
-                    var_dump('3');
-                    die();
-                    $user_data['IsContactEdit'] = true;
-
                     $return_contact = $this->model_register_register->createContact($user_data);
                     $contact_id = $return_contact['id'];
             }
@@ -1355,7 +1381,6 @@ class ControllerRegisterEvent extends Controller
             );
             $this->model_register_register->log($log, 'info');
             $master_class_info = [];
-//            var_dump($this->session->data['register_event']['type']);
 
             switch ($this->session->data['register_event']['type']) {
                 case 'webinar':
@@ -1398,7 +1423,6 @@ class ControllerRegisterEvent extends Controller
 
             $deal_info = [];
             $smart_proccess_info = [];
-//            var_dump($this->session->data['register_event']['type']);
 
             if ($this->session->data['register_event']['type'] === 'master_class') {
                 if ($this->session->data['register_event']['register_exists']['deal_id']) {
@@ -1407,22 +1431,13 @@ class ControllerRegisterEvent extends Controller
                     $deal_info = $this->model_register_register->createDeal($event_info);
                     $master_class_info['deal_id'] = $deal_info['id'];
                 }
-//                var_dump($master_class_info);
 
                 $smart_proccess_info = $this->model_register_register->createSmartProccess($master_class_info);
-//                var_dump($smart_proccess_info);
 
             } else {
                 $deal_info = $this->model_register_register->createDeal($event_info);
             }
-//            var_dump($this->session->data['register_event']['type']);
-//            var_dump($deal_info);
-//
-//            var_dump($master_class_info);
-//
-//            var_dump($smart_proccess_info);
 
-//            die();
             if (($this->session->data['register_event']['type'] === 'master_class' && $smart_proccess_info['code'] == 200)) {
                 if ($deal_info['code'] == 200 ||$master_class_info['deal_id']) {
                     $return['old_id'] = $this->session->data['register_user']['user_id'];
@@ -1536,5 +1551,42 @@ class ControllerRegisterEvent extends Controller
         $this->response->setOutput(json_encode($return));
     }
 
+    private function companyCheck($data = [])
+    {
+        $this->load->model('register/register');
+
+        $b24id = !empty($this->request->post['b24id']) ? $this->request->post['b24id'] : '';
+        $company_name = !empty($this->request->post['company_name']) ? $this->request->post['company_name'] : '';
+        $company_inn = !empty($this->request->post['company_inn']) ? $this->request->post['company_inn'] : '';
+        $company_address = !empty($this->request->post['company_address']) ? $this->request->post['company_address'] : '';
+        $site = substr(strstr($this->session->data["register_user"]["email"], '@'), 1);
+
+        $this->session->data["register_event"]['company_inn'] = $company_inn;
+
+        $data['company_info'] = array();
+
+        $data['activity'] = $this->company_activity;
+
+        $filter_data = array(
+            'filter_start' => 0,
+            'filter_limit' => 1
+        );
+
+        if ($b24id) {
+            $filter_data['filter_b24id'] = $b24id;
+        } else {
+            $filter_data['filter_name'] = $company_name;
+            $filter_data['filter_inn'] = $company_inn;
+            $filter_data['filter_address'] = $company_address;
+            $filter_data['filter_site'] = $site;
+        }
+
+        var_dump($filter_data);
+
+        $results = $this->model_register_register->getCompanyNames($filter_data);
+
+        var_dump($results);
+
+    }
 
 }

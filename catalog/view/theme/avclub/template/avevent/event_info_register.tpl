@@ -2,7 +2,7 @@
 
 	<div class="reg__cont">
 		<div class="reg__data">
-			<div class="reg__qty">ОСТАЛОСЬ <?php echo $count; ?> <?php echo $count_text; ?></div>
+			<!--<div class="reg__qty">ОСТАЛОСЬ <?php echo $count; ?> <?php echo $count_text; ?></div>-->
 			<div class="reg__title">Зарегистрируйтесь на мероприятие</div>
 			<div class="reg__capt">
 				<div class="reg__name"><?php echo $type; ?>.<?php echo $city; ?></div>
