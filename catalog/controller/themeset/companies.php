@@ -146,7 +146,17 @@ class ControllerThemesetCompanies extends Controller {
 		echo '</pre>';
 	}
 
+    public function updateAllCompanies() {
+        $this->load->model('themeset/companies');
 
+        $all_companies = $this->model_themeset_companies->getAllCompanies();
+
+        foreach ($all_companies as $company_id) {
+            $this->model_themeset_companies->getCompanyInfo($company_id, true, ['show_result' => true]);
+        }
+
+        echo 'Все компании успешно обновлены.';
+    }
 
 	public function getCompanyById($company_id = 0) {
 
@@ -166,7 +176,6 @@ class ControllerThemesetCompanies extends Controller {
 	}
 
 	public function updateCompany() {
-
 		$log = new Log('company_change-' . date('Y-m-d') . '.log');
 		$message = "\n------------------\n";
 		$message .= !empty($this->request->post) ? json_encode($this->request->post) : 'POST Empty';
@@ -218,8 +227,6 @@ class ControllerThemesetCompanies extends Controller {
 		$this->load->model('themeset/themeset');
 		$this->model_themeset_themeset->editSetting('themeset', array('themeset_bitrix_company_refresh_token'=>$refresh_token));
 	}
-
-
 
 	public function install() {
 		require_once(DIR_SYSTEM . 'library/crest/crest.php');

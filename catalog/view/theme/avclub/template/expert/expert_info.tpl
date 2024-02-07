@@ -29,7 +29,7 @@
                         </a>
                     </div>
                     <?php } ?>
-                    <?php if($edit_info && $alternate_count) { ?>
+                    <?php if($edit_info && $alternate_count && $is_expert) { ?>
                     <div class="expertinfo__attention">
                         <svg class="icow">
                             <use xlink:href="catalog/view/theme/avclub/img/sprite.svg#attention">

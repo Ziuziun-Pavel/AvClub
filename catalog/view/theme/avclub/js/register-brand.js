@@ -93,6 +93,7 @@ $(function(){
 		b24id = $(this).attr('data-id'),
 		company_name = $(this).attr('data-name'),
 		company_address = $(this).attr('data-address'),
+		company_director = $(this).attr('data-director'),
 		company_inn = $(this).attr('data-inn');
 
 		$.ajax({
@@ -103,6 +104,7 @@ $(function(){
 				'b24id': b24id,
 				'company_name': company_name,
 				'company_address': company_address,
+				'company_director': company_director,
 				'company_inn': company_inn,
 			},
 			beforeSend: function(json) { $('.reg__load').fadeIn(); },

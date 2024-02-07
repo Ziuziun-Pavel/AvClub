@@ -54,9 +54,23 @@ class ControllerRegisterCompany extends Controller
             $dadata_results = [];
             $results = [];
 
+            $results = $this->model_register_register->getCompanyNames($filter_data);
+
             switch ($data['country'])
             {
                 case 'Россия':
+                    if (!empty($results)) {
+                        foreach ($results as $result) {
+                            $data['companies'][] = array(
+                                'b24id' => !empty($result['b24id']) ? $result['b24id'] : 0,
+                                'id' => !empty($result['b24id']) ? $result['b24id'] : 'new',
+                                'title' => $result['name'],
+                                'city' => $result['city'],
+                                'address' => $result['address'],
+                                'manager' => $result['director'],
+                            );
+                        }
+                    }
                     $dadata_results = $MyDadata->findRuCompany($company_name)['suggestions'];
                     if (!empty($dadata_results)) {
                         $data['dadata'] = true;
@@ -71,6 +85,18 @@ class ControllerRegisterCompany extends Controller
                     }
                     break;
                 case 'Беларусь':
+                    if (!empty($results)) {
+                        foreach ($results as $result) {
+                            $data['companies'][] = array(
+                                'b24id' => !empty($result['b24id']) ? $result['b24id'] : 0,
+                                'id' => !empty($result['b24id']) ? $result['b24id'] : 'new',
+                                'title' => $result['name'],
+                                'city' => $result['city'],
+                                'address' => $result['address'],
+                                'manager' => $result['director'],
+                            );
+                        }
+                    }
                     $dadata_results = $MyDadata->findByCompany($company_name)['suggestions'];
                     if (!empty($dadata_results)) {
                         $data['dadata'] = true;
@@ -85,6 +111,19 @@ class ControllerRegisterCompany extends Controller
                     }
                     break;
                 case 'Казахстан':
+                    if (!empty($results)) {
+                        foreach ($results as $result) {
+                            $data['companies'][] = array(
+                                'b24id' => !empty($result['b24id']) ? $result['b24id'] : 0,
+                                'id' => !empty($result['b24id']) ? $result['b24id'] : 'new',
+                                'title' => $result['name'],
+                                'city' => $result['city'],
+                                'address' => $result['address'],
+                                'manager' => $result['director'],
+                            );
+                        }
+                    }
+
                     $dadata_results = $MyDadata->findKzCompany($company_name)['suggestions'];
                     if (!empty($dadata_results)) {
                         $data['dadata'] = true;
@@ -99,7 +138,6 @@ class ControllerRegisterCompany extends Controller
                     }
                     break;
                 default:
-                    $results = $this->model_register_register->getCompanyNames($filter_data);
                     if (!empty($results)) {
                         $data['dadata'] = false;
                         foreach ($results as $result) {
@@ -166,9 +204,15 @@ class ControllerRegisterCompany extends Controller
         $company_name = !empty($this->request->post['company_name']) ? $this->request->post['company_name'] : '';
         $company_inn = !empty($this->request->post['company_inn']) ? $this->request->post['company_inn'] : '';
         $company_address = !empty($this->request->post['company_address']) ? $this->request->post['company_address'] : '';
-        $site = substr(strstr($this->session->data["register_user"]["email"], '@'), 1);
+        $company_director = !empty($this->request->post['company_director']) ? $this->request->post['company_director'] : '';
+
+        if ($company_director || $company_inn || $company_address) {
+            $site = substr(strstr($this->session->data["register_user"]["email"], '@'), 1);
+        }
 
         $this->session->data["register_event"]['company_inn'] = $company_inn;
+        $this->session->data["register_event"]['company_address'] = $company_address;
+        $this->session->data["register_event"]['company_director'] = $company_director;
 
         $data['company_info'] = array();
 
@@ -238,6 +282,7 @@ class ControllerRegisterCompany extends Controller
 
         $company_name = !empty($this->request->post['search']) ? $this->request->post['search'] : '';
         $company_second_choice = !empty($this->request->post['company_second_choice']) ? true : false;
+        $this->session->data["register_event"]['company_add'] = true;
 
         if (!$company_name) {
             $error = true;

@@ -31,18 +31,21 @@ $(function () {
             error = false;
 
         form.find('.invalid').removeClass('invalid');
+        var isPhoneValid = $('#telephone').intlTelInput('isValidNumber');
+        console.log(isPhoneValid)
 
+        if (!isPhoneValid) {
+            addInvalid(telephone.closest('.regphone__inp'));
+            error = true;
+            mess.show()
+            mess.text("Введите правильный номер телефона")
+        }
 
         if (email.length && email.is(':visible')) {
             if (email.val().length < 1 || !$rv_email.test(email.val())) {
                 addInvalid(email.closest('.regform__inp'));
                 error = true;
             }
-        }
-
-        if (!telephone.inputmask('isComplete')) {
-            addInvalid(telephone);
-            error = true;
         }
 
         if (!error) {

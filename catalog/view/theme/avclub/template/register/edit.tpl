@@ -18,7 +18,7 @@
                         <span><span class="link">Назад</span></span>
                     </a>
                 </div>
-                <?php if($alternate_count) { ?>
+                <?php if($alternate_count && $is_expert) { ?>
                 <div class="edit__attention">
                     <svg class="icow">
                         <use xlink:href="catalog/view/theme/avclub/img/sprite.svg#attention">
@@ -81,7 +81,7 @@
                         <div class="regform__inp regform__inp-plh">
                             <input type="tel" name="telephone" value="<?php echo $user['telephone']; ?>"
                                    class="regform__input  <?php echo $user['telephone'] ? 'valid' : ''; ?>"
-                                   data-input-change/>
+                                   data-input-change disabled>
                             <div class="regform__plh">Телефон</div>
                         </div>
                     </div>
@@ -98,74 +98,6 @@
                     <div class="regbrand col-12">
                         <?php echo $company_template;  ?>
                     </div>
-                    <?php /* ?>
-                    <div class="regform__outer regform__outer-capt col-12">
-                        Компания
-                    </div>
-                    <div class="regform__outer col-12">
-                        <div class="regform__inp regform__inp-plh">
-                            <input type="text" name="company" value="<?php echo $user['company']; ?>"
-                                   class="regform__input <?php echo $user['company'] ? 'valid' : ''; ?>"
-                                   autocomplete="false" data-input-change/>
-                            <div class="regform__find">+ Найти</div>
-                            <div class="regform__plh">Компания</div>
-                        </div>
-                    </div>
-
-                    <div class="regcompany col-12 "
-                         style="<?php echo !empty($user['company_status']) && $user['company_status'] === 'new' ? 'display:block;' : ''; ?>">
-                        <div class="regcompany__row row">
-
-                            <div class="regform__outer col-12">
-                                <div class="regform__inp regform__inp-plh">
-                                    <input type="text" readonly name="city" value="<?php echo $user['city']; ?>"
-                                           class="regform__input" data-input-change />
-                                    <div class="regform__plh">Город работы</div>
-                                </div>
-                            </div>
-                            <div class="regform__outer company--new col-12">
-                                <div class="regform__inp regform__inp-plh">
-                                    <input type="tel" readonly name="company_phone" value="<?php echo $user['company_phone']; ?>"
-                                           class="regform__input" autocomplete="false" data-input-change />
-                                    <div class="regform__plh">Телефон компании</div>
-                                </div>
-                            </div>
-                            <div class="regform__outer company--new col-12">
-                                <div class="regform__inp regform__inp-plh">
-                                    <input type="text" readonly name="company_site" value="<?php echo $user['company_site']; ?>"
-                                           class="regform__input" autocomplete="false" data-input-change />
-                                    <div class="regform__plh">Сайт компании</div>
-                                </div>
-                            </div>
-
-                            <?php
-								$activity = array(
-									'Производитель',
-									'Системная интеграция',
-									'Поставка и дистрибуция AV-оборудования',
-									'Установка и обслуживание',
-									'Прокат, аренда аудиовизуальных систем',
-									'Пользователь AV-решений',
-									'Другое'
-								);
-								?>
-                            <div class="regform__outer regform__outer-capt regcompact__title col-12">
-                                Основная деятельность компании в области профессиональных аудиовизуальных технологий
-                                (proAV)
-                            </div>
-                            <div class="regform__outer company--new col-12">
-                                <div class="regcompact__list ">
-                                    <?php foreach($activity as $item) { ?>
-                                    <label class="regcompact__item">
-                                        <input type="checkbox" name="company_activity[]" value="<?php echo $item; ?>">
-                                        <span><?php echo $item; ?></span>
-                                    </label>
-                                    <?php } ?>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <?php */ ?>
 
                     <div class="regform__outer regform__outer-capt col-12">
                         Информация о себе

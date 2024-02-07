@@ -841,6 +841,28 @@ class ModelVisitorExpert extends Model
         return $json;
     }
 
+    public function isExpert($b24id = 0, $visitor_id = 0)
+    {
+        if ($visitor_id) {
+            $sql = "SELECT COUNT(*) AS total 
+            FROM " . DB_PREFIX . "visitor 
+            WHERE visitor_id = '" . (int)$visitor_id . "' 
+            AND status = '1'
+            AND expert = '1'";
+        } else {
+            $sql = "SELECT COUNT(*) AS total 
+            FROM " . DB_PREFIX . "visitor 
+            WHERE b24id = '" . (int)$b24id . "' 
+            AND status = '1'
+            AND expert = '1'";
+        }
+
+
+        $query = $this->db->query($sql);
+
+        return ($query->row['total'] > 0);
+    }
+
     private function mb_ucfirst($string, $encoding = 'UTF-8')
     {
         $strlen = mb_strlen($string, $encoding);

@@ -605,7 +605,6 @@ class ModelRegisterRegister extends Model
 
     private function updateContactInfo($data = array(), $new = false)
     {
-
         /*{
             'old_id' : <старый id контакта, если данные поменялись>,
             'name' : <имя>,
@@ -637,6 +636,8 @@ class ModelRegisterRegister extends Model
             'company_site' => $data['company_site'],
             'company_country' => $data['company_country'],
             'company_inn' => $data['company_inn'],
+            'company_address' => $data['company_address'],
+            'company_director' => $data['company_director'],
             'company_activity' => array($data['company_activity']),
             'b24_company_old_id' => $data['b24_company_old_id'],
         );
@@ -660,6 +661,8 @@ class ModelRegisterRegister extends Model
                     'company_site' => $contact_info['company_site'],
                     'company_country' => $contact_info['company_country'],
                     'company_inn' => $contact_info['company_inn'],
+                    'company_address' => $contact_info['company_address'],
+                    'company_director' => $contact_info['company_director'],
                     'company_activity' => $contact_info['company_activity'],
                 );
 
@@ -702,6 +705,8 @@ class ModelRegisterRegister extends Model
                     'company_site' => $contact_info['company_site'],
                     'company_country' => $contact_info['company_country'],
                     'company_inn' => $contact_info['company_inn'],
+                    'company_address' => $contact_info['company_address'],
+                    'company_director' => $contact_info['company_director'],
                     'company_activity' => $contact_info['company_activity'],
                 );
 
@@ -758,7 +763,9 @@ class ModelRegisterRegister extends Model
         }
 
         if ($contact_info['userFieldsChanged'] || $contact_info['isCompanyChanged'] || $contact_info['IsCompanyEdit']) {
-            if ($new) {
+//            if ($new && $contact_info['isExpert']) {
+
+            if ($data["isExpert"]) {
                 $url = $this->url_contact_create;
             } else {
                 $url = str_replace('{id}', $data['old_user_id'], $this->url_contact_update);

@@ -354,7 +354,7 @@ class ControllerThemesetEvents extends Controller
                 }
 
                 if ($master_id) {
-                    $json = ['status' => '200', 'message' => 'Список вебинаров успешно обновлен', 'id' => $master_id, 'b24_id' => $data['b24id']];
+                    $json = ['status' => '200', 'message' => 'Список вебинаров успешно обновлен', 'id' => $master_id, 'b24_id' => $data['b24id'], 'url' => 'https://www.avclub.pro/obuchenie/' . $master_info['keyword'] . '/'];
                 } else {
                     $json = ['status' => '400', 'message' => 'Ошибка обнавления списка вебинаров',];
                 }
@@ -378,7 +378,7 @@ class ControllerThemesetEvents extends Controller
 
 
                 if ($master_id) {
-                    $json = ['status' => '200', 'message' => 'Список тегов успешно обновлен', 'id' => $master_id, 'b24_id' => $data['b24id']];
+                    $json = ['status' => '200', 'message' => 'Список тегов успешно обновлен', 'id' => $master_id, 'b24_id' => $data['b24id'], 'url' => 'https://www.avclub.pro/obuchenie/' . $master_info['keyword'] . '/'];
                 } else {
                     $json = ['status' => '400', 'message' => 'Ошибка обнавления списка тегов',];
                 }

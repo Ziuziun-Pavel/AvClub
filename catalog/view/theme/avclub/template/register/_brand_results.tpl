@@ -28,6 +28,7 @@
                      data-name='<?php echo $company["title"]; ?>'
                      data-inn='<?php echo implode(", ", array_filter([$company["inn"], $company["unp"], $company["bik"]], "strlen")); ?>'
                      data-address='<?php echo $company["address"]; ?>'
+                     data-director='<?php echo $company["manager"]; ?>'
                 >
                     <div style="text-align: left"><span style="font-size: .9rem; font-weight: 500">Название компании: </span><?php echo ' ' . $company['title']; ?></div>
                     <?php if ($company['manager']): ?>
@@ -44,8 +45,9 @@
                     <?php endif; ?>
                     <?php if ($company['address']): ?>
                         <div style="text-align: left"><span style="font-size: .9rem; font-weight: 500">Адрес: </span><?php echo ' ' . $company['address']; ?></div>
+                    <?php elseif ($company['city']): ?>
+                        <div style="text-align: left"><span style="font-size: .9rem; font-weight: 500">Адрес: </span><?php echo ' г. ' . $company['city']; ?></div>
                     <?php endif; ?>
-
                 </div>
                 <?php else: ?>
                 <button type="button" class="btn btn-invert regbrand--choose"

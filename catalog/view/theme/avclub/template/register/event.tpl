@@ -110,7 +110,7 @@
                                 <?php if($event_info['type'] === 'webinar') { ?>
                                 <div class="reginfo__price"><?php echo $event_info['date']; ?></div>
                                 <div class="reginfo__text">
-                                    <span><?php echo $event_info['name']; ?></span>
+                                    <a target="_blank" style="text-decoration: none;color: #fff;" href="<?php echo $event_info['link']; ?>"><span><?php echo $event_info['name']; ?></span></a>
                                     <?php
                                             if ($event_info['isClosed']) { ?>
                                     <span>Регистрация на вебинар закрыта</span>

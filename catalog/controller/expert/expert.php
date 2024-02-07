@@ -32,6 +32,7 @@ class ControllerExpertExpert extends Controller
         $data['expert_id'] = $expert_id;
 
         $expert_info = $this->model_visitor_expert->getExpert($expert_id, 0, false);
+        $is_expert = $this->model_visitor_expert->isExpert(0, $expert_id);
 
         $data['breadcrumbs'] = array();
 
@@ -54,6 +55,7 @@ class ControllerExpertExpert extends Controller
             $data['logged'] = $status_logged;
             $data['event_list'] = $status_logged;
             $data['alternate_count'] = $expert_info['alternate_count'];
+            $data['is_expert'] = $is_expert;
 
             $data['edit_info'] = $status_logged ? $this->url->link('register/edit') : '';
             $data['publication'] = $status_logged ? $this->url->link('register/publication') : '';

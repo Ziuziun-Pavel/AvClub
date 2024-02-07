@@ -71,8 +71,6 @@ class ModelThemesetCompanies extends Model {
 
 		$flag_archive = isset($result['result']['UF_CRM_1687952516']) && $result['result']['UF_CRM_1687952516'] == 0 ? 0 : 1;
 
-
-
 		$info = $result['result'];
 
 		$title = explode('/', $info['TITLE']);
@@ -83,8 +81,6 @@ class ModelThemesetCompanies extends Model {
 			'branch'	=> !empty($info['UF_CRM_1676452514']) ? $info['UF_CRM_1676452514'] : array(),
 			'product'	=> !empty($info['UF_CRM_1676472006']) ? $info['UF_CRM_1676472006'] : array(),
 		);
-
-
 
 		$tags = $this->getCompanyFields($filter_tags);
 		$tag_personal = (!empty($info['UF_CRM_PERSONAL_TAG_ITEMS_FIELD']) && !empty($tags['tag_personal'][$info['UF_CRM_PERSONAL_TAG_ITEMS_FIELD']])) ? $tags['tag_personal'][$info['UF_CRM_PERSONAL_TAG_ITEMS_FIELD']] : '';
@@ -159,6 +155,9 @@ class ModelThemesetCompanies extends Model {
 			'tag_personal'	=> $tag_personal,
 			'tag_branch'		=> $tag_branch,
 			'tag_product'		=> $tag_product,
+            'inn'			=> $result["requisites"],
+            'address'			=> $info['UF_CRM_1707121975'],
+            'director'			=> $info['UF_CRM_1707121931'],
 			'activity'			=> $activity,
 			'sync'					=> $sync,
 			'flag_archive'	=> $flag_archive,
@@ -187,8 +186,6 @@ class ModelThemesetCompanies extends Model {
 
 		$this->updateCompany($company_info);
 
-
-
 	}
 
 	public function updateCompanyNames($data = array()) {
@@ -205,6 +202,9 @@ class ModelThemesetCompanies extends Model {
 				city = '" . $this->db->escape($data['city']) . "', 
 				phone = '" . $this->db->escape($data['phone']) . "', 
 				web = '" . $this->db->escape($data['web']) . "', 
+				inn = '" . $this->db->escape($data['inn']) . "', 
+				director = '" . $this->db->escape($data['director']) . "', 
+				address = '" . $this->db->escape($data['address']) . "', 
 				activity = '" . $this->db->escape($data['activity']) . "', 
 				archive = '" . (int)$data['flag_archive'] . "' 
 				WHERE  
@@ -216,6 +216,9 @@ class ModelThemesetCompanies extends Model {
 				alternate = '" . $this->db->escape($data['alternate']) . "',
 				city = '" . $this->db->escape($data['city']) . "', 
 				phone = '" . $this->db->escape($data['phone']) . "', 
+				inn = '" . $this->db->escape($data['inn']) . "', 
+				director = '" . $this->db->escape($data['director']) . "', 
+				address = '" . $this->db->escape($data['address']) . "', 
 				web = '" . $this->db->escape($data['web']) . "', 
 				activity = '" . $this->db->escape($data['activity']) . "',  
 				archive = '" . (int)$data['flag_archive'] . "'");
@@ -236,6 +239,9 @@ class ModelThemesetCompanies extends Model {
 			'city'					=> '',
 			'email'					=> '',
 			'web'						=> '',
+            'inn'						=> '',
+            'address'						=> '',
+            'director'						=> '',
 			'description'		=> '',
 			'activity'			=> '',
 			'social'				=> array(),
@@ -270,6 +276,9 @@ class ModelThemesetCompanies extends Model {
 			'city'					=> $data['city'],
 			'phone'					=> $data['phone_1'],
 			'web'						=> $data['web'],
+            'inn'						=> $data['inn'],
+            'address'						=> $data['address'],
+            'director'						=> $data['director'],
 			'activity'			=> $data['activity'],
 			'flag_archive'	=> $data['flag_archive'],
 		);
@@ -476,6 +485,21 @@ class ModelThemesetCompanies extends Model {
 		
 	}
 
+    public function getAllCompanies() {
+        $sql = "SELECT c.b24id FROM " . DB_PREFIX . "company_names c ";
+
+        $companies = array();
+
+        $query = $this->db->query($sql);
+
+        foreach ($query->rows as $result) {
+            $companies[] = $result["b24id"];
+        }
+
+        return $companies;
+
+    }
+
 
 	private function getCompanyFromB24($company_id) {
 		$company_data = array();
@@ -500,9 +524,19 @@ class ModelThemesetCompanies extends Model {
 
 			if(!empty($result['result']['ID'])) {
 				$company_data = $result;
+
+                $resultRequisite = CRest::call(
+                    'crm.requisite.list',
+                    [
+                        "filter" => ["ENTITY_TYPE_ID" => 4, "ENTITY_ID" => $company_id],
+                    ]
+                );
+
+                if (!empty($resultRequisite['result'])) {
+                    $company_data['requisites'] = $resultRequisite['result'][0]['RQ_INN'];
+                }
 			}
 		}
-
 
 		return $company_data;
 	}
@@ -650,7 +684,7 @@ class ModelThemesetCompanies extends Model {
 		$mail->smtp_port = $this->config->get('av_alert_mail_smtp_port');
 		$mail->smtp_timeout = $this->config->get('av_alert_mail_smtp_timeout');
 
-		$mail->setTo('bu.babasik@gmail.com');
+		$mail->setTo('p.ziuziun@techin.by');
 		$mail->setFrom($this->config->get('av_alert_mail_protocol') === 'smtp' ? $this->config->get('av_alert_mail_smtp_username') : $this->config->get('av_alert_email'));
 		$mail->setSender('АВ Клуб | AV Club');
 		$mail->setSubject($email_subject);

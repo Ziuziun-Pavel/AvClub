@@ -4,7 +4,9 @@
 </div>
 <form id="registration-number" action="#" class="regphone">
 	<div class="regphone__inp">
-		<input type="tel" name="telephone" class="regphone__input" value="+" placeholder="+"/>
+		<input id="telephone" type="tel" name="telephone" class="regphone__input" value="" placeholder="+" style="max-width: 100%;"/>
+		<div id="validation-message" style="color: red;"></div>
+
 		<button type="submit" class="regphone__submit btn btn-invert">
 			<span>Продолжить</span>
 			<svg class="ico"><use xlink:href="#arr-register" /></svg>
@@ -23,4 +25,26 @@
 	<input type="hidden" name="r" value="1">
 	<input type="hidden" name="sid" value="<?php echo $session; ?>">
 </form>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/css/intlTelInput.css" rel="stylesheet"/>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/intlTelInput-jquery.min.js"></script>
+
+
+<script>
+	$(document).ready(function() {
+		$("#telephone").intlTelInput({
+			initialCountry: "ru",
+			separateDialCode: false,
+			nationalMode: false,
+			utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/utils.js",
+		});
+
+		// $(document).on('input', '#telephone', function () {
+		// 	var isValid = $('#telephone').intlTelInput('isValidNumber');
+		//
+		// })
+	});
+</script>
+
 <?php require(DIR_TEMPLATE . 'avclub/template/register/_inc_fail.tpl'); ?>

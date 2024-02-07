@@ -27,11 +27,12 @@ class ControllerRegisterEdit extends Controller {
 		$data['expert_id'] = $expert_id; 
 
 		$expert_info = $this->model_visitor_expert->getExpert($expert_id, 0, false);
+        $is_expert = $this->model_visitor_expert->isExpert(0, $expert_id);
 
 		if($expert_info) {
-
 			$data['alternate_count'] = $expert_info['alternate_count'];
-			
+            $data['is_expert'] = $is_expert;
+
 			// $this->model_themeset_expert->getContactInfo($b24id);
 			$contact_info = $this->model_register_register->getContactInfo($b24id);
 
@@ -105,7 +106,7 @@ class ControllerRegisterEdit extends Controller {
 			);
 
 			if($user_data['company']) {
-				$data['company_template'] = $this->load->view('register/_brand_data', $data_company);
+				$data['company_template'] = $this->load->view('register/_brand_data_noedit', $data_company);
 			}else{
 				$data['company_template'] = $this->load->view('register/_brand_main', $data_company);
 			}
