@@ -155,7 +155,7 @@ class ControllerRegisterCompany extends Controller
                 $data['text_result'] = 'По запросу <strong>“' . $company_name . '”</strong> ' . $this->model_themeset_themeset->trueText(count($data['companies']), 'найдена', 'найдено', 'найдено') . ' ' . count($data['companies']) . ' ' . $this->model_themeset_themeset->trueText(count($data['companies']), 'компания', 'компании', 'компаний');
                 $return['template'] = $this->load->view('register/_brand_results', $data);
             } else {
-
+                $this->session->data["register_event"]['company_add'] = true;
                 $data['activity'] = $this->company_activity;
                 $data['company_info'] = array(
                     'b24_company_old_id' => 0,
