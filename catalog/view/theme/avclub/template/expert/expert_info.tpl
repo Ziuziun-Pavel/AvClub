@@ -190,7 +190,12 @@
                                    class="expertnav__change publications expertnav__tab-tab <?php echo !$active_tab ? 'active' : ''; ?>"
                                    data-type="publications">ПУБЛИКАЦИИ</a></li>
                             <?php $active_tab = true; ?>
-
+                            <?php if(!empty($event_list)) { ?>
+                            <li><a href="#"
+                                   class="expertnav__change catalog_list expertnav__tab-tab <?php echo !$active_tab ? 'active' : ''; ?>"
+                                   data-type="catalog_list">Компании</a></li>
+                            <?php $active_tab = true; ?>
+                            <?php } ?>
                         </ul>
                     </div>
                     <?php if(!$tabs && !empty($bio)) { ?>
@@ -296,6 +301,12 @@
 
                         </div>
                         <?php $active_tab = true; ?>
+
+                        <div id="catalog_list" class="expert__content <?php echo !empty($active_tab) ? '' : 'active'; ?> d-none">
+
+                        </div>
+                        <?php $active_tab = true; ?>
+
 
                     </div>
                     <div class="expertrow__aside col-xl-4">
@@ -526,6 +537,44 @@
             error: function (json) {
                 $('#publist').html(error_text);
                 console.log('expert getPubApplications error', json);
+            }
+        });
+
+        $.ajax({
+            type: "GET",
+            url: "index.php?route=expert/expert/getCatalogList",
+            dataType: "json",
+            data: 'expert_id=<?php echo $expert_id; ?>',
+            beforeSend: function (json) {
+                $('#catalog_list').html(`
+                    <div class="expreg__message ">
+                        <div class="expreg__message--preloader">
+                            <div class="cssload-clock"></div>
+                        </div>
+                        <div class="expreg__message--text">
+                            Подождите, идет поиск заявок...
+                        </div>
+                    </div>
+                `);
+            },
+            complete: function (json) {
+            },
+            success: function (json) {
+                if (json['template']) {
+                    $('#catalog_list').html(json['template']);
+                } else if (json['error']) {
+                    $('#catalog_list').html(error_text);
+                }
+                if ($('.expertnav__tabs a.catalog_list').hasClass('active')) {
+                    $('.expreg').removeClass('d-none');
+                    $('.expert__content').removeClass('d-none');
+                    $('#navlist-bio').removeClass('active');
+                }
+
+            },
+            error: function (json) {
+                $('#catalog_list').html(error_text);
+                console.log('expert getCatalogList error', json);
             }
         });
     })

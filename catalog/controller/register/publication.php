@@ -100,7 +100,9 @@ class ControllerRegisterPublication extends Controller {
 				'search'							=> $user_data['company'],
 			);
 
-			$data['company_template'] = $this->load->view('register/_brand_publication', $data_company);
+            $data_company['countries'] = $this->model_company_company->getListOfCountries();
+
+			$data['company_template'] = $this->load->view('register/_brand_main', $data_company);
 
 			// $data['back'] = $this->url->link('expert/expert', 'expert_id=' . $expert_id);
 			$data['back'] = '/account/';

@@ -194,8 +194,6 @@ $(function () {
         });
     })
 
-
-
     $(document).on('click', '#button-save', function (e) {
         e.preventDefault();
 
@@ -220,68 +218,73 @@ $(function () {
 
         $('.invalid').removeClass('invalid');
 
-        if ($email.length) {
-            if ($email.val().length < 1 || !$rv_email.test($email.val())) {
-                addInvalid($email.closest('.regform__inp'));
-                error = true;
-                console.log('error1');
-            }
-        }
-
-        if ($post.length) {
-            if ($post.val().length < 1) {
-                addInvalid($post.closest('.regform__inp'));
-                error = true;
-                console.log('error2');
-            }
-        }
-
-        var input_arr = [];
-        var company_arr = [];
-
-        if ($name.length) {
-            input_arr.push($name);
-        }
-        if ($lastname.length) {
-            input_arr.push($lastname);
-        }
-
-        $.each(input_arr, function (key, item) {
-            if (item.val().length < 2) {
-                addInvalid(item.closest('.regform__inp'));
-                error = true;
-                console.log('error3');
-            }
-        })
-
-        if (!form.find('input[name="b24_company_old_id"]').length || !form.find('input[name="b24_company_id"]').length) {
-            console.log('error4');
-            error = true;
-            error_company = true;
-        } else {
-            company_arr.push(form.find('input[name="city"]'));
-            company_arr.push(form.find('input[name="company_phone"]'));
-            company_arr.push(form.find('input[name="company_site"]'));
-            var company_activity = form.find('input[name="company_activity"]').closest('.regform__inp');
-            if (!form.find('input[name="city"]').val()) {
-                addInvalid(company_activity);
-                error = true;
-                console.log('error5');
-                error_company = true;
+        if (!form.find('.regform__inp').hasClass('noedit')) {
+            if ($email.length) {
+                if ($email.val().length < 1 || !$rv_email.test($email.val())) {
+                    addInvalid($email.closest('.regform__inp'));
+                    error = true;
+                    console.log('error1');
+                }
             }
 
-            $.each(company_arr, function (key, item) {
+            if ($post.length) {
+                if ($post.val().length < 1) {
+                    addInvalid($post.closest('.regform__inp'));
+                    error = true;
+                    console.log('error2');
+                }
+            }
+
+            var input_arr = [];
+            var company_arr = [];
+
+            if ($name.length) {
+                input_arr.push($name);
+            }
+            if ($lastname.length) {
+                input_arr.push($lastname);
+            }
+
+            $.each(input_arr, function (key, item) {
                 if (item.val().length < 2) {
                     addInvalid(item.closest('.regform__inp'));
                     error = true;
-                    console.log('error6');
-                    error_company = true;
+                    console.log('error3');
                 }
             })
-        }
 
-        if (error_company) {
-            addInvalid($('.regbrand'));
+            if (!form.find('input[name="b24_company_old_id"]').length || !form.find('input[name="b24_company_id"]').length) {
+                form.find('.error-message').show();
+                console.log('error4');
+                error = true;
+                error_company = true;
+            } else {
+                company_arr.push(form.find('input[name="city"]'));
+                // if (form.find('input[name="company_phone"]')) {
+                //     company_arr.push(form.find('input[name="company_phone"]'));
+                // }
+                company_arr.push(form.find('input[name="company_site"]'));
+                var company_activity = form.find('input[name="company_activity"]').closest('.regform__inp');
+                if (!form.find('input[name="city"]').val()) {
+                    addInvalid(company_activity);
+                    error = true;
+                    console.log('error5');
+                    error_company = true;
+                }
+
+                $.each(company_arr, function (key, item) {
+                    if (item.val().length < 2) {
+                        addInvalid(item.closest('.regform__inp'));
+                        error = true;
+                        console.log('error6');
+                        error_company = true;
+                    }
+                })
+            }
+
+            if (error_company) {
+                addInvalid($('.regbrand'));
+            }
         }
 
         /*
@@ -353,6 +356,7 @@ $(function () {
         if ($company.length) {
             if ($company.val().length < 2) {
                 addInvalid($company.closest('.regform__inp'));
+                $company.closest('.regform__outer').find('.error-message').show();
                 error = true;
             }
         }

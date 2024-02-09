@@ -254,6 +254,17 @@ $(function () {
                 $('#content-events').addClass('d-none');
             }
 
+            if(type === 'catalog_list') {
+                $('#catalog_list .expreg').removeClass('d-none');
+                $('#catalog_list.expert__content').css("display", "block");
+                $('#catalog_list').removeClass('d-none')
+                $('#navlist-bio').addClass('d-none')
+            } else {
+                $('#catalog_list .expreg').addClass('d-none');
+                $('#catalog_list.expert__content').css("display", "none");
+                $('#catalog_list').addClass('d-none');
+            }
+
             if(type === 'publications') {
                 $('#publist .expreg').removeClass('d-none');
                 $('#publist.expert__content').css("display", "block");

@@ -1353,8 +1353,6 @@ class ControllerRegisterEvent extends Controller
             switch (true) {
                 /* данные не менялись */
                 case (!$user_data['userFieldsChanged'] && !$user_data['isCompanyChanged'] && $user_data['old_user_id']):
-                    var_dump('1');
-                    die();
                     $contact_id = $user_data['old_user_id'];
                     break;
 
@@ -1371,8 +1369,6 @@ class ControllerRegisterEvent extends Controller
 
                 /* новый контакт */
                 default:
-                    var_dump('3');
-                    die();
                     $return_contact = $this->model_register_register->createContact($user_data);
                     $contact_id = $return_contact['id'];
             }

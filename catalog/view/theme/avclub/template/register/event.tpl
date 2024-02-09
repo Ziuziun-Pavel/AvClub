@@ -83,9 +83,7 @@
                                 <?php if($event_info['type'] === 'master_class') { ?>
                                 <?php
                                         $infos = array();
-                                        if(!empty($event_info['price'])) {
-                                            $infos[] = $event_info['price'] . ' р.';
-                                        }
+
                                         $infos[] = 'Бесплатно для резидентов Клуба при указании промокода';
                                         ?>
                                 <div class="reginfo__price"><?php echo implode(' / ', $infos); ?> </div>
@@ -93,7 +91,7 @@
                                     <?php if(!empty($event_info['address'])) { ?>
                                     <span><?php echo implode(', ', $event_info['address']); ?></span>
                                     <?php } ?>
-                                    <?php if($event_info['date_stop']) { ?>
+                                    <?php if($event_info['date_stop'] && $event_info['date'] !== $event_info['date_stop']) { ?>
                                     <span><?php echo $event_info['date']; ?> - <?php echo $event_info['date_stop']; ?></span>
                                     <?php } else { ?>
                                     <span><?php echo $event_info['date']; ?></span>

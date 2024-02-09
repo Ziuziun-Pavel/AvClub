@@ -223,7 +223,7 @@
 			<div class="page__outer"
 				<?php if(isset($type_page) && strpos($_SERVER['REQUEST_URI'], '/event-register') !== false) { ?>
 				style="padding-top: 10px"
-				<?php } elseif(strpos($_SERVER['REQUEST_URI'], '/event-register') !== false) { ?>
+				<?php } elseif(strpos($_SERVER['REQUEST_URI'], '/event-register') !== false || strpos($_SERVER['REQUEST_URI'], '/login') !== false ) { ?>
 				style=""
 				<?php } else { ?>
 				style="padding-top: 48px"

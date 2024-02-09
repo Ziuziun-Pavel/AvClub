@@ -19,9 +19,8 @@ class ModelRegisterRegister extends Model
     private $url_get_paid_publications = "http://clients.techin.by/avclub/site/api/v1/deal/get-paid-publication";
     private $url_get_pub_applications = "http://clients.techin.by/avclub/site/api/v1/deal/get-publication-list";
     private $url_check_registration = "http://clients.techin.by/avclub/site/api/v1/deal/check-registration";
-
     private $url_create_smart_proccess = "http://clients.techin.by/avclub/site/api/v1/smart-process/create";
-
+    private $url_get_catalog_list = "http://clients.techin.by/avclub/site/api/v1/deal/get-catalog-list";
     private $url_deal = "http://clients.techin.by/avclub/site/api/v1/deal/create";
 
     private $debug = 0;
@@ -278,16 +277,24 @@ class ModelRegisterRegister extends Model
 
         if (!empty($data['filter_inn'])) {
             $sql .= " AND c.inn = '" . (int)$data['filter_inn'] . "'";
-        }
+        } else {
+            if (!empty($data['filter_site'])) {
+                $site = $this->db->escape($data['filter_site']);
 
-        if (!empty($data['filter_site'])) {
-            $sql .= " AND c.web = '" . $data['filter_site'] . "'";
+                // Удаляем "http://", "https://", "www." и слэши из значения filter_site
+                $site = str_replace(array('http://', 'https://', 'www.'), '', $site);
+
+                if (strpos($site, '/') !== false) {
+                    $site = strstr($site, '/', true);
+                }
+
+                $sql .= " AND (c.web LIKE '%" . $site . "%' OR c.web LIKE '%www." . $site . "%')";
+            }
         }
 
         $sql .= " GROUP BY c.b24id";
 
         $sql .= " ORDER BY LCASE(c.title) ASC";
-
 
         if (isset($data['start']) || isset($data['limit'])) {
             if ($data['start'] < 0) {
@@ -515,6 +522,33 @@ class ModelRegisterRegister extends Model
 
         return $return_list;
     }
+
+    public function getCatalogList($contact_id = 0, $last_id = 0)
+    {
+        $return_list = array();
+
+        $fields = array(
+            'contact_id' => $contact_id,
+            'last_id' => $last_id,
+        );
+        $ch = curl_init($this->url_get_catalog_list);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
+        $body = curl_exec($ch);
+        curl_close($ch);
+
+        $json = json_decode($body, true);
+
+        if (!empty($json['list'])) {
+            foreach ($json['list'] as &$item) {
+                $return_list[] = $item;
+            }
+        }
+
+        return $return_list;
+    }
+
 
     public function confirmParticipation($deal_id = 0, $type)
     {
