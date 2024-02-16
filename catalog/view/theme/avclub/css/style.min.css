@@ -19410,7 +19410,7 @@ body.avevent-event-info .header, body.event-item .header {
     }
 
     .xprt__item-event .xprt__image {
-        padding-bottom: 60.9%
+        padding-bottom: 67.9%
     }
 
     .xprt__item-case .xprt__image {
@@ -20771,7 +20771,10 @@ body.avevent-event-info .header, body.event-item .header {
         opacity: .4
     }
 }
-
+.regform__btn[disabled] {
+    pointer-events: none;
+    opacity: .4
+}
 .regfile {
     background: #f6f6f6;
     display: -ms-flexbox;
@@ -20780,6 +20783,12 @@ body.avevent-event-info .header, body.event-item .header {
     flex-flow: column;
     padding: 10px;
     width: 100%
+}
+
+.regform__input.required, .regform__label.required {
+    background: url(/catalog/view/theme/avclub/images/required.svg) no-repeat;
+    background-position: right center;
+    background-size: 1.4rem;
 }
 
 .regfile--name {

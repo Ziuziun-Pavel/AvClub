@@ -311,15 +311,18 @@
                     </div>
                     <div class="expertrow__aside col-xl-4">
 
-                        <?php if(!empty($banner)) { ?>
-                        <div class="abanner__cont">
-                            <?php require(DIR_TEMPLATE . 'avclub/template/_include/journal-banner.tpl'); ?>
-                        </div>
+                        <?php if($logged) { ?>
+                            <?php if(!empty($banner)) { ?>
+                            <div class="abanner__cont">
+                                <?php require(DIR_TEMPLATE . 'avclub/template/_include/journal-banner.tpl'); ?>
+                            </div>
+                            <?php } ?>
+                        <?php } else { ?>
+                            <div class="expert__master expert__master-short">
+                                <?php require(DIR_TEMPLATE . 'avclub/template/_include/journal-master.tpl'); ?>
+                            </div>
                         <?php } ?>
 
-                        <div class="expert__master expert__master-short">
-                            <?php require(DIR_TEMPLATE . 'avclub/template/_include/journal-master.tpl'); ?>
-                        </div>
 
                     </div>
 

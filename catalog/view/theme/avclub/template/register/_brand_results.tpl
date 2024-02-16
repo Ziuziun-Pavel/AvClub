@@ -1,4 +1,4 @@
-<div class="regbrand__result">
+<div class="regbrand__result" style="margin: 0">
 
     <div class="regbrand__result--top">
         <div class="regbrand__result--left">
@@ -29,6 +29,7 @@
                      data-inn='<?php echo implode(", ", array_filter([$company["inn"], $company["unp"], $company["bik"]], "strlen")); ?>'
                      data-address='<?php echo $company["address"]; ?>'
                      data-director='<?php echo $company["manager"]; ?>'
+                     data-id="<?php echo $company['id']; ?>"
                 >
                     <div style="text-align: left"><span style="font-size: .9rem; font-weight: 500">Название компании: </span><?php echo ' ' . $company['title']; ?></div>
                     <?php if ($company['manager']): ?>

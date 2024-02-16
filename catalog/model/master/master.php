@@ -249,6 +249,7 @@ class ModelMasterMaster extends Model {
 			LEFT JOIN " . DB_PREFIX . "visitor v ON (a.author_id = v.visitor_id) 
 			WHERE 
 			a.master_id = '" . (int)$master_id . "' 
+			AND v.image IS NOT NULL AND v.image <> ''
 			ORDER BY a.master_id ASC");
 
         if($query->num_rows) {
@@ -277,6 +278,7 @@ class ModelMasterMaster extends Model {
 			LEFT JOIN " . DB_PREFIX . "visitor v ON (a.author_id = v.visitor_id) 
 			WHERE 
 			a.master_id = '" . (int)$master_id . "' 
+			AND v.image IS NOT NULL AND v.image <> ''
 			ORDER BY a.master_id ASC");
 
         if($query->num_rows) {

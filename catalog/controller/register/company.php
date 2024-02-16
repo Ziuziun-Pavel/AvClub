@@ -20,7 +20,6 @@ class ControllerRegisterCompany extends Controller
 
     public function searchCompanies()
     {
-
         $this->load->model('register/register');
         $this->load->model('themeset/themeset');
 
@@ -56,6 +55,8 @@ class ControllerRegisterCompany extends Controller
 
             $results = $this->model_register_register->getCompanyNames($filter_data);
 
+            $clean_company_name = str_replace('&quot;', "'", $company_name);
+
             switch ($data['country'])
             {
                 case 'Россия':
@@ -71,7 +72,7 @@ class ControllerRegisterCompany extends Controller
                             );
                         }
                     }
-                    $dadata_results = $MyDadata->findRuCompany($company_name)['suggestions'];
+                    $dadata_results = $MyDadata->findRuCompany($clean_company_name)['suggestions'];
                     if (!empty($dadata_results)) {
                         $data['dadata'] = true;
                         foreach ($dadata_results as $result) {
@@ -97,7 +98,7 @@ class ControllerRegisterCompany extends Controller
                             );
                         }
                     }
-                    $dadata_results = $MyDadata->findByCompany($company_name)['suggestions'];
+                    $dadata_results = $MyDadata->findByCompany($clean_company_name)['suggestions'];
                     if (!empty($dadata_results)) {
                         $data['dadata'] = true;
                         foreach ($dadata_results as $result) {
@@ -124,7 +125,7 @@ class ControllerRegisterCompany extends Controller
                         }
                     }
 
-                    $dadata_results = $MyDadata->findKzCompany($company_name)['suggestions'];
+                    $dadata_results = $MyDadata->findKzCompany($clean_company_name)['suggestions'];
                     if (!empty($dadata_results)) {
                         $data['dadata'] = true;
                         foreach ($dadata_results as $result) {

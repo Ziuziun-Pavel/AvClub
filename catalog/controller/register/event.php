@@ -51,8 +51,8 @@ class ControllerRegisterEvent extends Controller
         $data['attention_text'] = $this->attention_text;
 
         /* FORUM */
-        if (isset($this->request->get['forum_id']) && !isset($this->request->get['master_class_id'])  && !$has_event) {
-          $forum_id = !empty($this->request->get['forum_id']) ? (int)$this->request->get['forum_id'] : 0;
+        if (isset($this->request->get['forum_id']) && !isset($this->request->get['master_class_id']) && !$has_event) {
+            $forum_id = !empty($this->request->get['forum_id']) ? (int)$this->request->get['forum_id'] : 0;
             $result = CRest::call(
                 'lists.element.get',
                 [
@@ -643,7 +643,8 @@ class ControllerRegisterEvent extends Controller
 
             }
 
-            if ($data['register_exists']) {
+            if ((is_array($data['register_exists']) && $data['register_exists']["registration_id"]) ||
+                (!is_array($data['register_exists']) && $data['register_exists'])) {
                 $return['error'] = 'Пользователь уже зарегистрирован на это мероприятие.';
                 $return['template'] = $this->load->view('register/event_code', $data);
 
@@ -695,7 +696,8 @@ class ControllerRegisterEvent extends Controller
             $this->model_register_register->log($log, 'info');
         }
 
-        if ($data['register_exists']) {
+        if ((is_array($data['register_exists']) && $data['register_exists']["registration_id"]) ||
+            (!is_array($data['register_exists']) && $data['register_exists'])) {
             $return['error'] = 'Пользователь уже зарегистрирован на это мероприятие.';
             $return['template'] = $this->load->view('register/event_code', $data);
 
@@ -805,6 +807,7 @@ class ControllerRegisterEvent extends Controller
 
                 $data['show_name'] = true;
                 $data['show_notme'] = true;
+                $data['save_btn_disabled'] = false;
 
                 $return['template'] = $this->load->view('register/event_user_main', $data);
 
@@ -817,6 +820,7 @@ class ControllerRegisterEvent extends Controller
                 $data['show_name'] = false;
                 $data['show_notme'] = false;
                 $data['show_name_fields'] = true;
+                $data['save_btn_disabled'] = true;
                 $data['company_template'] = $this->load->view('register/_brand_main', $data);
 
                 $return['template'] = $this->load->view('register/event_user_change', $data);
@@ -1031,8 +1035,7 @@ class ControllerRegisterEvent extends Controller
         $data['session'] = $sid;
         $data['attention'] = $this->attention;
         $data['attention_text'] = $this->attention_text;
-        $data['second_choice'] = false
-        ;
+        $data['second_choice'] = false;
         // нет хэша
         if (empty($this->session->data['register_user'])) {
             $error = true;
@@ -1419,7 +1422,7 @@ class ControllerRegisterEvent extends Controller
                     $type_text = 'мастер-класс';
                     break;
                 default:
-                     $event_info = array(
+                    $event_info = array(
                         'company_id' => $contact_info['COMPANY_ID'] ? $contact_info['COMPANY_ID'] : $contact_info['company_id'],
                         'contact_id' => $contact_id,
                         'dealType' => 'forum',
@@ -1447,7 +1450,7 @@ class ControllerRegisterEvent extends Controller
             }
 
             if (($this->session->data['register_event']['type'] === 'master_class' && $smart_proccess_info['code'] == 200)) {
-                if ($deal_info['code'] == 200 ||$master_class_info['deal_id']) {
+                if ($deal_info['code'] == 200 || $master_class_info['deal_id']) {
                     $return['old_id'] = $this->session->data['register_user']['user_id'];
                     $return['new_id'] = $contact_id;
                     $return['contact_info'] = $contact_info;
@@ -1494,7 +1497,7 @@ class ControllerRegisterEvent extends Controller
                     $this->model_register_register->log($error_text);
 
                 }
-            } else  {
+            } else {
                 if ($deal_info['code'] == 200) {
                     $return['old_id'] = $this->session->data['register_user']['user_id'];
                     $return['new_id'] = $contact_id;
@@ -1550,7 +1553,7 @@ class ControllerRegisterEvent extends Controller
                     'deal_info' => $deal_info,
                     'event_info' => $event_info,
                 );
-                $this->model_register_register->log($log, 'info');
+                $this->model_register_register->log($log, 'register_info');
             }
 
         }

@@ -1,7 +1,7 @@
 $(function () {
 
 
-    $('.regphone__inp input[name="telephone"]').inputmask("+9{0,30}");
+    // $('.regphone__inp input[name="telephone"]').inputmask("+9{0,30}");
 
     $(document).on('click', '.reginfo.short .reginfo__name', function (e) {
         e.preventDefault();
@@ -30,15 +30,32 @@ $(function () {
             mess = form.find('.reg__error'),
             error = false;
 
+        var code = $('.iti__selected-dial-code').text();
+
         form.find('.invalid').removeClass('invalid');
         var isPhoneValid = $('#telephone').intlTelInput('isValidNumber');
         console.log(isPhoneValid)
 
-        if (!isPhoneValid) {
+        if (isPhoneValid === false) {
             addInvalid(telephone.closest('.regphone__inp'));
             error = true;
             mess.show()
             mess.text("Введите правильный номер телефона")
+            $.ajax({
+                type: "POST",
+                url: "index.php?route=register/login/logPhone",
+                dataType: "json",
+                data: form.serialize(),
+                beforeSend: function (json) {
+                },
+                complete: function (json) {
+                },
+                success: function (json) {
+                },
+                error: function (json) {
+
+                }
+            });
         }
 
         if (email.length && email.is(':visible')) {
@@ -53,7 +70,12 @@ $(function () {
                 type: "POST",
                 url: "index.php?route=register/event/authorize",
                 dataType: "json",
-                data: form.serialize(),
+                data: {
+                    'telephone': code + $('input[name="telephone"]').val(),
+                    'email': email.val(),
+                    'r': $('input[name="r"]').val(),
+                    'sid': $('input[name="sid"]').val()
+                },
                 beforeSend: function (json) {
                     $('.reg__load').fadeIn();
                 },
@@ -138,6 +160,7 @@ $(function () {
         e.preventDefault();
 
         var form = $(this).closest('form');
+        var companyInput = form.find('input[name="company"]');
 
         $.ajax({
             type: "POST",
@@ -156,6 +179,12 @@ $(function () {
                 }
                 if (json['template']) {
                     $('.regdata').html(json['template']);
+                }
+
+                if (companyInput.val() === '') {
+                    $('#button-save').prop("disabled", true)
+                } else {
+                    $('#button-save').prop("disabled", false)
                 }
             },
             error: function (json) {
@@ -196,7 +225,7 @@ $(function () {
 
     $(document).on('click', '#button-save', function (e) {
         e.preventDefault();
-
+        console.log('1')
         if (userFieldsChanged) {
             console.log('Данные пользователя изменились!');
         } else {
@@ -218,73 +247,95 @@ $(function () {
 
         $('.invalid').removeClass('invalid');
 
-        if (!form.find('.regform__inp').hasClass('noedit')) {
-            if ($email.length) {
-                if ($email.val().length < 1 || !$rv_email.test($email.val())) {
-                    addInvalid($email.closest('.regform__inp'));
-                    error = true;
-                    console.log('error1');
-                }
+        if ($email.length) {
+            if ($email.val().length < 1 || !$rv_email.test($email.val())) {
+                addInvalid($email.closest('.regform__inp'));
+                error = true;
+                console.log('error1');
+            }
+        }
+
+        if ($post.length) {
+            if ($post.val().length < 1) {
+                addInvalid($post.closest('.regform__inp'));
+                error = true;
+                console.log('error2');
+            }
+        }
+
+        if ($name.length) {
+            if ($name.val().length < 1) {
+                addInvalid($name.closest('.regform__inp'));
+                error = true;
+                console.log('error3');
+            }
+        }
+
+        if ($lastname.length) {
+            if ($lastname.val().length < 1) {
+                addInvalid($lastname.closest('.regform__inp'));
+                error = true;
+                console.log('error4');
+            }
+        }
+
+        var input_arr = [];
+        var company_arr = [];
+
+        if ($name.length) {
+            input_arr.push($name);
+        }
+        if ($lastname.length) {
+            input_arr.push($lastname);
+        }
+
+        $.each(input_arr, function (key, item) {
+            if (item.val().length < 2) {
+                addInvalid(item.closest('.regform__inp'));
+                error = true;
+                console.log('error3');
+            }
+        })
+
+        if (!form.find('input[name="b24_company_old_id"]').length || !form.find('input[name="b24_company_id"]').length) {
+            addInvalid(this.closest('#regbrand-search'));
+            form.find('.error-message').show();
+            console.log('error4');
+            error = true;
+            error_company = true;
+        } else {
+            if (!form.find('input[name="city"]').hasClass('noedit')) {
+                company_arr.push(form.find('input[name="city"]'));
+            }
+            if (form.find('input[name="company_phone"]') && !form.find('input[name="company_phone"]').hasClass('noedit')) {
+                company_arr.push(form.find('input[name="company_phone"]'));
+            }
+            if (!form.find('input[name="company_site"]').hasClass('noedit')) {
+                company_arr.push(form.find('input[name="company_site"]'));
+            }
+            var company_activity = form.find('input[name="company_activity"]').closest('.regform__inp');
+
+            console.log(!form.find('.regform__select--text').hasClass('noedit'))
+            console.log($('.regform__select--text span').html().trim() === '')
+            if (!form.find('.regform__select--text').hasClass('noedit') && $('.regform__select--text span').html().trim() === '') {
+                addInvalid(company_activity);
+                error = true;
+                console.log('error5');
+                error_company = true;
             }
 
-            if ($post.length) {
-                if ($post.val().length < 1) {
-                    addInvalid($post.closest('.regform__inp'));
-                    error = true;
-                    console.log('error2');
-                }
-            }
-
-            var input_arr = [];
-            var company_arr = [];
-
-            if ($name.length) {
-                input_arr.push($name);
-            }
-            if ($lastname.length) {
-                input_arr.push($lastname);
-            }
-
-            $.each(input_arr, function (key, item) {
+            $.each(company_arr, function (key, item) {
                 if (item.val().length < 2) {
                     addInvalid(item.closest('.regform__inp'));
                     error = true;
-                    console.log('error3');
-                }
-            })
-
-            if (!form.find('input[name="b24_company_old_id"]').length || !form.find('input[name="b24_company_id"]').length) {
-                form.find('.error-message').show();
-                console.log('error4');
-                error = true;
-                error_company = true;
-            } else {
-                company_arr.push(form.find('input[name="city"]'));
-                // if (form.find('input[name="company_phone"]')) {
-                //     company_arr.push(form.find('input[name="company_phone"]'));
-                // }
-                company_arr.push(form.find('input[name="company_site"]'));
-                var company_activity = form.find('input[name="company_activity"]').closest('.regform__inp');
-                if (!form.find('input[name="city"]').val()) {
-                    addInvalid(company_activity);
-                    error = true;
-                    console.log('error5');
+                    console.log('error6');
                     error_company = true;
                 }
+            })
+        }
 
-                $.each(company_arr, function (key, item) {
-                    if (item.val().length < 2) {
-                        addInvalid(item.closest('.regform__inp'));
-                        error = true;
-                        console.log('error6');
-                        error_company = true;
-                    }
-                })
-            }
-
-            if (error_company) {
-                addInvalid($('.regbrand'));
-            }
+        if (error_company) {
+            addInvalid($('.regbrand'));
         }
 
         /*
@@ -313,33 +364,35 @@ $(function () {
             error_company = true;
         }*/
 
-        if(!error) {
-            console.log(userFieldsChanged)
-
-                $.ajax({
-                    type: "POST",
-                    url: "index.php?route=register/event/saveData",
-                    dataType: "json",
-                    data: form.serialize() + '&userFieldsChanged=' + userFieldsChanged,
-                    beforeSend: function(json) { $('.reg__load').fadeIn(); },
-                    complete: function(json) { $('.reg__load').fadeOut(); },
-                    success: function(json){
-                        if(json['reload']) {
-                            console.log('1')
-                            location.reload();
-                        }
-                        if(json['template']) {
-                            console.log('2')
-                            $('.regdata').html(json['template']);
-                            yaGoal('personalnie');
-                        }
-
-
-                    },
-                    error: function(json){
-                        console.log('save data', json);
+        if (!error) {
+            $.ajax({
+                type: "POST",
+                url: "index.php?route=register/event/saveData",
+                dataType: "json",
+                data: form.serialize() + '&userFieldsChanged=' + userFieldsChanged,
+                beforeSend: function (json) {
+                    $('.reg__load').fadeIn();
+                },
+                complete: function (json) {
+                    $('.reg__load').fadeOut();
+                },
+                success: function (json) {
+                    if (json['reload']) {
+                        console.log('1')
+                        location.reload();
                     }
-                });
+                    if (json['template']) {
+                        console.log('2')
+                        $('.regdata').html(json['template']);
+                        yaGoal('personalnie');
+                    }
+
+
+                },
+                error: function (json) {
+                    console.log('save data', json);
+                }
+            });
         }
     })
 
@@ -415,6 +468,7 @@ $(function () {
                 $('.reg__load').fadeOut();
             },
             success: function (json) {
+                yaGoal('register-success')
 
                 if (json['reload']) {
                     location.reload();

@@ -104,9 +104,9 @@
 						<?php } ?>
 						<?php require(DIR_TEMPLATE . 'avclub/template/_include/breadcrumbs.tpl'); ?>
 					</div>
+				<?php echo $html; ?>
 
 				</div>
-				
 				<?php echo $column_right; ?>
 
 			</div>
@@ -117,6 +117,7 @@
 
 	</div>
 </section>
+
 <?php echo $content_bottom; ?>
 <a href="#" class="toTop goTo">
 	<svg class="ico ico-center"><use xlink:href="#arrow-top" /></svg>

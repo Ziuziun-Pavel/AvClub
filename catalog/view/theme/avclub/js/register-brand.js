@@ -30,7 +30,7 @@ $(function(){
 					country: selectedCountry.val()
 				},
 				beforeSend: function(json) { $('.reg__load').fadeIn(); },
-				complete: function(json) { $('.reg__load').fadeOut(); },
+				complete: function(json) { $('.reg__load').fadeOut(); $('#button-save').prop("disabled", false)},
 				success: function(json){
 					if(json['template']) {
 						$('.regbrand').html(json['template']);
@@ -63,6 +63,8 @@ $(function(){
 
 		var 
 		search = $(this).attr('data-search');
+
+		$('#button-save').prop("disabled",true);
 
 		$.ajax({
 			type: "POST", 
@@ -110,6 +112,7 @@ $(function(){
 			beforeSend: function(json) { $('.reg__load').fadeIn(); },
 			complete: function(json) { $('.reg__load').fadeOut(); },
 			success: function(json){
+				$('#button-save').prop("disabled",false)
 				if(json['template']) {
 					$('.regbrand').html(json['template']);
 				}
@@ -137,6 +140,7 @@ $(function(){
 			beforeSend: function(json) { $('.reg__load').fadeIn(); },
 			complete: function(json) { $('.reg__load').fadeOut(); },
 			success: function(json){
+				$('#button-save').prop("disabled",false)
 				if(json['template']) {
 					$('.regbrand').html(json['template']);
 				}

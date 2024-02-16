@@ -131,11 +131,11 @@ $(function(){
 		$lastname = form.find('input[name="lastname"]'),
 		$company = form.find('input[name="company"]'),
 		$email = form.find('input[name="email"]'),
+		$post = form.find('input[name="post"]'),
 		$rv_email = /^([a-zA-Z0-9_.-])+@([a-zA-Z0-9_.-])+\.([a-zA-Z])+([a-zA-Z])+/,
 		error = false,
 		error_company = false,
 		error_text = '';
-
 
 		$('.invalid').removeClass('invalid');
 
@@ -143,8 +143,32 @@ $(function(){
 		if($email.length){
 			if($email.val().length < 1 || !$rv_email.test($email.val())){
 				addInvalid($email.closest('.regform__inp'));
-				error = true;		
+				error = true;
 				error_text = 'Ошибка почты';
+			}
+		}
+
+		if ($post.length) {
+			if ($post.val().length < 1) {
+				addInvalid($post.closest('.regform__inp'));
+				error = true;
+				console.log('error2');
+			}
+		}
+
+		if ($name.length) {
+			if ($name.val().length < 1) {
+				addInvalid($name.closest('.regform__inp'));
+				error = true;
+				console.log('error3');
+			}
+		}
+
+		if ($lastname.length) {
+			if ($lastname.val().length < 1) {
+				addInvalid($lastname.closest('.regform__inp'));
+				error = true;
+				console.log('error4');
 			}
 		}
 
@@ -157,30 +181,40 @@ $(function(){
 		$.each(input_arr, function(key, item){
 			if(item.val().length < 2 ){
 				addInvalid(item.closest('.regform__inp'));
-				error = true;		
+				error = true;
 				error_text = 'Ошибка ' + item.attr('name');
 			}
 		})
 
 		if(!form.find('input[name="b24_company_old_id"]').length || !form.find('input[name="b24_company_id"]').length) {
+			addInvalid(this.closest('#regbrand-search'));
+			form.find('.error-message').show();
+			console.log('error4');
 			error = true;
-			error_company = true;		
+			error_company = true;
 		}else{
-			company_arr.push(form.find('input[name="city"]'));
-			company_arr.push(form.find('input[name="company_phone"]'));
-			company_arr.push(form.find('input[name="company_site"]'));
+			if (!form.find('input[name="city"]').hasClass('noedit')) {
+				company_arr.push(form.find('input[name="city"]'));
+			}
+			if (form.find('input[name="company_phone"]') && !form.find('input[name="company_phone"]').hasClass('noedit')) {
+				company_arr.push(form.find('input[name="company_phone"]'));
+			}
+			if (!form.find('input[name="company_site"]').hasClass('noedit')) {
+				company_arr.push(form.find('input[name="company_site"]'));
+			}
 			var company_activity = form.find('input[name="company_activity"]').closest('.regform__inp');
-			if(!form.find('input[name="company_activity"]:checked').length) {
+			if (!form.find('.regform__select--text').hasClass('noedit') && $('.regform__select--text span').html().trim() === '') {
 				addInvalid(company_activity);
 				error = true;
-				error_company = true;		
+				console.log('error5');
+				error_company = true;
 			}
 
 			$.each(company_arr, function(key, item){
 				if(item.val().length < 2 ){
 					addInvalid(item.closest('.regform__inp'));
-					error = true;		
-					error_company = true;		
+					error = true;
+					error_company = true;
 				}
 			})
 		}
@@ -197,32 +231,32 @@ $(function(){
 			if(!form.find('input[name="company_activity[]"]:checked').length) {
 				addInvalid($('.regcompact__title'));
 				error = true;
-				error_company = true;		
+				error_company = true;
 				error_text = 'Ошибка - активность компании';
 			}
 		}
 		$.each(company_arr, function(key, item){
 			if(item.val().length < 2 ){
 				addInvalid(item.closest('.regform__inp'));
-				error = true;		
-				error_company = true;		
+				error = true;
+				error_company = true;
 				error_text = 'Ошибка - поле компании - ' + item.attr('name');
 			}
 		})
 
 		if($company.val().length < 2 || error_company ){
 			addInvalid($company.closest('.regform__inp'));
-			error = true;		
-			error_company = true;		
+			error = true;
+			error_company = true;
 			error_text = 'Ошибка - название компании или поле компании';
 		}*/
 
 		if(!error) {
 
 			$.ajax({
-				type: "POST", 
-				url: "index.php?route=register/login/saveData", 
-				dataType: "json", 
+				type: "POST",
+				url: "index.php?route=register/login/saveData",
+				dataType: "json",
 				data: form.serialize(),
 				beforeSend: function(json) { $('.reg__load').fadeIn(); },
 				complete: function(json) { $('.reg__load').fadeOut(); },

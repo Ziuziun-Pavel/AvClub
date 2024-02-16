@@ -1,13 +1,19 @@
+<style>
+	#telephone::placeholder {
+		color: #cdcdcd;
+	}
+</style>
+
 <?php require(DIR_TEMPLATE . 'avclub/template/register/_inc_attention.tpl'); ?>
 <div class="regdata__title">
 	Введите номер своего мобильного телефона
 </div>
 <form id="registration-number" action="#" class="regphone">
 	<div class="regphone__inp">
-		<input id="telephone" type="tel" name="telephone" class="regphone__input" value="" placeholder="+" style="max-width: 100%;"/>
+		<input id="telephone" type="tel" name="telephone" class="regphone__input" value="" placeholder="" style="max-width: 100%;"/>
 		<div id="validation-message" style="color: red;"></div>
 
-		<button type="submit" class="regphone__submit btn btn-invert">
+		<button id="registration-number-btn" type="submit" class="regphone__submit btn btn-invert">
 			<span>Продолжить</span>
 			<svg class="ico"><use xlink:href="#arr-register" /></svg>
 		</button>
@@ -34,10 +40,17 @@
 <script>
 	$(document).ready(function() {
 		$("#telephone").intlTelInput({
-			initialCountry: "ru",
-			separateDialCode: false,
+			initialCountry: "auto",
+			separateDialCode: true,
 			nationalMode: false,
 			utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/utils.js",
+			preferredCountries:["ru","by","kz","uz"],
+			geoIpLookup: callback => {
+				fetch("https://ipapi.co/json")
+						.then(res => res.json())
+						.then(data => callback(data.country_code))
+						.catch(() => callback("us"));
+			}
 		});
 
 		// $(document).on('input', '#telephone', function () {
@@ -45,6 +58,19 @@
 		//
 		// })
 	});
+
+	document.getElementById('telephone').addEventListener('input', function(event) {
+		var placeholder = this.placeholder.replace(/\D/g,'');
+		var inputValue = this.value.replace(/\D/g,'');
+		var maxLength = placeholder.length;
+
+		if (inputValue.length > maxLength) {
+			inputValue = inputValue.slice(0, maxLength);
+		}
+
+		this.value = inputValue;
+	});
+
 </script>
 
 <?php require(DIR_TEMPLATE . 'avclub/template/register/_inc_fail.tpl'); ?>

@@ -387,6 +387,7 @@ class ModelAveventEvent extends Model {
 			LEFT JOIN " . DB_PREFIX . "visitor v ON (a.author_id = v.visitor_id) 
 			WHERE 
 			a.event_id = '" . (int)$event_id . "' 
+			AND v.image IS NOT NULL AND v.image <> ''
 			ORDER BY a.sort_order ASC");
 
 		if($query->num_rows) {

@@ -1,4 +1,4 @@
-<div class="regbrand__result">
+<div class="regbrand__result" style="margin: 0">
 	
 	
 	<div class="regbrand__result--top">
@@ -14,15 +14,15 @@
 	<div class="regbrand__fields">
 		<div class="regbrand__fields--title">Заполните или измените данные о компании</div>
 		<div class="regform__inp">
-			<input type="text" name="city" value="<?php echo $company_info['city']; ?>" class="regform__input" placeholder="" />
+			<input type="text" name="city" value="<?php echo $company_info['city']; ?>" class="regform__input required " placeholder="" />
 			<div class="regform__label">Город работы</div>
 		</div>
 		<div class="regform__inp">
-			<input type="tel" name="company_phone" value="<?php echo $company_info['phone']; ?>" class="regform__input" autocomplete="false" placeholder="" />
+			<input type="tel" name="company_phone" value="<?php echo $company_info['phone']; ?>" class="regform__input required " autocomplete="false" placeholder="" />
 			<div class="regform__label">Телефон</div>
 		</div>
 		<div class="regform__inp">
-			<input type="text" name="company_site" value="<?php echo $company_info['web']; ?>" class="regform__input" autocomplete="false" placeholder="" />
+			<input type="text" name="company_site" value="<?php echo $company_info['web']; ?>" class="regform__input required " autocomplete="false" placeholder="" />
 			<div class="regform__label">Сайт компании</div>
 		</div>
 

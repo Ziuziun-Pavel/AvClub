@@ -1,4 +1,4 @@
-<div class="regbrand__result">
+<div class="regbrand__result" style="margin: 0">
 
 
     <div class="regbrand__result--top">
@@ -11,18 +11,18 @@
         </div>
     </div>
 
-    <div class="regbrand__fields">
+    <div class="regbrand__fields noedit">
         <div class="regbrand__fields--title">Ознакомьтесь с данными о компании</div>
-        <div class="regform__inp noedit" style="border: none">
-            <input type="text" name="city" value="<?php echo $company_info['city']; ?>" class="regform__input" placeholder="" readonly />
+        <div class="regform__inp" style="border: none">
+            <input type="text" name="city" value="<?php echo $company_info['city']; ?>" class="regform__input noedit" placeholder="" readonly />
             <div class="regform__label">Город работы</div>
         </div>
-        <div class="regform__inp noedit" style="border: none">
-            <input type="tel" name="company_phone" value="<?php echo $company_info['phone']; ?>" class="regform__input" autocomplete="false" placeholder="" readonly />
+        <div class="regform__inp" style="border: none">
+            <input type="tel" name="company_phone" value="<?php echo $company_info['phone']; ?>" class="regform__input noedit" autocomplete="false" placeholder="" readonly />
             <div class="regform__label">Телефон</div>
         </div>
-        <div class="regform__inp noedit" style="border: none">
-            <input type="text" name="company_site" value="<?php echo $company_info['web']; ?>" class="regform__input" autocomplete="false" placeholder="" readonly />
+        <div class="regform__inp" style="border: none">
+            <input type="text" name="company_site" value="<?php echo $company_info['web']; ?>" class="regform__input noedit" autocomplete="false" placeholder="" readonly />
             <div class="regform__label">Сайт компании</div>
         </div>
 
@@ -35,8 +35,8 @@
 			}
 		}
 		?>
-        <div class="regform__inp noedit" style="border: none">
-            <div class="regform__select--text dropdown-toggle <?php echo $main_activity ? 'valid' : ''; ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+        <div class="regform__inp" style="border: none">
+            <div class="regform__select--text dropdown-toggle noedit <?php echo $main_activity ? 'valid' : ''; ?>" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                 <span><?php echo $main_activity; ?></span>
             </div>
             <div class="regform__plh">Активность в proAV</div>

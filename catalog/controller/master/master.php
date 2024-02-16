@@ -287,10 +287,16 @@ class ControllerMasterMaster extends Controller {
             $data['date'] = date('d', $date) . '&nbsp;' . $month_list[(int)date('m', $date)] . '&nbsp;' . date('Y', $date);
 
             $time_start = strtotime($master_info['time']);
+
             $time_end = strtotime('+1 hour', $time_start);
 
             $data['time_start'] = date('H:s', $time_start);
             $data['time_end'] = date('H:s', $time_end);
+
+            if ($master_info['master_id'] == 172) {
+                $data['time_end'] = '15:30';
+            }
+
 
             $data['description'] = html_entity_decode($master_info['description'], ENT_QUOTES, 'UTF-8');
             $data['preview'] = html_entity_decode($master_info['preview'], ENT_QUOTES, 'UTF-8');

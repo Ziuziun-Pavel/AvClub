@@ -221,6 +221,7 @@ class ControllerRegisterLogin extends Controller {
 		$this->load->model('register/register');
 		$this->load->model('themeset/expert');
 		$this->load->model('themeset/image');
+        $this->load->model('company/company');
 
 		$return = array();
 		$data = array();
@@ -261,7 +262,7 @@ class ControllerRegisterLogin extends Controller {
 			);
 			$this->model_register_register->log($log, 'login');
 		}
-
+        $data['countries'] = $this->model_company_company->getListOfCountries();
 		// все ок, ошибок нет
 		if(!$error) {
 
@@ -293,7 +294,7 @@ class ControllerRegisterLogin extends Controller {
 				$data['show_notme'] = false;
 				$data['show_name_fields'] = true;
 
-				$data['company_template'] = $this->load->view('register/_brand_main', array());
+				$data['company_template'] = $this->load->view('register/_brand_main', $data);
 
 				$this->session->data['loguser']['user'] = $user_data;
 				$return['template'] = $this->load->view('register/event_user_change', $data);
@@ -355,27 +356,28 @@ class ControllerRegisterLogin extends Controller {
 		// все ок, ошибок нет
 		if(!$error) {
 
-			$user_data = array(
-				'user_id'					=> $this->session->data['loguser']['user']['user_id'],
-				'name'						=> isset($post['name']) ? $post['name'] : $this->session->data['loguser']['user']['name'],
-				'lastname'				=> isset($post['lastname']) ? $post['lastname'] : $this->session->data['loguser']['user']['lastname'],
-				'phone'						=> $this->session->data['loguser']['phone'],
-				'post'						=> isset($post['post']) ? $post['post'] : '',
-                'IsContactEdit' => true,
-                'b24_company_id'	=> isset($post['b24_company_id']) ? $post['b24_company_id'] : 0,
-				'company'					=> isset($post['company']) ? $post['company'] : '',
-				'company_status'	=> isset($post['company_status']) ? $post['company_status'] : '',
-				'company_phone'		=> isset($post['company_phone']) ? $post['company_phone'] : '',
-				'company_site'		=> isset($post['company_site']) ? $post['company_site'] : '',
-				'company_activity'=> isset($post['company_activity']) ? $post['company_activity'] : array(),
-				'city'						=> isset($post['city']) ? $post['city'] : '',
-				'email'						=> isset($post['email']) ? $post['email'] : '',
-				'avatar'					=> $this->session->data['loguser']['user']['avatar'],
-			);
+            $user_data = array(
+                //'user_id'					=> $this->session->data['register_user']['user_id'],
+                'user_id' => 0,
+                'old_user_id' => $this->session->data['loguser']['user']['user_id'],
+                'phone' => $this->session->data['loguser']['phone'],
+                'name' => isset($post['name']) ? $post['name'] : $this->session->data['loguser']['user']['name'],
+                'lastname' => isset($post['lastname']) ? $post['lastname'] : $this->session->data['loguser']['user']['lastname'],
+                'post' => isset($post['post']) ? $post['post'] : '',
+                'company_id' => isset($post['b24_company_id']) ? $post['b24_company_id'] : 0,
+                'company_name' => isset($post['company']) ? $post['company'] : '',
+                'company_status' => isset($post['company_status']) ? $post['company_status'] : '',
+                'company_phone' => isset($post['company_phone']) ? $post['company_phone'] : '',
+                'company_site' => isset($post['company_site']) ? $post['company_site'] : '',
+                'company_activity' => isset($post['company_activity']) ? $post['company_activity'] : '',
+                'company_city' => isset($post['city']) ? $post['city'] : '',
+                'email' => isset($post['email']) ? $post['email'] : '',
+                'avatar' => $this->session->data['loguser']['user']['avatar']
+            );
 
 			$this->session->data['loguser']['user'] = $user_data;
 
-			$new_contact_info = $this->model_register_register->createContact($user_data);
+			$new_contact_info = $this->model_register_register->createContactForLogin($user_data);
 			$contact_id = !empty($new_contact_info['id']) ? $new_contact_info['id'] : 0;
 			$this->session->data['loguser']['b24id'] = $contact_id;
 
@@ -408,5 +410,15 @@ class ControllerRegisterLogin extends Controller {
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($return));
 	}
+
+    public function logPhone() {
+        $this->load->model('register/register');
+        $log = array(
+            'step'						=> 'Телефон -- ERROR',
+            'browser'					=>	$_SERVER['HTTP_USER_AGENT'],
+            'phone'				=>	$_POST['telephone'],
+        );
+        $this->model_register_register->log($log, 'phone');
+    }
 
 }

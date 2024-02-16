@@ -418,7 +418,7 @@ class ModelRegisterRegister extends Model
     {
 
         if ($master_class_forum_id) {
-            if($contact_ids[0]) {
+            if ($contact_ids[0]) {
                 $fields = array(
                     'dealType' => $dealType,
                     'master_class_id' => $eventId,
@@ -437,7 +437,7 @@ class ModelRegisterRegister extends Model
                 );
             }
         } else {
-            if($contact_ids[0]) {
+            if ($contact_ids[0]) {
                 $fields = array(
                     'dealType' => $dealType,
                     'event_id' => $eventId,
@@ -637,6 +637,92 @@ class ModelRegisterRegister extends Model
         return $this->updateContactInfo($data, false);
     }
 
+    //для входа в ЛК
+    public function createContactForLogin($data = array())
+    {
+        return $this->updateContactInfoForLogin($data, false);
+    }
+
+    private function updateContactInfoForLogin($data = array(), $new = false)
+    {
+        /*{
+            'old_id' : <старый id контакта, если данные поменялись>,
+            'name' : <имя>,
+            'last_name' : <фамилия>,
+            'post' : <должность>,
+            'email' : <email>,
+            'phone' : <телефон>,
+            'company_id' : <id компании>,
+            'company_name': <название компании>,
+            'company_city': <город компании>,
+            'company_phone': <телефон компании>,
+             'company_site': <сайт компании>,
+             'company_activity': <массив активностей в proAV>,
+
+         }*/
+
+        $contact_info = array(
+            'name' => $data['name'],
+            'last_name' => $data['lastname'],
+            'post' => $data['post'],
+            'email' => $data['email'],
+            'phone' => $data['phone'],
+            'company_city' => $data['company_city'],
+            'company_name' => $data['company_name'],
+            'company_phone' => $data['company_phone'],
+            'company_site' => $data['company_site'],
+            'company_activity' => array($data['company_activity']),
+            'company_id' => $data['company_id'],
+        );
+
+        if (!empty($data['old_user_id'])) {
+            $contact_info['old_id'] = $data['old_user_id'];
+            $new = false;
+        }
+
+        $more_fields = array(
+            'expertise' => 'expertise',
+            'useful' => 'useful',
+            'regalia' => 'merit',
+            'photo' => 'photo',
+        );
+
+        foreach ($more_fields as $key => $send_key) {
+            if (isset($data[$key])) {
+                $contact_info[$send_key] = $data[$key];
+            }
+        }
+
+        $url = $this->url_contact_create;
+
+        if ($this->debug) {
+            $contact_info['debug'] = 1;
+        }
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($contact_info));
+        $body = curl_exec($ch);
+        curl_close($ch);
+
+        $json = json_decode($body, true);
+
+        if (empty($json['code']) || $json['code'] != 200) {
+            $error_text = $url === $this->url_contact_create ? "Создание контакта" : "Обновление контакта";
+            $error_text .= "\nINPUT: " . json_encode($contact_info);
+            $error_text .= "\nRETURN: " . json_encode($json);
+            $this->log($error_text);
+        }
+
+        $json['COMPANY_ID'] = !empty($contact_info['company_id']) ? $contact_info['company_id'] : 0;
+
+        $contact_id = !empty($json['id']) ? $json['id'] : 0;
+
+        return $json;
+
+    }
+
     private function updateContactInfo($data = array(), $new = false)
     {
         /*{
@@ -729,7 +815,6 @@ class ModelRegisterRegister extends Model
                 }
                 /* # EDIT COMPANY */
             } else {
-
                 /* CREATE NEW COMPANY */
                 $company_fields = array(
                     'company_id' => $contact_info['company_name'],
@@ -839,6 +924,8 @@ class ModelRegisterRegister extends Model
                 "COMPANY_ID" => !empty($contact_info['company_id']) ? $contact_info['company_id'] : 0
             );
         }
+        die();
+
     }
 
     public function addAlternateId($main_id, $new_id)
@@ -977,10 +1064,15 @@ class ModelRegisterRegister extends Model
 
     public function log($data, $type = 'error')
     {
-
         switch ($type) {
             case 'error':
                 $file = 'register_error1.log';
+                break;
+            case 'phone':
+                $file = 'phone.log';
+                break;
+            case 'register_info':
+                $file = 'register_event.log';
                 break;
             case 'login':
                 $file = 'login.log';

@@ -272,6 +272,7 @@ class ModelJournalJournal extends Model {
 		LEFT JOIN " . DB_PREFIX . "visitor v ON (je.author_id = v.visitor_id) 
 		WHERE 
 		je.journal_id = '" . (int)$journal_id . "' 
+		AND v.image IS NOT NULL AND v.image <> ''
 		ORDER BY 
 		v.lastname ASC";
 

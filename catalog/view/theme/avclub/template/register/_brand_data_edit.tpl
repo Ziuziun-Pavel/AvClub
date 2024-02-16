@@ -1,4 +1,4 @@
-<div class="regbrand__result">
+<div class="regbrand__result" style="margin: 0">
 
 
     <div class="regbrand__result--top">

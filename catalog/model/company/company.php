@@ -660,29 +660,90 @@ class ModelCompanyCompany extends Model {
 
     public function getListOfCountries()
     {
-        $api_url = 'https://restcountries.com/v3.1/region/europe';
+        $countries = array(
+            "Россия",
+            "Беларусь",
+            "Казахстан",
+            "Узбекистан",
+            "Кипр",
+            "Словакия",
+            "Ватикан",
+            "Сербия",
+            "Фарерские острова",
+            "Албания",
+            "Италия",
+            "Испания",
+            "Ирландия",
+            "Хорватия",
+            "Эстония",
+            "Великобритания",
+            "Гибралтар",
+            "Финляндия",
+            "Швеция",
+            "Исландия",
+            "Швейцария",
+            "Латвия",
+            "Польша",
+            "Литва",
+            "Андорра",
+            "Джерси",
+            "Мальта",
+            "Германия",
+            "Сан-Марино",
+            "Люксембург",
+            "Румыния",
+            "Шпицберген и Ян-Майен",
+            "Аландские острова",
+            "Гернси",
+            "Норвегия",
+            "Бельгия",
+            "Португалия",
+            "Дания",
+            "Чехия",
+            "Греция",
+            "Австрия",
+            "Монако",
+            "Словения",
+            "Босния и Герцеговина",
+            "Франция",
+            "Болгария",
+            "Молдавия",
+            "Остров Мэн",
+            "Черногория",
+            "Венгрия",
+            "Северная Македония",
+            "Республика Косово",
+            "Нидерланды",
+            "Украина",
+            "Лихтенштейн"
+        );
 
-        $ch = curl_init($api_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        return [];
 
-        $response = curl_exec($ch);
+//        $api_url = 'https://restcountries.com/v3.1/region/europe';
 
-        if (curl_errno($ch)) {
-            echo 'Ошибка при выполнении запроса: ' . curl_error($ch);
-        } else {
-            $countries = json_decode($response, true);
-
-            if ($countries) {
-                $filtered_countries = $this->filterCountries($countries);
-                $final_country_list = array_merge($this->company_countries, $filtered_countries);
-
-                return $final_country_list;
-            } else {
-                echo 'Ошибка при декодировании JSON';
-            }
-        }
-
-        curl_close($ch);
+//        $ch = curl_init($api_url);
+//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//
+//        $response = curl_exec($ch);
+//
+//        if (curl_errno($ch)) {
+//            echo 'Ошибка при выполнении запроса: ' . curl_error($ch);
+//        } else {
+//            $countries = json_decode($response, true);
+//
+//            if ($countries) {
+//                $filtered_countries = $this->filterCountries($countries);
+//                $final_country_list = array_merge($this->company_countries, $filtered_countries);
+//                print_r($final_country_list);
+//die();
+//                return $final_country_list;
+//            } else {
+//                echo 'Ошибка при декодировании JSON';
+//            }
+//        }
+//
+//        curl_close($ch);
     }
 
     private function filterCountries($countries)

@@ -46,7 +46,7 @@
                                     class="regform__input"
                                     autocomplete="false"
                                     data-input-change/>
-                            <div class="regform__plh">Навазние компании</div>
+                            <div class="regform__plh">Название компании</div>
                         </div>
                     </div>
                     <div class="regform__outer col-12 col-md-6 profile__edit">
