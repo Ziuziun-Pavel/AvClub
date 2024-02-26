@@ -265,6 +265,19 @@ $(function () {
                 $('#catalog_list').addClass('d-none');
             }
 
+            if(type === 'voting') {
+                $('#content-votes .expreg').removeClass('d-none');
+                $('#content-votes.expert__content').css("display", "block");
+                $('#content-votes').removeClass('d-none')
+                $('#navlist-bio').addClass('d-none')
+                $('#content-bio').addClass('d-none')
+                $('.events__tabs').addClass('d-none');
+            } else {
+                $('#content-votes .expreg').addClass('d-none');
+                $('#content-votes.expert__content').css("display", "none");
+                $('#content-votes').addClass('d-none');
+            }
+
             if(type === 'publications') {
                 $('#publist .expreg').removeClass('d-none');
                 $('#publist.expert__content').css("display", "block");
@@ -280,6 +293,7 @@ $(function () {
                 $('#content-' + type).addClass('active');
                 $('#navlist-' + type).removeClass('d-none');
                 $('.events__tabs').addClass('d-none');
+                $('#content-bio').removeClass('d-none')
             }
 
         }

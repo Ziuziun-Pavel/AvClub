@@ -445,7 +445,6 @@ class ControllerExpertExpert extends Controller
             $sort_forum = array();
 
             foreach ($event_list as $event_item) {
-
                 $time = strtotime($event_item['date']);
 
                 $statuses = array();
@@ -493,6 +492,8 @@ class ControllerExpertExpert extends Controller
 
                 $event_item_info = array(
                     'type_event' => $event_type,
+                    'id' => $event_item["id"],
+                    'landing_url' => $event_item["landing_url"],
                     'type' => $event_item['type'],
                     'name' => $event_item['name'],
                     'status' => $event_item['status'],
@@ -525,7 +526,6 @@ class ControllerExpertExpert extends Controller
 
             array_multisort($sort_forum, SORT_DESC, $data['event_list']);
 
-
             $return['template'] = $this->load->view('expert/expert_events', $data);
 
         } else {
@@ -556,7 +556,9 @@ class ControllerExpertExpert extends Controller
         $this->response->setOutput(json_encode($response));
     }
 
-    public function edit() { }
+    public function edit()
+    {
+    }
 
     public function sendMail()
     {
@@ -804,4 +806,104 @@ class ControllerExpertExpert extends Controller
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($return));
     }
+
+    public function getVotes()
+    {
+        $return = array();
+        $data = array();
+
+        session_write_close();
+
+        $this->load->model('register/register');
+        $this->load->model('visitor/expert');
+
+        if (isset($this->request->get['expert_id'])) {
+            $expert_id = (int)$this->request->get['expert_id'];
+        } else {
+            $expert_id = 0;
+        }
+
+        $last_id = $this->request->get['last_id'];
+
+        $expert_info = $this->model_visitor_expert->getExpert($expert_id, 0, false);
+
+        if ($expert_info && $this->visitor->getId() && $this->visitor->getId() == $expert_id) {
+
+            $month_list = array(
+                1 => 'января',
+                2 => 'февраля',
+                3 => 'марта',
+                4 => 'апреля',
+                5 => 'мая',
+                6 => 'июня',
+                7 => 'июля',
+                8 => 'августа',
+                9 => 'сентября',
+                10 => 'октября',
+                11 => 'ноября',
+                12 => 'декабря'
+            );
+
+            $now = strtotime("now");
+
+            $vote_list = [];
+
+            $vote_list = $this->model_visitor_expert->getVotes($expert_info['b24id'], $last_id)['list'];
+
+            var_dump($vote_list);
+
+            $sort_vote_list = array();
+
+            foreach ($vote_list as $vote_item) {
+                $time = strtotime($vote_item['date_end']);
+
+                $statuses = array();
+
+                $statuses[] = array(
+                    'text' => 'Ожидание голосования',
+                    'active' => true
+                );
+
+                if ($vote_item['status'] === 'success') {
+                    $statuses[] = array('text' => 'Прошёл опрос', 'active' => true);
+                }
+
+                if ($vote_item['status'] === 'fail') {
+                    $statuses[] = array('text' => 'Не прошёл опрос', 'active' => true);
+                }
+
+                foreach ($statuses as $key => &$status) {
+                    if ($key == count($statuses) - 2 && !$statuses[count($statuses) - 1]['active']) {
+                        $status['preactive'] = true;
+                    } else {
+                        $status['preactive'] = false;
+                    }
+                }
+
+                $vote_item_info = array(
+                    'name' => $vote_item['name'],
+                    'status' => $vote_item['status'],
+                    'link' => $vote_item['link'],
+                    'statuses' => $statuses,
+                    'date_end' => date('d', $time) . '&nbsp;' . $month_list[(int)date('m', $time)] . '&nbsp;' . date('Y', $time)
+                );
+
+                $data['vote_list'][] = $vote_item_info;
+
+                $sort_vote_list[] = $time;
+
+            }
+
+            array_multisort($sort_vote_list, SORT_DESC, $data['vote_list']);
+
+            $return['template'] = $this->load->view('expert/expert_votes', $data);
+
+        } else {
+            $return['error'] = true;
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($return));
+    }
+
 }

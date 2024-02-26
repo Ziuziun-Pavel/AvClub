@@ -315,6 +315,75 @@ class ModelVisitorVisitor extends Model {
         return $query->rows;
 	}
 
+    public function getExperts($data = array()) {
+
+        $sql = "SELECT * FROM " . DB_PREFIX . "visitor v ";
+
+        $implode = array();
+
+        if (!empty($data['filter_name'])) {
+            $implode[] = "v.name LIKE '%" . $this->db->escape($data['filter_name']) . "%'";
+        }
+
+        if (isset($data['filter_status']) && !is_null($data['filter_status'])) {
+            $implode[] = "v.status = '" . (int)$data['filter_status'] . "'";
+        }
+
+        if (isset($data['filter_expert']) && !is_null($data['filter_expert'])) {
+            $implode[] = "v.expert = '" . (int)$data['filter_expert'] . "'";
+        }
+
+        //Убираем из выборки удалённые контакты
+        $implode[] = "v.b24id != 0";
+        //Убираем из выборки заархивированные контакты
+        $implode[] = "v.status != 0";
+
+        $implode[] = "  
+            v.expert = '1' 
+            AND v.status = '1'
+            AND v.image IS NOT NULL AND v.image <> ''
+		";
+
+
+        if ($implode) {
+            $sql .= " WHERE " . implode(" AND ", $implode);
+        }
+
+        $sort_data = array(
+            'v.name',
+//			'v.email',
+            'v.status'
+        );
+
+        if (isset($data['sort']) && in_array($data['sort'], $sort_data)) {
+            $sql .= " ORDER BY " . $data['sort'];
+        } else {
+            $sql .= " ORDER BY v.name";
+        }
+
+        if (isset($data['order']) && ($data['order'] == 'DESC')) {
+            $sql .= " DESC";
+        } else {
+            $sql .= " ASC";
+        }
+
+        if (isset($data['start']) || isset($data['limit'])) {
+            if ($data['start'] < 0) {
+                $data['start'] = 0;
+            }
+
+            if ($data['limit'] < 1) {
+                $data['limit'] = 20;
+            }
+
+            $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+        }
+
+        $query = $this->db->query($sql);
+
+        return $query->rows;
+    }
+
 	public function getTotalVisitors($data = array()) {
 		$sql = "SELECT COUNT(*) AS total FROM " . DB_PREFIX . "visitor";
 

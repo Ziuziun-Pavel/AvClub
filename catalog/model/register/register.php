@@ -326,6 +326,11 @@ class ModelRegisterRegister extends Model
         return !empty($this->session->data['register_hash']) && $this->session->data['register_hash'] === $this->hashCode($code) ? true : false;
     }
 
+    public function validateCodeLogin($code = 0)
+    {
+        return !empty($this->session->data['loguser']['hash']) && $this->session->data['loguser']['hash'] === $this->hashCode($code) ? true : false;
+    }
+
     public function hashCode($number = 0)
     {
 

@@ -1,3 +1,42 @@
+<style>
+    .expreg__btns .message {
+        color: var(--red);
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .loader {
+        width: 48px;
+        height: 48px;
+        border: 2px solid var(--red);
+        border-radius: 50%;
+        display: inline-block;
+        position: relative;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+    }
+
+    .loader::after {
+        content: '';
+        box-sizing: border-box;
+        position: absolute;
+        left: 50%;
+        top: 0;
+        background: var(--red);
+        width: 3px;
+        height: 20px;
+        transform: translateX(-50%);
+    }
+
+    @keyframes rotation {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
 <?php echo $header; ?>
 <?php echo $content_top; ?>
 
@@ -113,6 +152,13 @@
                         <a href="#"
                            class="expertnav__tab expertnav__tab-tab events link <?php echo !$active_tab ? 'active' : ''; ?>"
                            data-type="events">Мои заявки</a>
+                        <?php $active_tab = true; ?>
+                        <?php } ?>
+
+                        <?php if(!empty($event_list)) { ?>
+                        <a href="#"
+                           class="expertnav__tab expertnav__tab-tab voting link <?php echo !$active_tab ? 'active' : ''; ?>"
+                           data-type="voting">Голосование</a>
                         <?php $active_tab = true; ?>
                         <?php } ?>
 
@@ -292,35 +338,41 @@
                         <?php $active_tab = true; ?>
                         <?php } ?>
 
-                        <div id="content-events" class="expert__content <?php echo !empty($active_tab) ? '' : 'active'; ?> d-none">
+                        <div id="content-events"
+                             class="expert__content <?php echo !empty($active_tab) ? '' : 'active'; ?> d-none">
 
                         </div>
                         <?php $active_tab = true; ?>
 
-                        <div id="publist" class="expert__content <?php echo !empty($active_tab) ? '' : 'active'; ?> d-none">
+                        <div id="publist"
+                             class="expert__content <?php echo !empty($active_tab) ? '' : 'active'; ?> d-none">
 
                         </div>
                         <?php $active_tab = true; ?>
 
-                        <div id="catalog_list" class="expert__content <?php echo !empty($active_tab) ? '' : 'active'; ?> d-none">
+                        <div id="catalog_list"
+                             class="expert__content <?php echo !empty($active_tab) ? '' : 'active'; ?> d-none">
 
                         </div>
                         <?php $active_tab = true; ?>
 
-
+                        <div id="content-votes"
+                             class="expert__content <?php echo !empty($active_tab) ? '' : 'active'; ?>">
+                            <?php require(DIR_TEMPLATE . 'avclub/template/expert/expert_votes.tpl'); ?>
+                        </div>
                     </div>
                     <div class="expertrow__aside col-xl-4">
 
                         <?php if($logged) { ?>
-                            <?php if(!empty($banner)) { ?>
-                            <div class="abanner__cont">
-                                <?php require(DIR_TEMPLATE . 'avclub/template/_include/journal-banner.tpl'); ?>
-                            </div>
-                            <?php } ?>
+                        <?php if(!empty($banner)) { ?>
+                        <div class="abanner__cont">
+                            <?php require(DIR_TEMPLATE . 'avclub/template/_include/journal-banner.tpl'); ?>
+                        </div>
+                        <?php } ?>
                         <?php } else { ?>
-                            <div class="expert__master expert__master-short">
-                                <?php require(DIR_TEMPLATE . 'avclub/template/_include/journal-master.tpl'); ?>
-                            </div>
+                        <div class="expert__master expert__master-short">
+                            <?php require(DIR_TEMPLATE . 'avclub/template/_include/journal-master.tpl'); ?>
+                        </div>
                         <?php } ?>
 
 
@@ -448,7 +500,6 @@
             complete: function (json) {
             },
             success: function (json) {
-
                 if (json['template']) {
                     $('#content-webinars').html(json['template']);
                 } else if (json['error']) {
@@ -492,7 +543,7 @@
                 } else if (json['error']) {
                     $('#content-events').html(error_text);
                 }
-                if ($('.expertnav__tabs a.fut_ev').hasClass('active')) {
+                if ($('.expertnav__tabs a.events').hasClass('active') && $('.expertnav__change.fut_ev').hasClass('active')) {
                     $('.expreg').removeClass('d-none');
                     $('.expert__content').removeClass('d-none');
                     $('#navlist-bio').removeClass('active');
@@ -580,55 +631,104 @@
                 console.log('expert getCatalogList error', json);
             }
         });
-    })
 
-    function acceptInvitation() {
-        $('.invitation').click(function () {
+        $.ajax({
+            type: "GET",
+            url: "index.php?route=expert/expert/getVotes",
+            dataType: "json",
+            data: {
+                'expert_id': '<?php echo $expert_id; ?>'
+            },
+            beforeSend: function (json) {
+                $('#content-votes').html(`
+                    <div class="expreg__message ">
+                        <div class="expreg__message--preloader">
+                            <div class="cssload-clock"></div>
+                        </div>
+                        <div class="expreg__message--text">
+                            Подождите, идет поиск опросов...
+                        </div>
+                    </div>
+                `);
+            },
+            complete: function (json) {
+            },
+            success: function (json) {
+                if (json['template']) {
+                    $('#content-votes').html(json['template']);
+                } else if (json['error']) {
+                    $('#content-votes').html(error_text);
+                }
+                if ($('.expertnav__tabs a.voting').hasClass('active')) {
+                    $('#content-votes').removeClass('d-none');
+                    $('#navlist-bio').removeClass('active');
+                    $('#navlist-events').removeClass('active');
+                }
+
+            },
+            error: function (json) {
+                $('#catalog_list').html(error_text);
+                console.log('expert getCatalogList error', json);
+            }
+        });
+
+        $(document).on('click', '.invitation', function (event) {
+            event.stopPropagation();
+
             var dealId = $(this).data('deal-id');
             var eventType = $(this).data('event-type');
+            var $btns = $(this).closest('.expreg__btns');
+            $btns.html('<span class="loader" style="margin: 0 auto"></span>');
+
+            console.log(dealId);
+            console.log(eventType);
+            var self = this;
 
             $.ajax({
                 type: "GET",
                 url: "index.php?route=expert/expert/confirmParticipation",
                 dataType: "json",
                 data: {type: eventType, deal_id: dealId},
-                // beforeSend: function (json) {
-                //     $('#content-events').html(`
-                //                             <div class="expreg__message ">
-                //                 <div class="expreg__message--preloader">
-                //                     <div class="cssload-clock"></div>
-                //                 </div>
-                //                 <div class="expreg__message--text">
-                //                     Подождите, идет поиск мероприятий...
-                //                 </div>
-                //             </div>
-                // `);
-                // },
-                complete: function (json) {
-                },
+                beforeSend: function () { },
+                complete: function () { },
                 success: function (json) {
-                    alert('Участие одобрено!')
-                    console.log(json)
+                    $btns.find('.loader').hide();
+                    $btns.html('<span class="message">Приглашение успешно принято!</span>');
 
-                    acceptInvitation();
+                    $btns.closest('.expreg').find('.expreg__status').html(`
+                        <div class="expreg__status--item" style="display: none;">
+                            <span></span>
+                            Заявка на рассмотрении
+                        </div>
+                        <div class="expreg__status--item" style="display: none;">
+                            <span></span>
+                            Участие одобрено
+                        </div>
+                    `).find('.expreg__status--item').fadeIn(1000);
+
+
+                    var $message = $btns.find('.message');
+                    setTimeout(() => {
+                        $message.hide();
+                        console.log(json);
+                    }, 2000);
                 },
-                error: function (json) {
-                    alert('Произошла ошибка!')
+                error: function () {
+                    $btns.find('.loader').hide();
+                    $btns.html('<span class="message">Ошибка принятия приглашения</span>');
 
-                    console.log('ERROR')
-                    console.log(json)
+                    var $message = $btns.find('.message');
+                    setTimeout(() => {
+                        $message.hide();
+                    }, 2000);
 
+                    console.log('ERROR');
                 }
             });
-
-
-            console.log(eventType)
-
-            console.log(dealId)
-
         });
-    }
 
+
+    })
 
 </script>
 

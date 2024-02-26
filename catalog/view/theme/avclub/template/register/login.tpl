@@ -1,3 +1,8 @@
+<style>
+	#tel::placeholder {
+		color: #cdcdcd;
+	}
+</style>
 <?php $theme_dir = 'catalog/view/theme/avclub'; ?>
 <?php echo $header; ?>
 <div class="reg__load">
@@ -25,7 +30,8 @@
 				</div>
 				<form id="registration-number" action="#" class="regphone">
 					<div class="regphone__inp">
-						<input type="tel" name="telephone" class="regphone__input" value="+" placeholder="+"/>
+						<input id="tel" type="tel" name="telephone" class="regphone__input" value="" placeholder="" style="max-width: 100%;"/>
+						<div id="validation-mess" style="color: red;"></div>
 						<button type="submit" class="regphone__submit btn btn-invert">
 							<span>Продолжить</span>
 							<svg class="ico"><use xlink:href="#arr-register" /></svg>
@@ -67,4 +73,36 @@
 <script src="<?php echo $theme_dir; ?>/js/login.js?v=<?php echo filectime(DIR_TEMPLATE . 'avclub/js/login.js') ?>"></script>
 <link href="https://cdn.jsdelivr.net/npm/suggestions-jquery@latest/dist/css/suggestions.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/suggestions-jquery@latest/dist/js/jquery.suggestions.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/css/intlTelInput.css" rel="stylesheet"/>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/intlTelInput-jquery.min.js"></script>
+
+<script>
+	$("#tel").intlTelInput({
+		initialCountry: "auto",
+		separateDialCode: true,
+		nationalMode: false,
+		utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/utils.js",
+		preferredCountries:["ru","by","kz","uz"],
+		geoIpLookup: callback => {
+			fetch("https://ipapi.co/json")
+					.then(res => res.json())
+					.then(data => callback(data.country_code))
+					.catch(() => callback("us"));
+		}
+	});
+
+	document.getElementById('tel').addEventListener('input', function(event) {
+		var placeholder = this.placeholder.replace(/\D/g,'');
+		var inputValue = this.value.replace(/\D/g,'');
+		var maxLength = placeholder.length;
+
+		if (inputValue.length > maxLength) {
+			inputValue = inputValue.slice(0, maxLength);
+		}
+
+		this.value = inputValue;
+	});
+
+</script>
 <?php echo $footer; ?>

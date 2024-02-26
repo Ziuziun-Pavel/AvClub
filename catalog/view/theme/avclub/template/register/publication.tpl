@@ -90,9 +90,9 @@
                         </div>
                     </div>
 
-                    <div class="regbrand__start regbrand col-12">
-                        <?php echo $company_template;  ?>
-                    </div>
+         <!--           <div class="regbrand__start regbrand col-12">
+                            <?php echo $company_template;  ?>
+                        </div> -->
 
                      <div class="regform__outer col-12">
                          <div class="regform__agree">
@@ -345,7 +345,7 @@
 
             const title = $('.regform__textarea:first').text();
             const additionalInfo = $('.regform__textarea-limit').text();
-            const companyId = $('input[name="b24_company_id"]').val();
+            //const companyId = $('input[name="b24_company_id"]').val();
             const checkbox = document.getElementById('usePaidPublication');
 
             const data = {
@@ -353,14 +353,14 @@
                     dealType: 'publication',
                     additionFiles: additionFiles,
                     files: files[0],
-                    company_id: +companyId,
+                    //company_id: +companyId,
                     title: title,
                     addition_info: additionalInfo
                 },
                 expert_id: +'<?php echo $expert_id; ?>'
             }
 
-            if (checkbox.checked) {
+            if (checkbox && checkbox.checked) {
                 data.deal_id = +'<?php echo $paidPublicationId; ?>';
             }
 

@@ -6,6 +6,8 @@ class ModelVisitorExpert extends Model
     private $url_deal_update = "http://clients.techin.by/avclub/site/api/v1/deal/{id}/update";
     private $url_get_registrations = "http://clients.techin.by/avclub/site/api/v1/deal/get-user-event-list";
 
+    private $url_get_quiz_list = "http://clients.techin.by/avclub/site/api/v1/deal/get-quiz-list";
+
     public function getExpert($expert_id, $exp_id = 0, $expert = true)
     {
         $visitor_info = array();
@@ -828,8 +830,26 @@ class ModelVisitorExpert extends Model
             'contact_id' => $contact_id,
             'type' => $type
         );
-
         $ch = curl_init($this->url_get_registrations);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
+        $body = curl_exec($ch);
+        curl_close($ch);
+
+        $json = json_decode($body, true);
+
+        return $json;
+    }
+
+    public function getVotes($contact_id = 0, $last_id)
+    {
+        $fields = array(
+            'contact_id' => $contact_id,
+            'last_id' => $last_id
+        );
+
+        $ch = curl_init($this->url_get_quiz_list);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, 60);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));

@@ -134,7 +134,7 @@
                             <div id="company_tag_product" class="regform__select--dropdown dropdown-menu">
                                 <div class="regform__select--list">
 
-                                    <? foreach ($tags as $tag) : ?>
+                                    <? foreach ($product_tags as $tag) : ?>
                                     <label class="regform__select--input">
                                         <input class="tag_product" type="radio" name="tab"
                                                value="<?= $tag['tag_id'] ?>">
@@ -160,7 +160,7 @@
                             <div id="company_tag_industry" class="regform__select--dropdown dropdown-menu">
                                 <div class="regform__select--list">
 
-                                    <? foreach ($tags as $tag) : ?>
+                                    <? foreach ($industry_tags as $tag) : ?>
                                     <label class="regform__select--input">
                                         <input class="tag_industry" type="radio" name="tab1"
                                                value="<?= $tag['tag_id'] ?>">
@@ -253,18 +253,6 @@
 
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="regform__outer col-12 profile__edit">
-                        <div class="regform__inp regform__inp-plh">
-                            <input
-                                    type="text"
-                                    name="contact"
-                                    value=""
-                                    class="regform__input"
-                                    autocomplete="false"
-                                    data-input-change/>
-                            <div class="regform__plh">Контактное лицо по сделке</div>
                         </div>
                     </div>
                     <div class="regform__outer col-12 profile__edit">

@@ -393,10 +393,18 @@ class ControllerRegisterCompany extends Controller
 
             $this->load->model('tag/tag');
 
-            $results = $this->model_tag_tag->getTags();
+            $product_tags = $this->model_tag_tag->getProductTags();
+            $industry_tags = $this->model_tag_tag->getIndustryTags();
 
-            foreach ($results as $result) {
-                $data['tags'][] = array(
+            foreach ($product_tags as $result) {
+                $data['product_tags'][] = array(
+                    'tag_id' => $this->model_tag_tag->getB24IdByTagDescriptions($result['title']),
+                    'title' => $result['title'],
+                );
+            }
+
+            foreach ($industry_tags as $result) {
+                $data['industry_tags'][] = array(
                     'tag_id' => $this->model_tag_tag->getB24IdByTagDescriptions($result['title']),
                     'title' => $result['title'],
                 );

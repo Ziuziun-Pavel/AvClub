@@ -93,6 +93,84 @@ class ModelTagTag extends Model {
 		return $tag_data;
 	}
 
+    public function getProductTags($data = array()) {
+        $sql = "SELECT td.tag_id FROM " . DB_PREFIX . "b24_tags t ";
+        $sql .= " LEFT JOIN " . DB_PREFIX . "tag_description td ON (t.tag = td.title) ";
+        $sql .= " WHERE t.group_id = '93'";
+
+        if (!empty($data['journal_id'])) {
+            $sql .= " AND td.journal_id = '" . (int)$data['journal_id'] . "'";
+        }
+
+        if (!empty($data['filter_name'])) {
+            $sql .= " AND td.title LIKE '%" . $this->db->escape($data['filter_name']) . "%'";
+        }
+
+        $sql .= " GROUP BY td.tag_id";
+        $sql .= " ORDER BY LCASE(td.title) ASC";
+
+        if (isset($data['start']) || isset($data['limit'])) {
+            if ($data['start'] < 0) {
+                $data['start'] = 0;
+            }
+
+            if ($data['limit'] < 1) {
+                $data['limit'] = 20;
+            }
+
+            $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+        }
+
+        $tag_data = array();
+
+        $query = $this->db->query($sql);
+
+        foreach ($query->rows as $result) {
+            $tag_data[$result['tag_id']] = $this->getTag($result['tag_id']);
+        }
+
+        return $tag_data;
+    }
+
+    public function getIndustryTags($data = array()) {
+        $sql = "SELECT td.tag_id FROM " . DB_PREFIX . "b24_tags t ";
+        $sql .= " LEFT JOIN " . DB_PREFIX . "tag_description td ON (t.tag = td.title) ";
+        $sql .= " WHERE t.group_id = '91'";
+
+        if (!empty($data['journal_id'])) {
+            $sql .= " AND td.journal_id = '" . (int)$data['journal_id'] . "'";
+        }
+
+        if (!empty($data['filter_name'])) {
+            $sql .= " AND td.title LIKE '%" . $this->db->escape($data['filter_name']) . "%'";
+        }
+
+        $sql .= " GROUP BY td.tag_id";
+        $sql .= " ORDER BY LCASE(td.title) ASC";
+
+        if (isset($data['start']) || isset($data['limit'])) {
+            if ($data['start'] < 0) {
+                $data['start'] = 0;
+            }
+
+            if ($data['limit'] < 1) {
+                $data['limit'] = 20;
+            }
+
+            $sql .= " LIMIT " . (int)$data['start'] . "," . (int)$data['limit'];
+        }
+
+        $tag_data = array();
+
+        $query = $this->db->query($sql);
+
+        foreach ($query->rows as $result) {
+            $tag_data[$result['tag_id']] = $this->getTag($result['tag_id']);
+        }
+
+        return $tag_data;
+    }
+
     public function getB24IdByTagDescriptions($tag_title) {
         $b24_tag_id = 0;
 

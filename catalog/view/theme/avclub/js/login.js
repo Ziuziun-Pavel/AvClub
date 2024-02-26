@@ -5,9 +5,9 @@ addInvalid = function(elem) {
 }
 
 $(function(){
+	yaGoal('goal-cabinet')
 
-
-	$('.regphone__inp input[name="telephone"]').inputmask("+9{0,20}");
+	// $('.regphone__inp input[name="telephone"]').inputmask("+9{0,20}");
 
 	$(document).on('click', '.regform__label', function(e){
 		e.preventDefault();
@@ -25,8 +25,33 @@ $(function(){
 		mess = form.find('.reg__error'),
 		error = false;
 
-		form.find('.invalid').removeClass('invalid');
+		var code = $('.iti__selected-dial-code').text();
 
+		form.find('.invalid').removeClass('invalid');
+		var isPhoneValid = $('#tel').intlTelInput('isValidNumber');
+		console.log(isPhoneValid)
+
+		if (isPhoneValid === false) {
+			addInvalid(telephone.closest('.regphone__inp'));
+			error = true;
+			mess.show()
+			mess.text("Введите правильный номер телефона")
+			$.ajax({
+				type: "POST",
+				url: "index.php?route=register/login/logPhone",
+				dataType: "json",
+				data: form.serialize(),
+				beforeSend: function (json) {
+				},
+				complete: function (json) {
+				},
+				success: function (json) {
+				},
+				error: function (json) {
+
+				}
+			});
+		}
 
 		if(email.length && email.is(':visible')){
 			if(email.val().length < 1 || !$rv_email.test(email.val())){
@@ -35,17 +60,22 @@ $(function(){
 			}
 		}
 
-		if(!telephone.inputmask('isComplete')) {
-			addInvalid(telephone);
-			error = true;
-		}
+		// if(!telephone.inputmask('isComplete')) {
+		// 	addInvalid(telephone);
+		// 	error = true;
+		// }
 
 		if(!error) {
 			$.ajax({
 				type: "POST", 
 				url: "index.php?route=register/login/authorize", 
-				dataType: "json", 
-				data: form.serialize(),
+				dataType: "json",
+				data: {
+					'telephone': code + $('input[name="telephone"]').val(),
+					'email': email.val(),
+					'r': $('input[name="r"]').val(),
+					'sid': $('input[name="sid"]').val()
+				},
 				beforeSend: function(json) { $('.reg__load').fadeIn(); },
 				complete: function(json) { $('.reg__load').fadeOut(); },
 				success: function(json){

@@ -248,7 +248,7 @@ class ControllerRegisterLogin extends Controller {
 		}
 
 		// код неверный
-		if(!$error && (!empty($this->session->data['loguser']['hash']) && $this->session->data['hash']['hash'] === $this->model_register_register->hashCode($code))) {
+		if(!$error && !$this->model_register_register->validateCodeLogin($code)) {
 			$error = true;
 			$return['error'] = 'Неверный проверочный код';
 		}

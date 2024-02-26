@@ -29,6 +29,8 @@
 	<?php } ?>
 	<meta property="og:site_name" content="<?php echo $name; ?>" />
 
+	<link href="<?php echo $theme_dir; ?>/css/intlTelInput.css?v=<?php echo filectime(DIR_TEMPLATE . 'avclub/css/intlTelInput.css') ?>" rel="stylesheet"/>
+	<script src="<?php echo $theme_dir; ?>/js/intlTelInput-jquery.min.js"></script>
 
 	<?php foreach ($styles as $style) { ?>
 		<link href="<?php echo $style['href']; ?>" type="text/css" rel="<?php echo $style['rel']; ?>" media="<?php echo $style['media']; ?>" />

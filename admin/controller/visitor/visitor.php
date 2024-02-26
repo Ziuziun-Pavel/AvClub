@@ -905,7 +905,7 @@ class ControllerVisitorVisitor extends Controller {
 				'limit'        		=> 5
 			);
 
-			$results = $this->model_visitor_visitor->getVisitors($filter_data);
+			$results = $this->model_visitor_visitor->getExperts($filter_data);
 
 			foreach ($results as $result) {
 				

@@ -1,5 +1,5 @@
 $(function () {
-
+    yaGoal('goal-reg-entry')
 
     // $('.regphone__inp input[name="telephone"]').inputmask("+9{0,30}");
 
@@ -45,7 +45,9 @@ $(function () {
                 type: "POST",
                 url: "index.php?route=register/login/logPhone",
                 dataType: "json",
-                data: form.serialize(),
+                data: {
+                    'telephone': code + $('input[name="telephone"]').val()
+                },
                 beforeSend: function (json) {
                 },
                 complete: function (json) {
@@ -398,7 +400,7 @@ $(function () {
 
     $(document).on('click', '#button-register', function (e) {
         e.preventDefault();
-
+        yaGoal('goal-reg-start')
         var
             form = $(this).closest('form'),
             $company = form.find('input[name="company"]'),
