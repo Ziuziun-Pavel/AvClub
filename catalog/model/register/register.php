@@ -79,6 +79,15 @@ class ModelRegisterRegister extends Model
             $this->model_themeset_themeset->alert($alert_data, 'Ошибка sms.ru');
         }
 
+        $log = array(
+            'step' => 'Отправка смс ',
+            'browser' => $_SERVER['HTTP_USER_AGENT'],
+            'phone' => $phone,
+            'status' => $sms->status_text,
+            'code' => $sms->status_code,
+        );
+        $this->log($log, 'sms');
+
         return $return;
     }
 
@@ -1075,6 +1084,9 @@ class ModelRegisterRegister extends Model
                 break;
             case 'phone':
                 $file = 'phone.log';
+                break;
+            case 'sms':
+                $file = 'sms.log';
                 break;
             case 'register_info':
                 $file = 'register_event.log';

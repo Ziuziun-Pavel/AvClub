@@ -19604,6 +19604,10 @@ body.avevent-event-info .header, body.event-item .header {
 }
 
 .expreg__status--item.--preactive:before {
+    background: #000
+}
+
+.expreg__status--item.--passive:before {
     background: #ddd
 }
 
@@ -21974,7 +21978,7 @@ body.avevent-event-info .header, body.event-item .header {
     position: relative;
     width: 86px;
     height: 86px;
-    border: 1px solid var(--red);
+    border: 1px solid #c4c4c4;
     border-radius: 50%;
     overflow: hidden
 }

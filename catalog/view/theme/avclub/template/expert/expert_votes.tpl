@@ -1,3 +1,15 @@
+<style>
+    h2 {
+        color: #333;
+    }
+    .question {
+        margin-bottom: 10px;
+    }
+    .answer {
+        margin-left: 20px;
+        font-style: italic;
+    }
+</style>
 <p>(Раздел в разработке)</p>
 <?php if(!empty($vote_list)) { ?>
 <?php foreach($vote_list as $vote) { ?>
@@ -32,6 +44,21 @@
             </div>
 
         <?php } ?>
+
+        <?php if(!empty($vote["answers"])) { ?>
+
+        <h2>Ответы на опрос:</h2>
+        <?php foreach ($vote["answers"] as $question => $answer) { ?>
+        <div class="question">
+            <strong>Вопрос:</strong> <?php echo $question; ?>
+            <div class="answer">
+                <strong>Ответ:</strong> <?php echo $answer[0]; ?>
+            </div>
+        </div>
+        <?php } ?>
+
+        <?php } ?>
+
 
     </div>
     <div class="expreg__path">

@@ -1,3 +1,11 @@
+<style>
+    .regform__inp-error {
+        color: var(--red);
+        font-size: .9rem;
+        margin-top: .5rem;
+    }
+</style>
+
 <?php echo $header; ?>
 <?php echo $content_top; ?>
 (Раздел в разработке)
@@ -30,6 +38,7 @@
                         </svg>
                     </a>
                     <textarea name="photo"></textarea>
+                    <div class="regform__inp-error"></div>
                 </div>
 
                 <div class="edit__inputs row">
@@ -48,6 +57,7 @@
                                     data-input-change/>
                             <div class="regform__plh">Название компании</div>
                         </div>
+                        <div class="regform__inp-error"></div>
                     </div>
                     <div class="regform__outer col-12 col-md-6 profile__edit">
                         <div class="regform__inp regform__inp-plh">
@@ -60,6 +70,8 @@
                                     data-input-change/>
                             <div class="regform__plh">Город</div>
                         </div>
+                        <div class="regform__inp-error"></div>
+
                     </div>
 
                     <div class="regform__outer col-12 col-md-6 profile__edit">
@@ -72,6 +84,7 @@
                                     data-input-change/>
                             <div class="regform__plh">Телефон</div>
                         </div>
+                        <div class="regform__inp-error"></div>
                     </div>
 
                     <div class="regform__outer col-12 col-md-6 profile__edit">
@@ -84,6 +97,7 @@
                                     data-input-change/>
                             <div class="regform__plh">E-mail</div>
                         </div>
+                        <div class="regform__inp-error"></div>
                     </div>
 
                     <div class="regform__outer col-12 col-md-6 profile__edit">
@@ -96,6 +110,7 @@
                                     data-input-change/>
                             <div class="regform__plh">Сайт</div>
                         </div>
+                        <div class="regform__inp-error"></div>
                     </div>
 
                     <div class="regform__outer col-12 col-md-6 profile__edit">
@@ -119,6 +134,7 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="regform__inp-error"></div>
                     </div>
 
                     <div class="regform__outer col-12 col-md-6 profile__edit">
@@ -145,6 +161,7 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="regform__inp-error"></div>
                     </div>
 
                     <div class="regform__outer col-12 col-md-6 profile__edit">
@@ -171,6 +188,7 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="regform__inp-error"></div>
                     </div>
 
 
@@ -227,6 +245,7 @@
                                     data-input-change/>
                             <div class="regform__plh">ИНН</div>
                         </div>
+                        <div class="regform__inp-error"></div>
                     </div>
 
                     <div class="regform__outer col-12 profile__edit">
@@ -241,16 +260,22 @@
                             <div class="regform__plh">Выбор валюты для счета</div>
                             <div class="regform__select--dropdown dropdown-menu">
                                 <div class="regform__select--list">
-
                                     <label class="regform__select--input">
                                         <input type="radio" name="currency" value="RUB">
                                         <span>RUB</span>
                                     </label>
                                     <label class="regform__select--input">
-                                        <input type="radio" name="currency" value="BYN">
-                                        <span>BYN</span>
+                                        <input type="radio" name="currency" value="USD">
+                                        <span>USD</span>
                                     </label>
-
+                                    <label class="regform__select--input">
+                                        <input type="radio" name="currency" value="EUR">
+                                        <span>EUR</span>
+                                    </label>
+                                    <label class="regform__select--input">
+                                        <input type="radio" name="currency" value="CNY">
+                                        <span>CNY</span>
+                                    </label>
                                 </div>
                             </div>
                         </div>
@@ -453,6 +478,121 @@
 
         $(document).on('submit', '#form-edit-company', function (e) {
             e.preventDefault();
+
+            var companyName = $("input[name='name']").val();
+            var companyCity = $("input[name='city']").val();
+            var companyPhone = $("input[name='telephone']").val();
+            var companyEmail = $("input[name='email']").val();
+            var companyWeb = $("input[name='web']").val();
+            var companyActivity = $("input[name='company_activity']:checked").val();
+            var companyTagProd = $("#company_tag_product .tag_product:checked").val();
+            var companyTagIndustry = $("#company_tag_industry .tag_industry:checked").val();
+            var companyInn = $("input[name='inn']").val();
+
+            if (!data.data.company_initial_logo) {
+                $('.edit__image--image').css("border-color", "red");
+                $('.edit__image').find('.regform__inp-error').text('Добавьте логотип').css('color', 'red');
+            } else {
+                $('.edit__image--image').css("border-color", "#c4c4c4");
+                $('.edit__image').find('.regform__inp-error').text('');
+            }
+
+            if (!companyName) {
+                $("input[name='name']").closest('.regform__inp').addClass('invalid');
+                $("input[name='name']").closest('.regform__outer').find('.regform__inp-error').text('Введите название компании').css('color', 'red');
+            } else {
+                $("input[name='name']").closest('.regform__inp').removeClass('invalid');
+                $("input[name='name']").closest('.regform__outer').find('.regform__inp-error').text('');
+            }
+
+            if (!companyCity) {
+                $("input[name='city']").closest('.regform__inp').addClass('invalid');
+                $("input[name='city']").closest('.regform__outer').find('.regform__inp-error').text('Введите название города').css('color', 'red');
+            } else {
+                $("input[name='city']").closest('.regform__inp').removeClass('invalid');
+                $("input[name='city']").closest('.regform__outer').find('.regform__inp-error').text('');
+            }
+
+            if (!companyPhone) {
+                $("input[name='telephone']").closest('.regform__inp').addClass('invalid');
+                $("input[name='telephone']").closest('.regform__outer').find('.regform__inp-error').text('Введите телефон').css('color', 'red');
+            } else {
+                $("input[name='telephone']").closest('.regform__inp').removeClass('invalid');
+                $("input[name='telephone']").closest('.regform__outer').find('.regform__inp-error').text('');
+            }
+
+            if (!companyEmail) {
+                $("input[name='email']").closest('.regform__inp').addClass('invalid');
+                $("input[name='email']").closest('.regform__outer').find('.regform__inp-error').text('Введите email').css('color', 'red');
+            } else {
+                $("input[name='email']").closest('.regform__inp').removeClass('invalid');
+                $("input[name='email']").closest('.regform__outer').find('.regform__inp-error').text('');
+            }
+
+            if (!companyWeb) {
+                $("input[name='web']").closest('.regform__inp').addClass('invalid');
+                $("input[name='web']").closest('.regform__outer').find('.regform__inp-error').text('Введите название сайта').css('color', 'red');
+            } else {
+                $("input[name='web']").closest('.regform__inp').removeClass('invalid');
+                $("input[name='web']").closest('.regform__outer').find('.regform__inp-error').text('');
+            }
+
+            if (!companyActivity) {
+                $("input[name='company_activity']").closest('.regform__inp').addClass('invalid');
+                $("input[name='company_activity']").closest('.regform__outer').find('.regform__inp-error').text('Выберите активность').css('color', 'red');
+            } else {
+                $("input[name='company_activity']").closest('.regform__inp').removeClass('invalid');
+                $("input[name='company_activity']").closest('.regform__outer').find('.regform__inp-error').text('');
+            }
+
+            if (!companyTagProd) {
+                $("#company_tag_product").closest('.regform__inp').addClass('invalid');
+                $("#company_tag_product").closest('.regform__outer').find('.regform__inp-error').text('Выберите тег продукции').css('color', 'red');
+            } else {
+                $("#company_tag_product").closest('.regform__inp').removeClass('invalid');
+                $("#company_tag_product").closest('.regform__outer').find('.regform__inp-error').text('');
+            }
+
+            if (!companyTagIndustry) {
+                $("#company_tag_industry").closest('.regform__inp').addClass('invalid');
+                $("#company_tag_industry").closest('.regform__outer').find('.regform__inp-error').text('Выберите тег отрасли').css('color', 'red');
+            } else {
+                $("#company_tag_industry").closest('.regform__inp').removeClass('invalid');
+                $("#company_tag_industry").closest('.regform__outer').find('.regform__inp-error').text('');
+            }
+
+            if (!companyInn) {
+                $("input[name='inn']").closest('.regform__inp').addClass('invalid');
+                $("input[name='inn']").closest('.regform__outer').find('.regform__inp-error').text('Заполните реквизиты').css('color', 'red');
+            } else {
+                $("input[name='inn']").closest('.regform__inp').removeClass('invalid');
+                $("input[name='inn']").closest('.regform__outer').find('.regform__inp-error').text('');
+            }
+
+            if (!companyName ||
+                !companyCity ||
+                !companyPhone ||
+                !companyEmail ||
+                !data.data.company_initial_logo ||
+                !companyWeb ||
+                !companyActivity ||
+                !companyTagProd ||
+                !companyTagIndustry ||
+                !companyInn
+            ) {
+                if (!companyInn) {
+                    $("html, body").animate({
+                        scrollTop: $("textarea[name='description']").closest('.regform__outer').offset().top
+                    });
+                    return
+                } else {
+                    $("html, body").animate({
+                        scrollTop: $(".section_edit").offset().top
+                    });
+                }
+
+                return;
+            }
 
             const alternativeNames = [];
             $(".company_alternative").each(function () {

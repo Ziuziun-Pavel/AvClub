@@ -752,34 +752,63 @@ class ControllerExpertExpert extends Controller
 
                 $statuses = array();
 
+                if ($catalog_item['status'] === 'new') {
+                    $statuses[] = array(
+                        'text' => 'Новая заявка',
+                        'active' => true,
+                        'preactive' => true
+                    );
+                } else {
+                    $statuses[] = array(
+                        'text' => 'Новая заявка',
+                        'active' => false,
+                        'preactive' => false
+                    );
+                }
+
                 $statuses[] = array(
-                    'text' => 'Новая заявка',
-                    'active' => true
+                    'text' => 'Ожидает оплаты',
+                    'active' => false,
+                    'preactive' => false
                 );
 
+                $statuses[] = array(
+                    'text' => 'Подготовка к размещению',
+                    'active' => false,
+                    'preactive' => false
+                );
+
+                if ($catalog_item['status'] !== 'won' && $catalog_item['status'] !== 'cancel') {
+                    $statuses[] = array(
+                        'text' => 'Завершена',
+                        'active' => false,
+                        'preactive' => false
+                    );
+                }
+
                 if ($catalog_item['status'] === 'wait_payment') {
-                    $statuses[] = array('text' => 'Ожидает оплаты', 'active' => false);
+                    $statuses[] = array('text' => 'Ожидает оплаты', 'active' => true, 'preactive' => true);
                 }
 
                 if ($catalog_item['status'] === 'work') {
-                    $statuses[] = array('text' => 'В работе', 'active' => false);
+                    $statuses[] = array('text' => 'Подготовка к размещению', 'active' => true, 'preactive' => true);
                 }
 
                 if ($catalog_item['status'] === 'won') {
-                    $statuses[] = array('text' => 'Завершена', 'active' => true);
+                    $statuses[] = array('text' => 'Завершена', 'active' => true, 'preactive' => true);
                 }
 
                 if ($catalog_item['status'] === 'cancel') {
-                    $statuses[] = array('text' => 'Отмена', 'active' => true);
+                    $statuses[] = array('text' => 'Отмена', 'active' => true, 'preactive' => true);
                 }
 
-                foreach ($statuses as $key => &$status) {
-                    if ($key == count($statuses) - 2 && !$statuses[count($statuses) - 1]['active']) {
-                        $status['preactive'] = true;
-                    } else {
-                        $status['preactive'] = false;
-                    }
-                }
+//                foreach ($statuses as $key => &$status) {
+//                    if ($key == count($statuses) - 2 && !$statuses[count($statuses) - 1]['active']) {
+//                        $status['preactive'] = true;
+//                    } else {
+//                        $status['preactive'] = false;
+//                    }
+//                }
 
                 $catalog_item_info = array(
                     'title' => $catalog_item['title'],
@@ -850,8 +879,6 @@ class ControllerExpertExpert extends Controller
 
             $vote_list = $this->model_visitor_expert->getVotes($expert_info['b24id'], $last_id)['list'];
 
-            var_dump($vote_list);
-
             $sort_vote_list = array();
 
             foreach ($vote_list as $vote_item) {
@@ -885,7 +912,8 @@ class ControllerExpertExpert extends Controller
                     'status' => $vote_item['status'],
                     'link' => $vote_item['link'],
                     'statuses' => $statuses,
-                    'date_end' => date('d', $time) . '&nbsp;' . $month_list[(int)date('m', $time)] . '&nbsp;' . date('Y', $time)
+                    'date_end' => date('d', $time) . '&nbsp;' . $month_list[(int)date('m', $time)] . '&nbsp;' . date('Y', $time),
+                    'answers' => json_decode($vote_item['answers'], true)
                 );
 
                 $data['vote_list'][] = $vote_item_info;

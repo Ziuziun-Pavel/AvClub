@@ -13,6 +13,10 @@
         align-items: center;
         color: #0561c8;
     }
+
+    .expreg__status--item.--passive {
+        color: #cbcccd;
+    }
 </style>
 <?php if(!empty($catalog_list)) { ?>
 <?php foreach($catalog_list as $catalog_item) { ?>
@@ -26,14 +30,18 @@
             <span><?php echo $catalog_item['date']; ?></span>
         </div>
 
-            <a class="invoice--link" href="<?php echo $catalog_item['invoice']; ?>" ><?php echo $catalog_item['invoice']; ?></a>
+        <?php if($catalog_item['invoice'] && ($catalog_item['status'] !== 'won' || $catalog_item['status'] !== 'cancel')): ?>
+            <a class="invoice--link" href="<?php echo $catalog_item['invoice']; ?>" >Ссылка на счёт</a>
+        <?php endif; ?>
 
     </div>
     <div class="expreg__path">
-        <div class="expreg__capt">Статус регистрации</div>
+        <div class="expreg__capt">Статус заявки</div>
         <div class="expreg__status">
-            <?php foreach($catalog_item['statuses'] as $key=>$status) { ?>
-            <div class="expreg__status--item <?php echo $status['preactive'] ? '--preactive' : ''; ?> <?php echo $status['active'] ? '' : '--passive'; ?>">
+            <?php foreach($catalog_item['statuses'] as $key => $status) { ?>
+            <div class="expreg__status--item <?php echo $status['preactive'] ? '--preactive' : ''; ?>
+                                             <?php echo $status['active'] ? '' : '--passive'; ?>
+">
                 <span></span> <?php echo $status['text']; ?>
             </div>
             <?php } ?>
