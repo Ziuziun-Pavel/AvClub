@@ -2,6 +2,18 @@
 	#tel::placeholder {
 		color: #cdcdcd;
 	}
+
+	#loading-message {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 50px;
+		background-color: #f0f0f0;
+		text-align: center;
+		line-height: 50px;
+		z-index: 9999;
+	}
 </style>
 <?php $theme_dir = 'catalog/view/theme/avclub'; ?>
 <?php echo $header; ?>
@@ -27,6 +39,9 @@
 				<?php require(DIR_TEMPLATE . 'avclub/template/register/_inc_attention.tpl'); ?>
 				<div class="regdata__title">
 					Введите номер своего мобильного телефона
+				</div>
+				<div id="loading-message">
+					Дождитесь полной загрузки страницы...
 				</div>
 				<form id="registration-number" action="#" class="regphone">
 					<div class="regphone__inp">
@@ -78,6 +93,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/intlTelInput-jquery.min.js"></script>
 
 <script>
+	window.addEventListener('load', function () {
+		var loadingMessage = document.getElementById('loading-message');
+		loadingMessage.style.display = 'none';
+	});
+
 	$("#tel").intlTelInput({
 		initialCountry: "auto",
 		separateDialCode: true,

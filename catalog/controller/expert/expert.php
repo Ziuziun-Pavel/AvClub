@@ -766,32 +766,25 @@ class ControllerExpertExpert extends Controller
                     );
                 }
 
-                $statuses[] = array(
-                    'text' => 'Ожидает оплаты',
-                    'active' => false,
-                    'preactive' => false
-                );
-
-                $statuses[] = array(
-                    'text' => 'Подготовка к размещению',
-                    'active' => false,
-                    'preactive' => false
-                );
-
-                if ($catalog_item['status'] !== 'won' && $catalog_item['status'] !== 'cancel') {
+                if ($catalog_item['status'] === 'wait_payment') {
+                    $statuses[] = array('text' => 'Ожидает оплаты', 'active' => true, 'preactive' => true);
+                } else {
                     $statuses[] = array(
-                        'text' => 'Завершена',
+                        'text' => 'Ожидает оплаты',
                         'active' => false,
                         'preactive' => false
                     );
-                }
 
-                if ($catalog_item['status'] === 'wait_payment') {
-                    $statuses[] = array('text' => 'Ожидает оплаты', 'active' => true, 'preactive' => true);
                 }
 
                 if ($catalog_item['status'] === 'work') {
                     $statuses[] = array('text' => 'Подготовка к размещению', 'active' => true, 'preactive' => true);
+                } else {
+                    $statuses[] = array(
+                        'text' => 'Подготовка к размещению',
+                        'active' => false,
+                        'preactive' => false
+                    );
                 }
 
                 if ($catalog_item['status'] === 'won') {
@@ -801,6 +794,15 @@ class ControllerExpertExpert extends Controller
                 if ($catalog_item['status'] === 'cancel') {
                     $statuses[] = array('text' => 'Отмена', 'active' => true, 'preactive' => true);
                 }
+
+                if ($catalog_item['status'] !== 'won' && $catalog_item['status'] !== 'cancel') {
+                    $statuses[] = array(
+                        'text' => 'Завершена',
+                        'active' => false,
+                        'preactive' => false
+                    );
+                }
+
 
 //                foreach ($statuses as $key => &$status) {
 //                    if ($key == count($statuses) - 2 && !$statuses[count($statuses) - 1]['active']) {

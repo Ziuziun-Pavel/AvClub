@@ -1,6 +1,7 @@
 <style>
     .regform__name-wrapper {
         display: flex;
+        flex-wrap: wrap;
     }
 
     .regform__block {

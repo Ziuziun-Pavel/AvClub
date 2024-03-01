@@ -141,7 +141,7 @@
                         <div class="regform__inp regform__inp-plh regform__select dropdown">
                             <div class="regform__select--text dropdown-toggle" data-toggle="dropdown"
                                  aria-haspopup="true" aria-expanded="false">
-                                <span></span>
+                                <div class="adding__list--product"></div>
                                 <svg>
                                     <use xlink:href="catalog/view/theme/avclub/img/sprite.svg#arr-down-fill">
                                 </svg>
@@ -152,7 +152,7 @@
 
                                     <? foreach ($product_tags as $tag) : ?>
                                     <label class="regform__select--input">
-                                        <input class="tag_product" type="radio" name="tab"
+                                        <input class="tag_product" type="checkbox" name="tab"
                                                value="<?= $tag['tag_id'] ?>">
                                         <span><?= $tag['title'] ?></span>
                                     </label>
@@ -168,7 +168,7 @@
                         <div class="regform__inp regform__inp-plh regform__select dropdown">
                             <div class="regform__select--text dropdown-toggle" data-toggle="dropdown"
                                  aria-haspopup="true" aria-expanded="false">
-                                <span></span>
+                                <div class="adding__list--industry"></div>
                                 <svg>
                                     <use xlink:href="catalog/view/theme/avclub/img/sprite.svg#arr-down-fill">
                                 </svg>
@@ -179,7 +179,7 @@
 
                                     <? foreach ($industry_tags as $tag) : ?>
                                     <label class="regform__select--input">
-                                        <input class="tag_industry" type="radio" name="tab1"
+                                        <input class="tag_industry" type="checkbox" name="tab1"
                                                value="<?= $tag['tag_id'] ?>">
                                         <span><?= $tag['title'] ?></span>
                                     </label>
@@ -229,6 +229,7 @@
                                       class=""></textarea>
                             <div class="regform__plh">Описание вашей компании</div>
                         </div>
+                        <div class="regform__inp-error"></div>
                     </div>
 
                     <div class="regform__outer regform__outer-capt col-12">
@@ -375,6 +376,9 @@
             }
         };
 
+        var selectedProductTags = [];
+        var selectedIndustryTags = [];
+
         $(document).on('change', '.regform__select--dropdown input', function () {
             var select = $(this).closest('.regform__select'),
                 input = select.find('input:checked'),
@@ -476,6 +480,58 @@
             });
         })
 
+        // Обработчик для чекбоксов тегов продукции
+        $('.tag_product').change(function() {
+            updateSelectedTags('product');
+            console.log(selectedProductTags)
+        });
+
+        // Обработчик для чекбоксов тегов отрасли
+        $('.tag_industry').change(function() {
+            updateSelectedTags('industry');
+            console.log(selectedIndustryTags)
+        });
+
+        // Функция для обновления выбранных тегов и их отображения
+        function updateSelectedTags(type) {
+            var selectedTags = [];
+            var selectedTagsText = [];
+            var selector = type === 'product' ? '.tag_product' : '.tag_industry';
+
+            $(selector + ':checked').each(function() {
+                var tagId = +$(this).val();
+                var tagName = $(this).next('span').text();
+                selectedTags.push(tagId);
+                selectedTagsText.push(tagName);
+                if (type === 'product') {
+                    $('.regform__select--text').find('.adding__list--product').html(selectedTagsText + '</br>');
+                } else {
+                    $('.regform__select--text').find('.adding__list--industry').html(selectedTagsText + '</br>');
+                }
+
+            });
+
+            var $dropdown = $('#company_tag_' + type);
+            var $selectedText = $dropdown.prev('.regform__select--text').find('span');
+            //
+            // var addingHTML = [];
+            // for ( var i=0; i < selectedTagsText.length; i++ ) {
+            //     addingHTML.push ('<span style="background: red">' + selectedTagsText[i] + '</span>');
+            // }
+            // console.log(addingHTML);
+            // $('.regform__select--text').find('.adding__list').html(addingHTML.join(", "));
+            //
+            // console.log(selectedTagsText)
+
+            // Передача выбранных тегов в массив
+            if (type === 'product') {
+                selectedProductTags = selectedTags;
+            } else {
+                selectedIndustryTags = selectedTags;
+            }
+        }
+
+
         $(document).on('submit', '#form-edit-company', function (e) {
             e.preventDefault();
 
@@ -488,6 +544,7 @@
             var companyTagProd = $("#company_tag_product .tag_product:checked").val();
             var companyTagIndustry = $("#company_tag_industry .tag_industry:checked").val();
             var companyInn = $("input[name='inn']").val();
+            var companyDescription = $("textarea[name='description']").val();
 
             if (!data.data.company_initial_logo) {
                 $('.edit__image--image').css("border-color", "red");
@@ -503,6 +560,14 @@
             } else {
                 $("input[name='name']").closest('.regform__inp').removeClass('invalid');
                 $("input[name='name']").closest('.regform__outer').find('.regform__inp-error').text('');
+            }
+
+            if (!companyDescription) {
+                $("textarea[name='description']").closest('.regform__inp').addClass('invalid');
+                $("textarea[name='description']").closest('.regform__outer').find('.regform__inp-error').text('Введите описание компании').css('color', 'red');
+            } else {
+                $("textarea[name='description']").closest('.regform__inp').removeClass('invalid');
+                $("textarea[name='description']").closest('.regform__outer').find('.regform__inp-error').text('');
             }
 
             if (!companyCity) {
@@ -578,7 +643,8 @@
                 !companyActivity ||
                 !companyTagProd ||
                 !companyTagIndustry ||
-                !companyInn
+                !companyInn ||
+                !companyDescription
             ) {
                 if (!companyInn) {
                     $("html, body").animate({
@@ -606,10 +672,10 @@
             data.data.company_activity = [$("input[name='company_activity']:checked").val()]
             data.data.company_description = $("textarea[name='description']").val()
             data.data.company_city = $("input[name='city']").val()
-            data.data.company_tag_product = [+$("#company_tag_product .tag_product:checked").val()]
-            data.data.company_tag_industry = [+$("#company_tag_industry .tag_industry:checked").val()]
+            data.data.company_tag_product = selectedProductTags
+            data.data.company_tag_industry = selectedIndustryTags
             data.data.company_alternative_names = alternativeNames
-            data.data.currency = $("input[name='currency']:checked").val()
+            data.data.currency = $("input[name='currency']:checked").val() ?? 'RUB'
             data.data.company_inn = +$("input[name='inn']").val()
             data.data.company_bank_name = $("input[name='bank']").val()
             data.data.company_bik = $("input[name='bik']").val()

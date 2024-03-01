@@ -13,7 +13,9 @@
             <div class="expreg__type --online"><?php echo $event['type_text']; ?></div>
             <?php } ?>
         </div>
-        <div class="expreg__name expreg__name-fut-ev"><?php echo $event['name']; ?></div>
+        <a href="<?php echo $event['landing_url']; ?>" >
+            <div class="expreg__name expreg__name-fut-ev"><?php echo $event['name']; ?></div>
+        </a>
         <div class="expreg__date expreg__date-fut-ev">
             <span><?php echo $event['date']; ?></span>
         </div>
@@ -32,10 +34,10 @@
             <a data-deal-id="<?php echo $event['id']; ?>" data-event-type="<?php echo $event['type_event']; ?>"
                class="btn btn-red invitation" style="width: 48%; min-width: 147px;" target="_blank">Принять
                 приглашение</a>
-            <a href="<?php echo $event['landing_url']; ?>" class="btn btn-red" style="width: 48%;min-width: 147px;"
+            <!--<a href="<?php echo $event['landing_url']; ?>" class="btn btn-red" style="width: 48%;min-width: 147px;"
                target="_blank">Подробнее</a>
 
-            <!--<div class="expreg__qr"></div>-->
+            <div class="expreg__qr"></div>-->
         </div>
         <!--<div class="expreg__bottom">Для посещения мероприятия предъявите распечатанный билет (бейдж)</div>-->
         <?php } ?>
@@ -47,9 +49,9 @@
             <a data-deal-id="<?php echo $event['id']; ?>" data-event-type="<?php echo $event['type_event']; ?>"
                class="btn btn-red invitation" style="width: 48%;min-width: 147px;" target="_blank">Принять
                 приглашение</a>
-            <a href="<?php echo $event['landing_url']; ?>" class="btn btn-red" style="width: 48%;min-width: 147px;"
+            <!--<a href="<?php echo $event['landing_url']; ?>" class="btn btn-red" style="width: 48%;min-width: 147px;"
                target="_blank">Подробнее</a>
-            <!--<div class="expreg__qr"></div>-->
+            <div class="expreg__qr"></div>-->
         </div>
         <?php } ?>
         <?php /* # WEBINAR */ ?>

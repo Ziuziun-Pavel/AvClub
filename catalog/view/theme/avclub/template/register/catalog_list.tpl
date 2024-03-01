@@ -39,27 +39,33 @@
         <div class="expreg__capt">Статус заявки</div>
         <div class="expreg__status">
             <?php foreach($catalog_item['statuses'] as $key => $status) { ?>
-            <div class="expreg__status--item <?php echo $status['preactive'] ? '--preactive' : ''; ?>
-                                             <?php echo $status['active'] ? '' : '--passive'; ?>
-">
+            <div class="expreg__status--item <?php echo $status['preactive'] ? '--preactive' : ''; ?><?php echo $status['active'] ? '' : '--passive'; ?>">
                 <span></span> <?php echo $status['text']; ?>
             </div>
             <?php } ?>
         </div>
     </div>
+
 </div>
 <?php }?>
 <?php } else { ?>
-<div class="expreg d-none">
-    <div class="expreg__info">
-        <div class="imaster__text">
-            На данный момент регистраций не найдено.
-            Перейдите на вкладку "Ближайшие" и зарегистрируйтесь на новые мероприятия.
+    <div class="expreg d-none">
+        <div class="expreg__info">
+            <div class="imaster__text">
+                На данный момент заявок нет.
+            </div>
         </div>
-
     </div>
-</div>
-<script>
-
-</script>
 <?php } ?>
+<style>
+    .preactive-before:before {
+        background-color: black;
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        $(".expreg__status--item.--preactive").each(function() {
+            $(this).prevAll(".expreg__status--item").addClass("preactive-before");
+        });
+    });
+</script>

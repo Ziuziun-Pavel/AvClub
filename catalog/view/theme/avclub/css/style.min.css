@@ -19611,6 +19611,12 @@ body.avevent-event-info .header, body.event-item .header {
     background: #ddd
 }
 
+.expreg__status--item.preactive-before:before {
+    background: #000
+}
+
+
+
 .expreg__status--item.--passive span {
     color: #ddd
 }

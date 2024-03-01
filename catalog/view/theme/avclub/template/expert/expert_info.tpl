@@ -151,7 +151,7 @@
                         <?php if(!empty($event_list)) { ?>
                         <a href="#"
                            class="expertnav__tab expertnav__tab-tab events link <?php echo !$active_tab ? 'active' : ''; ?>"
-                           data-type="events">Мои заявки</a>
+                           data-type="events">Мои приглашения</a>
                         <?php $active_tab = true; ?>
                         <?php } ?>
 
