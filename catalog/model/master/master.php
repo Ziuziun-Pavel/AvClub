@@ -38,6 +38,7 @@ class ModelMasterMaster extends Model {
 				'image'            	=> $query->row['image'],
 				'logo'            	=> $query->row['logo'],
 				'date_available'   	=> $query->row['date_available'],
+                'duration'   	=> $query->row['duration'],
 				'date'   						=> date('d.m.Y', strtotime($query->row['date_available'])),
 				'time'   						=> date('H:i', strtotime($query->row['date_available'])),
 				'status'           	=> $query->row['status']

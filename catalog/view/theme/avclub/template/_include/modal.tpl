@@ -170,4 +170,19 @@
 		</div>
 	</div>
 
+	<div id="modal_vote" class="modal__cont modal__cont-form">
+		<div class="modal__inner" style="padding: 40px 40px 40px 40px;">
+			<button type="button" class="modal__close" data-fancybox-close>
+				<svg class="ico ico-center"><use xlink:href="#close" /></svg>
+			</button>
+
+			<div class="modal-body">
+				<h3 class="vote-title"></h3>
+				<iframe id="crmForm" src="" width="100%" height="800px" frameborder="0" >
+
+				</iframe>
+			</div>
+		</div>
+	</div>
+
 </div>

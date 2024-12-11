@@ -2,26 +2,24 @@
 class ControllerRegisterLogin extends Controller {
 
 	private $b24_hook = 'https://avclub.bitrix24.ru/rest/669/0nvck395h18aqtai/';
-	private $b24_contacts = 'https://avclub.bitrix24.ru/rest/669/2yt2mpuav23aqllx/';
+	private $b24_contacts = 'https://avclub.bitrix24.ru/rest/677/hgv4fvnz8xdrqk2k/';
 
 	private $write_log = true;
 	private $attention = true;
 	private $attention_text = 'Личный кабинет работает в тестовом режиме. <br class="d-md-none">Приносим свои извинения за&nbsp;неудобства!';
 
 	public function index() {
-
-		unset($this->session->data['loguser_data']);
+ 		unset($this->session->data['loguser_data']);
 
 		$this->load->model('register/register');
 
 		$expert_id = $this->visitor->getId();
 		$contact_id = $this->visitor->getB24id();
-
+                
 		if($this->visitor->isLogged()) {
 
 			header("Location: " . $this->url->link('register/account'));
 			exit();
-
 
 		}else{
 			$this->visitor->logout();
@@ -278,7 +276,12 @@ class ControllerRegisterLogin extends Controller {
 				$expert_id = $this->model_register_register->getExpertId($contact_id);
 
 				if($this->visitor->login($expert_id)) {
-					$return['redirect'] = $this->url->link('register/account');
+                    if (!empty($_SESSION["back_url"])) {
+                        $return['redirect'] = $_SESSION["back_url"];
+                        unset($_SESSION["back_url"]);
+                    } else {
+                        $return['redirect'] = $this->url->link('register/account');
+                    }
 				}else{
 					$return['error'] = 'Контакт не найден';
 				}

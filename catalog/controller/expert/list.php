@@ -136,6 +136,7 @@ class ControllerExpertList extends Controller {
                     'thumb'     	  => $image,
                     'name'       		=> $result['name'],
                     'exp'       		=> $result['exp'],
+                    'award'       		=> $result['award'],
                     'href'        	=> $this->url->link('expert/expert', 'expert_id=' . $result['expert_id'])
                 );
             }
@@ -156,8 +157,6 @@ class ControllerExpertList extends Controller {
 		$data['pagination'] = $pagination->render();
 
 		$data['filter'] = $filter_data;
-
-
 
         if($json) {
 			$data['template'] = $this->load->view('expert/expert_list_content', $data);

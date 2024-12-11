@@ -24,7 +24,7 @@
 
 							</span>
 							<span class="opinion__name"><?php echo $speaker['name']; ?></span>
-							<span class="opinion__exp"><?php echo $speaker['exp']; ?></span>
+							<span class="opinion__exp"><?php echo htmlspecialchars_decode($speaker['exp']); ?></span>
 						</span>
 						</<?php echo !empty($speaker['href']) ? 'a' : 'span'; ?>>
 					</div>

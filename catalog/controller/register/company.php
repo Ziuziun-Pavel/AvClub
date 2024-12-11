@@ -55,6 +55,7 @@ class ControllerRegisterCompany extends Controller
 
             $results = $this->model_register_register->getCompanyNames($filter_data);
 
+
             $clean_company_name = str_replace('&quot;', "'", $company_name);
 
             switch ($data['country'])
@@ -68,13 +69,13 @@ class ControllerRegisterCompany extends Controller
                                 'title' => $result['name'],
                                 'city' => $result['city'],
                                 'address' => $result['address'],
+                                'inn' => $result['inn'],
                                 'manager' => $result['director'],
                             );
                         }
                     }
                     $dadata_results = $MyDadata->findRuCompany($clean_company_name)['suggestions'];
                     if (!empty($dadata_results)) {
-                        $data['dadata'] = true;
                         foreach ($dadata_results as $result) {
                             $data['companies'][] = array(
                                 'title' => $result['data']['name']['short_with_opf'],
@@ -100,7 +101,6 @@ class ControllerRegisterCompany extends Controller
                     }
                     $dadata_results = $MyDadata->findByCompany($clean_company_name)['suggestions'];
                     if (!empty($dadata_results)) {
-                        $data['dadata'] = true;
                         foreach ($dadata_results as $result) {
                             $data['companies'][] = array(
                                 'title' => $result['data']['short_name_ru'],
@@ -127,7 +127,6 @@ class ControllerRegisterCompany extends Controller
 
                     $dadata_results = $MyDadata->findKzCompany($clean_company_name)['suggestions'];
                     if (!empty($dadata_results)) {
-                        $data['dadata'] = true;
                         foreach ($dadata_results as $result) {
                             $data['companies'][] = array(
                                 'title' => $result['data']['name_ru'],
@@ -140,7 +139,6 @@ class ControllerRegisterCompany extends Controller
                     break;
                 default:
                     if (!empty($results)) {
-                        $data['dadata'] = false;
                         foreach ($results as $result) {
                             $data['companies'][] = array(
                                 'b24id' => !empty($result['b24id']) ? $result['b24id'] : 0,

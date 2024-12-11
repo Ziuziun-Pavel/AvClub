@@ -1,4 +1,6 @@
 <?php $theme_dir = 'catalog/view/theme/avclub'; ?>
+<?php if (strpos($_SERVER['REQUEST_URI'], '/register-form') !== false) { } else { ?>
+
 <section class="foot__before"></section>
 </div>
 <footer class="footer">
@@ -108,6 +110,7 @@
 
 	</div>
 </footer>
+<?php } ?>
 <?php /* # page outer */ ?>
 
 <script src="<?php echo $theme_dir; ?>/libs/fancybox/jquery.fancybox.min.js"></script>

@@ -18,7 +18,7 @@
                         <span><span class="link">Назад</span></span>
                     </a>
                 </div>
-                <?php if($alternate_count && $is_expert) { ?>
+                <?php if($is_modified && $is_expert) { ?>
                 <div class="edit__attention">
                     <svg class="icow">
                         <use xlink:href="catalog/view/theme/avclub/img/sprite.svg#attention">

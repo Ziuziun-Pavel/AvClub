@@ -223,6 +223,8 @@ $(function(){
 			error = true;
 			error_company = true;
 		}else{
+			console.log('1212')
+
 			if (!form.find('input[name="city"]').hasClass('noedit')) {
 				company_arr.push(form.find('input[name="city"]'));
 			}
@@ -233,7 +235,7 @@ $(function(){
 				company_arr.push(form.find('input[name="company_site"]'));
 			}
 			var company_activity = form.find('input[name="company_activity"]').closest('.regform__inp');
-			if (!form.find('.regform__select--text').hasClass('noedit') && $('.regform__select--text span').html().trim() === '') {
+			if (!form.find('.regform__select--text').hasClass('noedit') && $('.regform__select--text span').html() && $('.regform__select--text span').html().trim() === '') {
 				addInvalid(company_activity);
 				error = true;
 				console.log('error5');

@@ -93,9 +93,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.13/js/intlTelInput-jquery.min.js"></script>
 
 <script>
+	$('#registration-number-btn').prop("disabled",true);
 	window.addEventListener('load', function () {
 		var loadingMessage = document.getElementById('loading-message');
 		loadingMessage.style.display = 'none';
+		$('#registration-number-btn').prop("disabled",false);
 	});
 
 	$("#tel").intlTelInput({

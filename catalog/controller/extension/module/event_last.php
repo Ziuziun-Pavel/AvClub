@@ -19,34 +19,45 @@ class ControllerExtensionModuleEventLast extends Controller {
 
 		$years = array();
 
-		if($events) {
-			foreach($events as $event) {
-				$date_start = strtotime($event['date']);
-				$date_stop = strtotime($event['date_stop']);
+        if($events) {
+            foreach($events as $event) {
+                $date_start = strtotime($event['date']);
+                $date_stop = strtotime($event['date_stop']);
 
-				$year = date('Y', $date_start);
+                $year = date('Y', $date_start);
 
-				$data['events'][$year]['year'] = $year;
-				$data['events'][$year]['events'][] = array(
-					'event_id'		=> $event['event_id'],
-					'year'				=> $year,
-					'date'				=> $event['date'],
-					'date_start'	=> date('d.m', $date_start),
-					'date_stop'		=> date('d.m', $date_stop),
-					'stop_show'		=> $date_stop > $date_start ? true : false,
-					'type'				=> $event['type'],
-					'city'				=> $event['city'],
-					'old_type'		=> $event['old_type'],
-					'old_link'		=> $event['old_link'],
-					'href'        => $this->url->link('avevent/event/info', 'event_id=' . $event['event_id'])
-				);
+                // Проверка наличия города в массиве $added_cities
+                if(!isset($added_cities[$year])) {
+                    $added_cities[$year] = array();
+                }
 
-				$sort[$year] = $year;
-			}
-			array_multisort($sort, SORT_DESC, $data['events']);
-		}
+                if(!in_array($event['city'], $added_cities[$year])) {
+                    $data['events'][$year]['year'] = $year;
+                    $data['events'][$year]['events'][] = array(
+                        'event_id'      => $event['event_id'],
+                        'year'          => $year,
+                        'date'          => $event['date'],
+                        'date_start'    => date('d.m', $date_start),
+                        'date_stop'     => date('d.m', $date_stop),
+                        'stop_show'     => $date_stop > $date_start ? true : false,
+                        'type'          => $event['type'],
+                        'city'          => $event['city'],
+                        'old_type'      => $event['old_type'],
+                        'old_link'      => $event['old_link'],
+                        'href'          => $this->url->link('avevent/event/info', 'event_id=' . $event['event_id'])
+                    );
 
-		if($data['events']) {
+                    $added_cities[$year][] = $event['city'];
+                }
+
+                $sort[$year] = $year;
+            }
+            array_multisort($sort, SORT_DESC, $data['events']);
+        }
+
+
+
+        if($data['events']) {
 			return $this->load->view('extension/module/event_last', $data);
 		}
 	}

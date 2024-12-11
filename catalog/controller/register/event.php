@@ -2,9 +2,11 @@
 
 class ControllerRegisterEvent extends Controller
 {
+//    private $b24_hook = 'https://avclub.bitrix24.ru/rest/669/0nvck395h18aqtai/';
+    private $b24_hook = 'https://avclub.bitrix24.ru/rest/677/qtn6xpqwuido3qts/';
+//    private $b24_contacts = 'https://avclub.bitrix24.ru/rest/669/2yt2mpuav23aqllx/';
+    private $b24_contacts = 'https://avclub.bitrix24.ru/rest/677/hgv4fvnz8xdrqk2k/';
 
-    private $b24_hook = 'https://avclub.bitrix24.ru/rest/669/0nvck395h18aqtai/';
-    private $b24_contacts = 'https://avclub.bitrix24.ru/rest/669/2yt2mpuav23aqllx/';
     private $forum_list_id = 77;
 
     private $master_class_list_id = 117;
@@ -67,8 +69,8 @@ class ControllerRegisterEvent extends Controller
                 $timeToClose = 17 + current($result['result'][0]['PROPERTY_477']) . ':00:00';
 
                 $isClosed = !(
-                    strtotime(date('d.m.Y')) < strtotime(current($result['result'][0]['PROPERTY_427'])) ||
-                    strtotime(date('d.m.Y')) == strtotime(current($result['result'][0]['PROPERTY_427'])) && time() <= strtotime($timeToClose)
+                    strtotime(date('d.m.Y')) < strtotime(current($result['result'][0]['PROPERTY_665'])) ||
+                    strtotime(date('d.m.Y')) == strtotime(current($result['result'][0]['PROPERTY_665'])) && time() <= strtotime($timeToClose)
                 );
 
                 $this->session->data['register_event'] = array(
@@ -143,7 +145,7 @@ class ControllerRegisterEvent extends Controller
                 $this->session->data['register_event'] = array(
                     'type' => 'webinar',
                     'webinar_id' => $webinar_id,
-                    'name' => $result['result'][0]['NAME'],
+                    'name' => !empty(current($result['result'][0]['PROPERTY_727'])) ? current($result['result'][0]['PROPERTY_727']) : $result['result'][0]['NAME'],
                     'date' => $date,
                     'isClosed' => $isClosed,
                     'eventSessionId' => current($result['result'][0]['PROPERTY_557']),
@@ -202,8 +204,8 @@ class ControllerRegisterEvent extends Controller
                 $timeToClose = 17 + current($result['result']['result']['get_forum'][0]['PROPERTY_477']) . ':00:00';
 
                 $isClosed = !(
-                    strtotime(date('d.m.Y')) < strtotime(current($result['result']['result']['get_forum'][0]['PROPERTY_427'])) ||
-                    strtotime(date('d.m.Y')) == strtotime(current($result['result']['result']['get_forum'][0]['PROPERTY_427'])) && time() <= strtotime($timeToClose)
+                    strtotime(date('d.m.Y')) < strtotime(current($result['result']['result']['get_forum'][0]['PROPERTY_665'])) ||
+                    strtotime(date('d.m.Y')) == strtotime(current($result['result']['result']['get_forum'][0]['PROPERTY_665'])) && time() <= strtotime($timeToClose)
                 );
 
                 $this->session->data['register_event'] = array(
@@ -1305,7 +1307,7 @@ class ControllerRegisterEvent extends Controller
         $user_data = array(
             'user_id' => $this->session->data['register_user']['user_id'],
             'old_user_id' => $this->session->data['register_user']['old_user_id'],
-            'isExpert' => $this->model_visitor_expert->isExpert($this->session->data['register_user']['old_user_id']),
+            'isExpert' => $this->model_visitor_expert->isExpert($this->session->data['register_user']['old_user_id']) ?? false,
             'phone' => $this->session->data['register_phone'],
             'name' => $this->session->data['register_user']['name'],
             'lastname' => $this->session->data['register_user']['lastname'],
@@ -1399,6 +1401,7 @@ class ControllerRegisterEvent extends Controller
 
                     /* новый контакт */
                     default:
+                        $user_data['isExpert'] = false;
                         $return_contact = $this->model_register_register->createContact($user_data);
                         $contact_id = $return_contact['id'];
                 }
@@ -1408,6 +1411,8 @@ class ControllerRegisterEvent extends Controller
                 } else {
                     $contact_info = $this->model_register_register->getContactInfo($contact_id);
                 }
+
+
 
                 $log = array(
                     'step' => 'Создание контакта',

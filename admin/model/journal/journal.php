@@ -67,6 +67,7 @@ class ModelJournalJournal extends Model {
 
 			$this->db->query("INSERT INTO " . DB_PREFIX . "journal_case SET 
 				journal_id = '" . (int)$journal_id . "', 
+				company_id = '" . (int)$data['company_id'] . "', 
 				template = '" . (int)$data['case']['template'] . "', 
 				bottom = '" . (int)$data['case']['bottom'] . "', 
 				title = '" . $this->db->escape($data['case']['title']) . "', 
@@ -178,7 +179,7 @@ class ModelJournalJournal extends Model {
 		$this->db->query("DELETE FROM " . DB_PREFIX . "journal_case WHERE journal_id = '" . (int)$journal_id . "'");
 		$this->db->query("DELETE FROM " . DB_PREFIX . "journal_case_attr WHERE journal_id = '" . (int)$journal_id . "'");
 		if (isset($data['case'])) {
-			$this->db->query("INSERT INTO " . DB_PREFIX . "journal_case SET journal_id = '" . (int)$journal_id . "', template = '" . (int)$data['case']['template'] . "', bottom = '" . (int)$data['case']['bottom'] . "', title = '" . $this->db->escape($data['case']['title']) . "', description = '" . $this->db->escape($data['case']['description']) . "', logo = '" . $this->db->escape($data['case']['logo']) . "'");
+			$this->db->query("INSERT INTO " . DB_PREFIX . "journal_case SET journal_id = '" . (int)$journal_id . "', company_id = '" . (int)$data['company_id'] . "', template = '" . (int)$data['case']['template'] . "', bottom = '" . (int)$data['case']['bottom'] . "', title = '" . $this->db->escape($data['case']['title']) . "', description = '" . $this->db->escape($data['case']['description']) . "', logo = '" . $this->db->escape($data['case']['logo']) . "'");
 
 			$case_id = $this->db->getLastId();
 
@@ -383,6 +384,7 @@ class ModelJournalJournal extends Model {
 					);
 				}
 			}
+
 			$case_data = array(
 				'title'					=>	$query->row['title'],
 				'description'		=>	$query->row['description'],
@@ -391,6 +393,10 @@ class ModelJournalJournal extends Model {
 				'bottom'				=>	$query->row['bottom'],
 				'attr'					=>	$case_attr
 			);
+
+            if ($query->row["company_id"]) {
+                $case_data["company_id"] = $query->row["company_id"];
+            }
 		}
 
 		return $case_data;

@@ -9,7 +9,11 @@
 		<span class="case__name link"><?php echo $journal['title']; ?></span>
 		<?php if(!empty($journal['case'])) { ?>
 			<span class="case__info">
-				<span class="case__attr">Интегратор: <strong><?php echo $journal['case']['title']; ?></strong></span>
+				<?php if($journal['company_id']) {  ?>
+					<span class="case__attr">Номинант: <strong><?php echo $journal['company_title']; ?></strong></span>
+				<?php } else {  ?>
+					<span class="case__attr">Интегратор: <strong><?php echo $journal['case']['title']; ?></strong></span>
+				<?php }   ?>
 				<?php if(!empty($journal['case']['attr'])) { ?>
 					<?php foreach($journal['case']['attr'] as $attr) { ?>
 						<?php if(!$attr['catalog']){continue;} ?>

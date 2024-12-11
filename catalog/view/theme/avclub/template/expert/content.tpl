@@ -1,5 +1,5 @@
 <?php if($type === 'all' && !empty($bio) && $page == 1 ) { ?>
-	<?php require(DIR_TEMPLATE . 'avclub/template/expert/expert_info-bio.tpl'); ?>
+
 <?php } ?>
 <?php foreach($results as $item) { ?>
 	<a href="<?php echo $item['href']; ?>" class="xprt__item xprt__item-<?php echo $item['type']; ?> link__outer">

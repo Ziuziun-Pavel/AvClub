@@ -1,9 +1,13 @@
 <?
-//define('C_REST_CLIENT_ID','local.5c8bb1b0891cf2.87252039');//Application ID
-//define('C_REST_CLIENT_SECRET','SakeVG5mbRdcQet45UUrt6q72AMTo7fkwXSO7Y5LYFYNCRsA6f');//Application key
+if ($bitrixWebHook) {
+    define('C_REST_WEB_HOOK_URL',$bitrixWebHook);//url on creat Webhook
+} else {
+    define('C_REST_CLIENT_ID',$client_id);//Application ID
+    define('C_REST_CLIENT_SECRET',$client_secret);//Application key
+}
+
 // or
 // define('C_REST_WEB_HOOK_URL','https://rest-api.bitrix24.com/rest/1/doutwqkjxgc3mgc1/');//url on creat Webhook
-define('C_REST_WEB_HOOK_URL',$bitrixWebHook);//url on creat Webhook
 
 //define('C_REST_CURRENT_ENCODING','windows-1251');
 //define('C_REST_IGNORE_SSL',true);//turn off validate ssl by curl

@@ -262,6 +262,10 @@ class ModelJournalJournal extends Model {
 				'bottom'				=>	$query->row['bottom'],
 				'attr'					=>	$case_attr
 			);
+
+            if ($query->row["company_id"]) {
+                $case_data["company_id"] = (int)$query->row["company_id"];
+            }
 		}
 		return $case_data;
 	}

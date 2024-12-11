@@ -4,6 +4,7 @@ class ControllerExtensionModuleMain extends Controller {
 		
 		$this->load->model('journal/journal');
 		$this->load->model('themeset/themeset');
+		// $this->load->library('wishlist');
 
 		$data['all_news'] = $this->url->link('journal/news');
 

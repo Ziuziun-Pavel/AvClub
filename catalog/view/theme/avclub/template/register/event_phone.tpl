@@ -59,11 +59,12 @@
 
 
 <script>
+    $('#registration-number-btn').prop("disabled",true);
     window.addEventListener('load', function () {
         var loadingMessage = document.getElementById('loading-message');
         loadingMessage.style.display = 'none';
+        $('#registration-number-btn').prop("disabled",false);
     });
-
     $("#telephone").intlTelInput({
         initialCountry: "auto",
         separateDialCode: true,

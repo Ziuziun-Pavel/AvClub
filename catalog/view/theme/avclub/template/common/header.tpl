@@ -117,13 +117,13 @@
 		<!-- DO NOT MODIFY -->
 		<!-- End Facebook Pixel Code -->
 	</head>
-	<body class="<?php echo $class; ?>">
+	<body class="<?php echo strpos($_SERVER['REQUEST_URI'], '/register-form') === false ? $class : 'register-form'; ?>">
 		<!-- Google Tag Manager (noscript) -->
 		<noscript><ifr ame src="https://www.googletagmanager.com/ns.html?id=GTM-569NTJX"
 			height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 			<!-- End Google Tag Manager (noscript) -->
 
-			<?php if(!empty($branding['pc']) || !empty($branding['mob'])) { ?>
+			<?php if((!empty($branding['pc']) || !empty($branding['mob'])) && strpos($_SERVER['REQUEST_URI'], '/register-form') === false) { ?>
 				<div class="branding">
 					<?php echo $branding['link'] ? '<a href="'.$branding['link'].'" ' . ($branding['target'] ? 'target="_blank"' : ''). ' class="' . (!empty($branding['banner_id']) ? 'banner_click' : '') . '" data-id="' . (!empty($branding['banner_id']) ? $branding['banner_id'] : '0') . '">' : '<span>'; ?>
 
@@ -246,12 +246,16 @@
 
 			</div>
 
-			<?php echo $fixed; ?>
+		<?php if (strpos($_SERVER['REQUEST_URI'], '/register-form') === false) {
+			 echo $fixed;
 
+				}
+
+?>
 			<div class="page__outer"
 				<?php if(isset($type_page) && strpos($_SERVER['REQUEST_URI'], '/event-register') !== false) { ?>
 				style="padding-top: 10px"
-				<?php } elseif(strpos($_SERVER['REQUEST_URI'], '/event-register') !== false || strpos($_SERVER['REQUEST_URI'], '/login') !== false ) { ?>
+				<?php } elseif(strpos($_SERVER['REQUEST_URI'], '/event-register') !== false || strpos($_SERVER['REQUEST_URI'], '/login') !== false || strpos($_SERVER['REQUEST_URI'], '/register-form') !== false) { ?>
 				style=""
 				<?php } else { ?>
 				style="padding-top: 48px"
@@ -262,6 +266,7 @@
 					require(DIR_TEMPLATE . 'avclub/template/common/header_event.tpl');
 				} elseif(isset($type_page) && $type_page === 'master') {
 					require(DIR_TEMPLATE . 'avclub/template/common/header_master.tpl');
+				} elseif (strpos($_SERVER['REQUEST_URI'], '/register-form') !== false) {
 				}
 				else{
 					require(DIR_TEMPLATE . 'avclub/template/common/header_default.tpl');

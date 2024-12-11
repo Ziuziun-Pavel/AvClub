@@ -3,6 +3,7 @@ class ModelMasterMaster extends Model {
 	public function addMaster($data) {
 		$this->db->query("INSERT INTO " . DB_PREFIX . "master SET 
 			date_available = '" . $this->db->escape($data['date_available']) . "', 
+		    duration = '" . $this->db->escape($data['duration']) . "', 
 			type = '" . $this->db->escape($data['type']) . "', 
 			image = '" . $this->db->escape($data['image']) . "', 
 			logo = '" . $this->db->escape($data['logo']) . "', 
@@ -66,6 +67,7 @@ class ModelMasterMaster extends Model {
 	public function editMaster($master_id, $data) {
 		$this->db->query("UPDATE " . DB_PREFIX . "master SET date_available = '" . $this->db->escape($data['date_available']) . "', 
 		type = '" . $this->db->escape($data['type']) . "', 
+		duration = '" . $this->db->escape($data['duration']) . "', 
 		image = '" . $this->db->escape($data['image']) . "', 
 		logo = '" . $this->db->escape($data['logo']) . "', 
 		link = '" . $this->db->escape($data['link']) . "', 
@@ -118,6 +120,8 @@ class ModelMasterMaster extends Model {
                 $this->db->query("INSERT INTO " . DB_PREFIX . "master_tag SET master_id = '" . (int)$master_id . "', tag_id = '" . (int)$tag_id . "'");
             }
         }
+
+        $this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'master_id=" . (int)$master_id . "'");
 
         if ($data['keyword']) {
             $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'master_id=" . (int)$master_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");
@@ -220,7 +224,6 @@ class ModelMasterMaster extends Model {
 		return $master_description_data;
 	}
 
-
 	public function getCompaniesByMaster($master_id) {
 		$company_data = array();
 
@@ -237,7 +240,6 @@ class ModelMasterMaster extends Model {
 
 		return $company_data;
 	}
-
 
 	public function getMasterExperts($master_id) {
 		$query = $this->db->query("SELECT * FROM " . DB_PREFIX . "master_expert WHERE master_id = '" . (int)$master_id . "'");
@@ -286,4 +288,49 @@ class ModelMasterMaster extends Model {
 
 		return $query->row['total'];
 	}
+
+    public function log($data, $type = 'error')
+    {
+        switch ($type) {
+            case 'error':
+                $file = 'register_error1.log';
+                break;
+            case 'phone':
+                $file = 'phone.log';
+                break;
+            case 'sms':
+                $file = 'sms.log';
+                break;
+            case 'register_info':
+                $file = 'register_event.log';
+                break;
+            case 'login':
+                $file = 'login.log';
+                break;
+            case 'update_event':
+                $file = 'update_event.log';
+                break;
+            case 'add_event':
+                $file = 'add_event.log';
+                break;
+            default:
+                $file = 'register1.log';
+        }
+
+
+        $log = new Log($file);
+
+        $message = "\n------------------\n";
+
+        if (is_array($data) && $data) {
+            foreach ($data as $key => $value) {
+                $message .= $key . " -- " . json_encode($value, JSON_UNESCAPED_UNICODE) . "\n";
+            }
+        } else if ($data) {
+            $message .= $data;
+        }
+
+        $log->write($message);
+
+    }
 }

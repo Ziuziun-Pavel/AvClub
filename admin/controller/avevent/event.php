@@ -18,9 +18,17 @@ class ControllerAveventEvent extends Controller {
 		$this->document->setTitle($this->language->get('heading_title'));
 
 		$this->load->model('avevent/event');
-
+        $this->load->model('master/master');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+            $logData = [
+                'datetime' => date('Y-m-d H:i:s'),
+                'from' => 'admin',
+                'action' => 'add',
+                'request_data' => $this->request->post
+            ];
+            $this->model_master_master->log($logData, 'add_event');
+
 			$this->model_avevent_event->addEvent($this->request->post);
 
 			$this->session->data['success'] = $this->language->get('text_success');
@@ -52,8 +60,18 @@ class ControllerAveventEvent extends Controller {
 		$this->document->setTitle($this->language->get('heading_title'));
 
 		$this->load->model('avevent/event');
+        $this->load->model('master/master');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+            $logData = [
+                'datetime' => date('Y-m-d H:i:s'),
+                'from' => 'admin',
+                'action' => 'edit',
+                'event_id' => $this->request->get['event_id'],
+                'request_data' => $this->request->post
+            ];
+            $this->model_master_master->log($logData, 'update_event');
+
 			$this->model_avevent_event->editEvent($this->request->get['event_id'], $this->request->post);
 
 			$this->session->data['success'] = $this->language->get('text_success');

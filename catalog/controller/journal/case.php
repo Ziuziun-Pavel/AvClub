@@ -4,6 +4,7 @@ class ControllerJournalCase extends Controller {
 		$this->load->language('journal/journal');
 
 		$this->load->model('journal/journal');
+        $this->load->model('company/company');
 
 		$this->load->model('tool/image');
 		$this->load->model('themeset/themeset');
@@ -92,9 +93,12 @@ class ControllerJournalCase extends Controller {
 			$time = strtotime($result['date_available']);
 
 			$case = $this->model_journal_journal->getCase($result['journal_id']);
+            $company_info = $this->model_company_company->getCompany($case['company_id']);
 
 			$data['journals'][] = array(
 				'journal_id' 	 	=> $result['journal_id'],
+                'company_id' => $company_info['company_id'],
+                'company_title' => $company_info['title'],
 				'type' 	 				=> $result['type'],
 				'case' 	 				=> $case,
 				'thumb'     	  => $image,

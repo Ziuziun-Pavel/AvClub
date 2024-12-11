@@ -19833,7 +19833,7 @@ body.avevent-event-info .header, body.event-item .header {
     display: none !important
 }
 
-.register-event .page__outer, .register-login .page__outer, .register-register .page__outer {
+.register-event .page__outer, .register-login .page__outer, .register-register .page__outer, .register-form .page__outer {
     max-width: 100% !important;
     padding: 0;
     margin: 0
@@ -19850,13 +19850,13 @@ body.avevent-event-info .header, body.event-item .header {
     background: hsla(0, 0%, 100%, .75)
 }
 
-.section_register {
+.section_register, .section_register-form {
     min-height: 100vh;
     position: relative;
     overflow: hidden
 }
 
-.section_register, .section_register .container {
+.section_register, .section_register-form, .section_register .container, .section_register-form .container {
     display: -ms-flexbox;
     display: flex
 }
@@ -19876,7 +19876,7 @@ body.avevent-event-info .header, body.event-item .header {
 }
 
 @media (min-width: 992px) {
-    .section_register {
+    .section_register, .section_register-form {
         padding-top: 61px
     }
 
@@ -19886,7 +19886,7 @@ body.avevent-event-info .header, body.event-item .header {
 }
 
 @media (min-width: 1270px) {
-    .section_register {
+    .section_register, .section_register-form {
         padding-top: 146px
     }
 }

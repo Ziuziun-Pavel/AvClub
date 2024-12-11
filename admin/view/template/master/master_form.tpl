@@ -143,6 +143,18 @@
 									</div>
 								</div>
 							<div class="form-group">
+								<label class="col-sm-2 control-label" for="duration">Продолжительность:</label>
+								<div class="col-sm-3">
+									<div class="input-group time">
+										<input type="text" name="duration" value="<?php echo $duration; ?>" placeholder="<?php echo $duration; ?>" data-time-format="HH:mm" id="duration" class="form-control" />
+										<span class="input-group-btn">
+											<button class="btn btn-default" type="button"><i class="fa fa-calendar"></i></button>
+										</span>
+									</div>
+								</div>
+
+							</div>
+							<div class="form-group">
 								<label class="col-sm-2 control-label"><?php echo $entry_tag; ?></label>
 								<div class="col-sm-10">
 									<div class="tag__cont">
@@ -175,7 +187,7 @@
 															<option value="0">-- По-умолчанию --</option>
 															<?php if(!empty($author['exp_list'])) { ?>
 																<?php foreach($author['exp_list'] as $exp_item) { ?>
-																	<option 
+																	<option
 																	value="<?php echo $exp_item['exp_id']; ?>"
 																	<?php if( (empty($author_exp) && $exp_item['main']) || $exp_item['exp_id'] == $author_exp ) {echo 'selected'; } ?>
 																	>
@@ -209,8 +221,8 @@
 																<option value="0">-- По-умолчанию --</option>
 																<?php if(!empty($expert['exp_list'])) { ?>
 																	<?php foreach($expert['exp_list'] as $exp_item) { ?>
-																		<option 
-																		value="<?php echo $exp_item['exp_id']; ?>" 
+																		<option
+																		value="<?php echo $exp_item['exp_id']; ?>"
 																		<?php echo $exp_item['exp_id'] == $expert['exp_id'] ? 'selected' : ''; ?>
 																		>
 																		<?php echo $exp_item['exp']; ?></option>
@@ -322,11 +334,11 @@
 
 	<script type="text/javascript">
 
-		var config_language_id = <?php echo $config_language_id; ?>;  
+		var config_language_id = <?php echo $config_language_id; ?>;
 
 		<?php if(stristr($_GET['route'], 'add')) { ?>
 
-			$('#input-title' + config_language_id).change(function(){ generateUrlOnAdd(); });  
+			$('#input-title' + config_language_id).change(function(){ generateUrlOnAdd(); });
 
 			function generateUrlOnAdd() {
 				data = {
@@ -352,7 +364,7 @@
 				};
 
 				getSeoUrl(data);
-			});   
+			});
 
 		<?php } ?>
 
@@ -372,7 +384,7 @@
 				error: function( jqXHR, textStatus, errorThrown ){
 					console.log('AJAX query Error: ' + textStatus );
 				},
-				complete: function() {  
+				complete: function() {
 				},
 			});
 		}
@@ -388,6 +400,17 @@
 				up: 'fa fa-sort-up',
 				down: 'fa fa-sort-down'
 			}
+		});
+
+			$('.time').datetimepicker({
+			pickDate: false,
+			pickTime: true,
+			icons: {
+			time: 'fa fa-clock-o',
+			date: 'fa fa-calendar',
+			up: 'fa fa-sort-up',
+			down: 'fa fa-sort-down'
+		}
 		});
 	</script>
 

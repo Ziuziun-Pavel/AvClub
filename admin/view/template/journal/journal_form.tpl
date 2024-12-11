@@ -120,7 +120,7 @@
 														<option value="0">-- По-умолчанию --</option>
 														<?php if(!empty($author['exp_list'])) { ?>
 															<?php foreach($author['exp_list'] as $exp_item) { ?>
-																<option 
+																<option
 																value="<?php echo $exp_item['exp_id']; ?>"
 																<?php if( (empty($author_exp) && $exp_item['main']) || $exp_item['exp_id'] == $author_exp ) {echo 'selected'; } ?>
 																>
@@ -154,8 +154,8 @@
 															<option value="0">-- По-умолчанию --</option>
 															<?php if(!empty($expert['exp_list'])) { ?>
 																<?php foreach($expert['exp_list'] as $exp_item) { ?>
-																	<option 
-																	value="<?php echo $exp_item['exp_id']; ?>" 
+																	<option
+																	value="<?php echo $exp_item['exp_id']; ?>"
 																	<?php echo $exp_item['exp_id'] == $expert['exp_id'] ? 'selected' : ''; ?>
 																	>
 																	<?php echo $exp_item['exp']; ?></option>
@@ -279,7 +279,7 @@
 						<!-- GALLERY -->
 						<div class="tab-pane" id="tab-gallery">
 
-							<?php 
+							<?php
 							$gallery_list = array(
 								1 => $gallery_1,
 								2 => $gallery_2,
@@ -331,11 +331,11 @@
 										<li id="column-<?php echo $column['column_id']; ?>" class="<?php echo $key == 0 ? 'active' : ''; ?>"><a href="#column-pane-<?php echo $column['column_id']; ?>" data-toggle="tab" aria-expanded="true"><?php echo $column['column_id']; ?></a></li>
 									<?php } ?>
 								<?php } ?>
-								<li id="column_btn"><button type="button" class="btn btn-block btn-primary" onclick="addColumn();">Добавить</button></li>   
+								<li id="column_btn"><button type="button" class="btn btn-block btn-primary" onclick="addColumn();">Добавить</button></li>
 							</ul>
 							<div id="columns" class="tab-content col-xs-12">
 								<?php $key_id = 101; ?>
-								<?php 
+								<?php
 								$sizes = array(
 									'xs'	=> '0-509 px',
 									'sm'	=> '509-767 px',
@@ -505,7 +505,7 @@
 
 								})
 
-							</script>						
+							</script>
 
 						</div>
 						<!-- # COLUMN -->
@@ -584,13 +584,47 @@
 						<div class="tab-pane" id="tab-case">
 
 							<div class="form-group">
+								<label class="col-sm-2 control-label">Компания</label>
+								<div class="col-sm-10">
+									<div class="company__cont">
+										<ul class="company__list sortable">
+											<?php if(!empty($case['company'])) { ?>
+											<li class="company__item company__item-<?php echo $case['company']['company_id']; ?>">
+												<?php echo $case['company']['title']; ?>
+												<button type="button" class="company__remove"><i class="fa fa-close"></i></button>
+												<input type="hidden" name="company_id" value="<?php echo $case['company']['company_id']; ?>">
+											</li>
+											<?php } ?>
+										</ul>
+										<input type="text" name="company_search" class="company__input " placeholder="<?php echo $entry_company_placeholder; ?>" autocomplete="off">
+									</div>
+									<?php if ($error_case_company) { ?>
+										<div class="text-danger"><?php echo $error_case_company; ?></div>
+									<?php } ?>
+								</div>
+								<?php require_once(DIR_TEMPLATE . 'company/company-autocomplete.tpl'); ?>
+							</div>
+
+
+							<!-- <div class="form-group">
+								<label class="col-sm-2 control-label" for="input-case-company-id">Компания</label>
+								<div class="col-sm-10">
+									<input type="text" name="case[company_id]" value="<?php echo $case['company_id']; ?>" placeholder="Компания" id="input-case-company-id" class="form-control" />
+									<?php if ($error_case) { ?>
+									<div class="text-danger"><?php echo $error_case; ?></div>
+									<?php } ?>
+								</div>
+							</div>-->
+
+							<div class="form-group">
 								<label class="col-sm-2 control-label" for="input-case-title"><?php echo $case_title; ?></label>
 								<div class="col-sm-10">
 									<input type="text" name="case[title]" value="<?php echo $case['title']; ?>" placeholder="<?php echo $case_title; ?>" id="input-case-title" class="form-control" />
-									<?php if ($error_case) { ?>
-										<div class="text-danger"><?php echo $error_case; ?></div>
+									<?php if ($error_case_title) { ?>
+										<div class="text-danger"><?php echo $error_case_title; ?></div>
 									<?php } ?>
 								</div>
+
 							</div>
 
 							<div class="form-group">
@@ -742,7 +776,7 @@
 
 	function addCopy() {
 		html  = '<tr id="copy-row' + copy_row + '">';
-		html += '  <td class="text-left"><input type="text" name="copy[' + copy_row + '][text]" value="" placeholder="<?php echo $entry_copy; ?>" class="form-control" /></td>';  
+		html += '  <td class="text-left"><input type="text" name="copy[' + copy_row + '][text]" value="" placeholder="<?php echo $entry_copy; ?>" class="form-control" /></td>';
 		html += '  <td class="text-right"><input type="text" name="copy[' + copy_row + '][sort_order]" value="'+copy_sort+'" placeholder="<?php echo $entry_sort_order; ?>" class="form-control" /></td>';
 		html += '  <td class="text-left"><button type="button" data-toggle="tooltip" title="<?php echo $button_remove; ?>" class="btn btn-danger copy__remove"><i class="fa fa-minus-circle"></i></button></td>';
 		html += '</tr>';
@@ -765,13 +799,13 @@
 
 	function addCaseAttr() {
 		html  = '<tr id="case-row' + case_row + '">';
-		html += '  <td class="text-left"><input type="text" name="case[attr][' + case_row + '][title]" value="" placeholder="<?php echo $entry_title; ?>" class="form-control" /></td>';  
-		html += '  <td class="text-left"><input type="text" name="case[attr][' + case_row + '][text]" value="" placeholder="<?php echo $case_text; ?>" class="form-control" /></td>';  
+		html += '  <td class="text-left"><input type="text" name="case[attr][' + case_row + '][title]" value="" placeholder="<?php echo $entry_title; ?>" class="form-control" /></td>';
+		html += '  <td class="text-left"><input type="text" name="case[attr][' + case_row + '][text]" value="" placeholder="<?php echo $case_text; ?>" class="form-control" /></td>';
 		html += '  <td class="text-center">';
 		html += '			<div class="btn-group btn-toggle" data-toggle="buttons">';
 		html += '				<label class="btn btn-primary"><input type="radio" name="case[attr][' + case_row + '][catalog]" value="1" > <?php echo $text_yes; ?> </label>';
 		html += '				<label class="btn btn-default active"><input type="radio" name="case[attr][' + case_row + '][catalog]" value="0" checked>  <?php echo $text_no; ?> </label>';
-		html += '			</div></td>'; 
+		html += '			</div></td>';
 		html += '  <td class="text-right"><input type="text" name="case[attr][' + case_row + '][sort_order]" value="'+case_sort+'" placeholder="<?php echo $entry_sort_order; ?>" class="form-control" /></td>';
 		html += '  <td class="text-left"><button type="button" data-toggle="tooltip" title="<?php echo $button_remove; ?>" class="btn btn-danger case__remove"><i class="fa fa-minus-circle"></i></button></td>';
 		html += '</tr>';
@@ -787,7 +821,7 @@
 			$(this).closest('tr').remove();
 		}
 	})
-</script> 
+</script>
 <script type="text/javascript"><!--
 	<?php if ($ckeditor) { ?>
 		<?php foreach ($languages as $language) { ?>
@@ -805,11 +839,11 @@
 
 <script type="text/javascript">
 
-	var config_language_id = <?php echo $config_language_id; ?>;  
+	var config_language_id = <?php echo $config_language_id; ?>;
 
 	<?php if(stristr($_GET['route'], 'add')) { ?>
 
-		$('#input-title' + config_language_id).change(function(){ generateUrlOnAdd(); });  
+		$('#input-title' + config_language_id).change(function(){ generateUrlOnAdd(); });
 
 		function generateUrlOnAdd() {
 			data = {
@@ -835,7 +869,7 @@
 			};
 
 			getSeoUrl(data);
-		});   
+		});
 
 	<?php } ?>
 
@@ -855,7 +889,7 @@
 			error: function( jqXHR, textStatus, errorThrown ){
 				console.log('AJAX query Error: ' + textStatus );
 			},
-			complete: function() {  
+			complete: function() {
 			},
 		});
 	}
@@ -933,7 +967,7 @@
 											$('#modal-image').modal('hide');
 										});
 									}
-								});						
+								});
 							}
 						});
 

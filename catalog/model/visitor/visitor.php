@@ -42,7 +42,9 @@ class ModelVisitorVisitor extends Model {
 				}	
 			}
 
-			$exp = !empty($exp_list['num']) ? $exp_list['num'] : $exp_list['main'];
+			//$exp = !empty($exp_list['num']) ? $exp_list['num'] : $exp_list['main'];
+			$exp = $exp_list['main'];
+
 			$visitor_info = array(
 				'visitor_id'		=> $query->row['visitor_id'],
 				'name'					=> $query->row['name'],

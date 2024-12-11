@@ -23,7 +23,6 @@
             <div class="regbrand__list--title">Выберите вашу компанию из&nbsp;списка</div>
             <div class="regbrand__list--list">
                 <?php foreach($companies as $company) { ?>
-                <?php if ($dadata): ?>
                 <div style="padding: .5rem;" class="btn company__block--item regbrand--choose"
                      data-name='<?php echo $company["title"]; ?>'
                      data-inn='<?php echo implode(", ", array_filter([$company["inn"], $company["unp"], $company["bik"]], "strlen")); ?>'
@@ -50,10 +49,6 @@
                         <div style="text-align: left"><span style="font-size: .9rem; font-weight: 500">Адрес: </span><?php echo ' г. ' . $company['city']; ?></div>
                     <?php endif; ?>
                 </div>
-                <?php else: ?>
-                <button type="button" class="btn btn-invert regbrand--choose"
-                        data-id="<?php echo $company['id']; ?>"><?php echo $company['title']; ?></button>
-                <?php endif; ?>
                 <?php } ?>
             </div>
             <div class="regbrand__list--line"></div>

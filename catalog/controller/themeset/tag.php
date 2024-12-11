@@ -1,7 +1,7 @@
 <?php
 class ControllerThemesetTag extends Controller {
 
-	private $b24_hook = 'https://avclub.bitrix24.ru/rest/669/2yt2mpuav23aqllx/';
+	private $b24_hook = 'https://avclub.bitrix24.ru/rest/677/hgv4fvnz8xdrqk2k/';
 	private $activity_key = 'UF_CRM_1641805321009';
 
 

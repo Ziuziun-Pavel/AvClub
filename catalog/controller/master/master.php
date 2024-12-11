@@ -26,7 +26,6 @@ class ControllerMasterMaster extends Controller {
 
 		$limit = $this->config->get('master_limit') ? $this->config->get('master_limit') : $this->config->get('journal_news_limit');
 
-
 		$data['breadcrumbs'] = array();
 
 		$data['breadcrumbs'][] = array(
@@ -90,6 +89,7 @@ class ControllerMasterMaster extends Controller {
                 'type'        	=> $result['type'],
 			);
 		}
+
 		$data['types'] = array(
 			''	=> 'Все события'
 		);
@@ -288,15 +288,13 @@ class ControllerMasterMaster extends Controller {
 
             $time_start = strtotime($master_info['time']);
 
-            $time_end = strtotime('+1 hour', $time_start);
+            list($hours, $minutes, $seconds) = explode(':', $master_info['duration']);
+            $duration_seconds = $hours * 3600 + $minutes * 60 + $seconds;
 
-            $data['time_start'] = date('H:s', $time_start);
-            $data['time_end'] = date('H:s', $time_end);
+            $time_end = $time_start + $duration_seconds;
 
-            if ($master_info['master_id'] == 172) {
-                $data['time_end'] = '15:30';
-            }
-
+            $data['time_start'] = date('H:i', $time_start);
+            $data['time_end'] = date('H:i', $time_end);
 
             $data['description'] = html_entity_decode($master_info['description'], ENT_QUOTES, 'UTF-8');
             $data['preview'] = html_entity_decode($master_info['preview'], ENT_QUOTES, 'UTF-8');
@@ -349,7 +347,6 @@ class ControllerMasterMaster extends Controller {
                     );
                 }
             }
-
 
             $data['page_type'] = 'webinar';
 

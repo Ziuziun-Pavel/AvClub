@@ -219,20 +219,20 @@ $(function () {
             if (type === 'events') {
                 $('.events__tabs').removeClass('d-none');
                 $('#navlist-bio').addClass('d-none');
-                $('.expertnav__tab-tab.reg').addClass('active');
-                $('.expertnav__tab-tab.fut_ev').removeClass('active');
+                $('.expertnav__tab-tab.reg').removeClass('active');
+                $('.expertnav__tab-tab.fut_ev').addClass('active');
                 $('.expertnav__tab-tab.publications').removeClass('active');
 
-                $('#content-webinars').removeClass('d-none');
-                $('#content-webinars .expreg').removeClass('d-none');
-                $('#content-webinars.expert__content').css("display", "block");
+                $('#content-events .expreg').removeClass('d-none');
+                $('#content-events.expert__content').css("display", "block");
+                $('#content-events').removeClass('d-none')
             } else {
-                $('#content-webinars .expreg').addClass('d-none');
-                $('#content-webinars.expert__content').css("display", "none");
-                $('#content-webinars').addClass('d-none');
+                $('#content-events .expreg').addClass('d-none');
+                $('#content-events.expert__content').css("display", "none");
+                $('#content-events').addClass('d-none');
             }
 
-            if(type === 'webinars' || type === 'events') {
+            if(type === 'webinars') {
                 $('#content-webinars .expreg').removeClass('d-none');
                 $('#content-webinars.expert__content').css("display", "block");
                 $('#content-webinars').removeClass('d-none')
@@ -240,10 +240,9 @@ $(function () {
                 $('#content-webinars .expreg').addClass('d-none');
                 $('#content-webinars.expert__content').css("display", "none");
                 $('#content-webinars').addClass('d-none');
-                $('#navlist-bio').addClass('d-none')
             }
 
-            if(type === 'future_events') {
+            if(type === 'future_events' || type === 'events') {
                 $('#content-events .expreg').removeClass('d-none');
                 $('#content-events.expert__content').css("display", "block");
                 $('#content-events').removeClass('d-none')
@@ -265,17 +264,173 @@ $(function () {
                 $('#catalog_list').addClass('d-none');
             }
 
-            if(type === 'voting') {
-                $('#content-votes .expreg').removeClass('d-none');
-                $('#content-votes.expert__content').css("display", "block");
-                $('#content-votes').removeClass('d-none')
+            // if(type === 'services') {
+            //     console.log('2')
+            //     $('#content-active-services .expreg').removeClass('d-none');
+            //     $('#content-active-services.expert__content').css("display", "block");
+            //     $('#content-active-services').removeClass('d-none')
+            //     $('#navlist-bio').addClass('d-none')
+            //     $('#content-bio').addClass('d-none')
+            //     $('.events__tabs').addClass('d-none');
+            //     $('.expertnav__change.services_active').addClass('active')
+            //     $('.expertnav__change.services_finished').removeClass('active')
+            //     $('#content-article').removeClass('active')
+            // } else {
+            //     $('#content-active-services .expreg').addClass('d-none');
+            //     $('#content-active-services.expert__content').css("display", "none");
+            //     $('#content-active-services').addClass('d-none');
+            // }
+            //
+            // if(type === 'services' || type === 'services_active') {
+            //     $('#content-active-services .expreg').removeClass('d-none');
+            //     $('#content-active-services.expert__content').css("display", "block");
+            //     $('#content-active-services').removeClass('d-none')
+            //     $('#navlist-bio').addClass('d-none')
+            //     $('#content-bio').addClass('d-none')
+            //     $('.events__tabs').addClass('d-none');
+            // } else {
+            //     $('#content-active-services .expreg').addClass('d-none');
+            //     $('#content-active-services.expert__content').css("display", "none");
+            //     $('#content-active-services').addClass('d-none');
+            // }
+            // if(type === 'services_finished') {
+            //     $('#content-finished-services .expreg').removeClass('d-none');
+            //     $('#content-finished-services.expert__content').css("display", "block");
+            //     $('#content-finished-services').removeClass('d-none')
+            //     $('#navlist-bio').addClass('d-none')
+            //     $('#content-bio').addClass('d-none')
+            //     $('.events__tabs').addClass('d-none');
+            // } else {
+            //     $('#content-finished-services .expreg').addClass('d-none');
+            //     $('#content-finished-services.expert__content').css("display", "none");
+            //     $('#content-finished-services').addClass('d-none');
+            // }
+
+            if(type === 'apps') {
+                $('#content-apps-forums .expreg').removeClass('d-none');
+                $('#content-apps-forums.expert__content').css("display", "block");
+                $('#content-apps-forums').removeClass('d-none')
+                $('#navlist-bio').addClass('d-none')
+                $('#content-bio').addClass('d-none')
+                $('.events__tabs').addClass('d-none');
+                $('.expertnav__change.apps_forums').addClass('active')
+                $('.expertnav__change.apps_webinars').removeClass('active')
+                $('.expertnav__change.apps_pubs').removeClass('active')
+                $('.expertnav__change.apps_finished').removeClass('active')
+                $('.expertnav__change.apps_ads').removeClass('active')
+                $('#content-article').removeClass('active')
+            } else {
+                $('#content-apps-forums .expreg').addClass('d-none');
+                $('#content-apps-forums.expert__content').css("display", "none");
+                $('#content-apps-forums').addClass('d-none');
+            }
+
+            if(type === 'apps' || type === 'apps_forums') {
+                $('#content-apps-forums .expreg').removeClass('d-none');
+                $('#content-apps-forums.expert__content').css("display", "block");
+                $('#content-apps-forums').removeClass('d-none')
                 $('#navlist-bio').addClass('d-none')
                 $('#content-bio').addClass('d-none')
                 $('.events__tabs').addClass('d-none');
             } else {
-                $('#content-votes .expreg').addClass('d-none');
-                $('#content-votes.expert__content').css("display", "none");
-                $('#content-votes').addClass('d-none');
+                $('#content-apps-forums .expreg').addClass('d-none');
+                $('#content-apps-forums.expert__content').css("display", "none");
+                $('#content-apps-forums').addClass('d-none');
+            }
+
+            if(type === 'apps_webinars') {
+                $('#content-apps-webinars .expreg').removeClass('d-none');
+                $('#content-apps-webinars.expert__content').css("display", "block");
+                $('#content-apps-webinars').removeClass('d-none')
+                $('#navlist-bio').addClass('d-none')
+                $('#content-bio').addClass('d-none')
+                $('.events__tabs').addClass('d-none');
+            } else {
+                $('#content-apps-webinars .expreg').addClass('d-none');
+                $('#content-apps-webinars.expert__content').css("display", "none");
+                $('#content-apps-webinars').addClass('d-none');
+            }
+
+            if(type === 'apps_pubs') {
+                $('#content-apps-pubs .expreg').removeClass('d-none');
+                $('#content-apps-pubs.expert__content').css("display", "block");
+                $('#content-apps-pubs').removeClass('d-none')
+                $('#navlist-bio').addClass('d-none')
+                $('#content-bio').addClass('d-none')
+                $('.events__tabs').addClass('d-none');
+            } else {
+                $('#content-apps-pubs .expreg').addClass('d-none');
+                $('#content-apps-pubs.expert__content').css("display", "none");
+                $('#content-apps-pubs').addClass('d-none');
+            }
+
+            if(type === 'apps_ads') {
+                $('#content-apps-ads .expreg').removeClass('d-none');
+                $('#content-apps-ads.expert__content').css("display", "block");
+                $('#content-apps-ads').removeClass('d-none')
+                $('#navlist-bio').addClass('d-none')
+                $('#content-bio').addClass('d-none')
+                $('.events__tabs').addClass('d-none');
+            } else {
+                $('#content-apps-ads .expreg').addClass('d-none');
+                $('#content-apps-ads.expert__content').css("display", "none");
+                $('#content-apps-ads').addClass('d-none');
+            }
+
+            if(type === 'apps_finished') {
+                $('#content-apps-finished .expreg').removeClass('d-none');
+                $('#content-apps-finished.expert__content').css("display", "block");
+                $('#content-apps-finished').removeClass('d-none')
+                $('#navlist-bio').addClass('d-none')
+                $('#content-bio').addClass('d-none')
+                $('.events__tabs').addClass('d-none');
+            } else {
+                $('#content-apps-finished .expreg').addClass('d-none');
+                $('#content-apps-finished.expert__content').css("display", "none");
+                $('#content-apps-finished').addClass('d-none');
+            }
+
+
+            if(type === 'voting') {
+                $('#content-active-votes .expreg').removeClass('d-none');
+                $('#content-active-votes.expert__content').css("display", "block");
+                $('#content-active-votes').removeClass('d-none')
+                $('#navlist-bio').addClass('d-none')
+                $('#content-bio').addClass('d-none')
+                $('.events__tabs').addClass('d-none');
+                $('.expertnav__change.voting_active').addClass('active')
+                $('.expertnav__change.voting_finished').removeClass('active')
+                $('#content-article').removeClass('active')
+            } else {
+                $('#content-active-votes .expreg').addClass('d-none');
+                $('#content-active-votes.expert__content').css("display", "none");
+                $('#content-active-votes').addClass('d-none');
+            }
+
+            if(type === 'voting' || type === 'voting_active') {
+                $('#content-active-votes .expreg').removeClass('d-none');
+                $('#content-active-votes.expert__content').css("display", "block");
+                $('#content-active-votes').removeClass('d-none')
+                $('#navlist-bio').addClass('d-none')
+                $('#content-bio').addClass('d-none')
+                $('.events__tabs').addClass('d-none');
+            } else {
+                $('#content-active-votes .expreg').addClass('d-none');
+                $('#content-active-votes.expert__content').css("display", "none");
+                $('#content-active-votes').addClass('d-none');
+            }
+
+            if(type === 'voting_finished') {
+                $('#content-finished-votes .expreg').removeClass('d-none');
+                $('#content-finished-votes.expert__content').css("display", "block");
+                $('#content-finished-votes').removeClass('d-none')
+                $('#navlist-bio').addClass('d-none')
+                $('#content-bio').addClass('d-none')
+                $('.events__tabs').addClass('d-none');
+            } else {
+                $('#content-finished-votes .expreg').addClass('d-none');
+                $('#content-finished-votes.expert__content').css("display", "none");
+                $('#content-finished-votes').addClass('d-none');
             }
 
             if(type === 'publications') {
@@ -290,10 +445,11 @@ $(function () {
             }
 
             if (type === 'bio') {
+                $('#content-bio').removeClass('d-none');
+                $('#content-bio.expert__content').removeClass('d-none')
                 $('#content-' + type).addClass('active');
                 $('#navlist-' + type).removeClass('d-none');
                 $('.events__tabs').addClass('d-none');
-                $('#content-bio').removeClass('d-none')
             }
 
         }

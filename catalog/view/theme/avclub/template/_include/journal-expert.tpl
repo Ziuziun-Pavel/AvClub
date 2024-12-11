@@ -9,7 +9,8 @@
 				</span>
 			</span>
 			<span class="opinion__name"><?php echo $expert['name']; ?></span>
-			<span class="opinion__exp"><?php echo $expert['exp']; ?></span>
+			<span class="opinion__exp"><?php echo htmlspecialchars_decode($expert['exp']); ?></span>
+			<span class="opinion__exp"><?php echo $expert['award']; ?></span>
 		</span>
 	</a>
 <?php }else{ ?>
@@ -22,6 +23,7 @@
 			</span>
 			<span class="opinion__name"><?php echo $expert['name']; ?></span>
 			<span class="opinion__exp"><?php echo $expert['exp']; ?></span>
+			<span class="opinion__exp" style="font-size: .9rem;"><?php echo $expert['award']; ?></span>
 		</span>
 	</span>
 	<?php } ?>

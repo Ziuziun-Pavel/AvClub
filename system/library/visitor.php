@@ -11,6 +11,8 @@ class Visitor {
 		$this->request = $registry->get('request');
 		$this->session = $registry->get('session');
 
+        //$this->logoutAllUsers();
+
 		if(
 			!empty($this->request->cookie['expert_id']) 
 			&& !empty($this->request->cookie['expert_data']) 
@@ -81,5 +83,20 @@ class Visitor {
 	private function hashId($id = 0) {
 		return sha1($this->hash_key . $id . $this->hash_key . sha1($this->hash_key . sha1($id)));
 	}
+
+    public function logoutAllUsers() {
+        // Обновляем статус всех активных пользователей в базе данных
+        $this->db->query("UPDATE " . DB_PREFIX . "visitor SET status = '0' WHERE status = '1'");
+
+        // Очистка всех сессий
+        if (isset($this->session)) {
+            $this->session->destroy();
+        }
+
+        // Очистка всех cookies
+        foreach ($_COOKIE as $key => $value) {
+            setcookie($key, '', time() - 3600 * 24 * 30, '/');
+        }
+    }
 
 }

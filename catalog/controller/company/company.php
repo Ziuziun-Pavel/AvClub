@@ -222,15 +222,18 @@ class ControllerCompanyCompany extends Controller {
 
 			$tags = $this->model_company_company->getTagsByCompany($result['company_id']);
 
-			$data['companies'][] = array(
-				'company_id' 	 	=> $result['company_id'],
-				'thumb'     	  => $image,
-				'title'       	=> $result['title'],
-				'preview'       => mb_strlen($result['description']) <= 80 ? $result['description'] : utf8_substr(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8')), 0, 80) . '...',
-				'branches'      => $result['branches'],
-				'tags'      		=> $tags,
-				'href'        	=> $this->url->link('company/info', 'company_id=' . $result['company_id'])
-			);
+            if ($result['image']) {
+                $data['companies'][] = array(
+                    'company_id' 	 	=> $result['company_id'],
+                    'thumb'     	  => $image,
+                    'title'       	=> $result['title'],
+                    'preview'       => mb_strlen($result['description']) <= 80 ? $result['description'] : utf8_substr(strip_tags(html_entity_decode($result['description'], ENT_QUOTES, 'UTF-8')), 0, 80) . '...',
+                    'branches'      => $result['branches'],
+                    'tags'      		=> $tags,
+                    'href'        	=> $this->url->link('company/info', 'company_id=' . $result['company_id'])
+                );
+            }
+
 		}
 
 		// BANNER

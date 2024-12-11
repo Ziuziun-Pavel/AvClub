@@ -21,6 +21,14 @@ class ControllerMasterMaster extends Controller {
 
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+            $logData = [
+                'datetime' => date('Y-m-d H:i:s'),
+                'from' => 'admin',
+                'action' => 'add',
+                'request_data' => $this->request->post
+            ];
+            $this->model_master_master->log($logData, 'add_event');
+
 			$this->model_master_master->addMaster($this->request->post);
 
 			$this->session->data['success'] = $this->language->get('text_success');
@@ -47,14 +55,22 @@ class ControllerMasterMaster extends Controller {
 	}
 
 	public function edit() {
+
 		$this->load->language('master/master');
 
 		$this->document->setTitle($this->language->get('heading_title'));
 
 		$this->load->model('master/master');
 
-
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+            $logData = [
+                'datetime' => date('Y-m-d H:i:s'),
+                'from' => 'admin',
+                'action' => 'edit',
+                'master_id' => $this->request->get['master_id'],
+                'request_data' => $this->request->post
+            ];
+            $this->model_master_master->log($logData, 'update_event');
 
             $this->model_master_master->editMaster($this->request->get['master_id'], $this->request->post);
 
@@ -88,6 +104,15 @@ class ControllerMasterMaster extends Controller {
 		$this->load->model('master/master');
 
 		if (isset($this->request->post['selected']) && $this->validateDelete()) {
+            $logData = [
+                'datetime' => date('Y-m-d H:i:s'),
+                'from' => 'admin',
+                'action' => 'delete',
+                'master_id' => $this->request->post['selected'],
+                'request_data' => $this->request->post['selected']
+            ];
+            $this->model_master_master->log($logData, 'update_event');
+
 			foreach ($this->request->post['selected'] as $master_id) {
 				$this->model_master_master->deleteMaster($master_id);
 			}
@@ -433,6 +458,7 @@ class ControllerMasterMaster extends Controller {
 			$this->document->addScript('view/javascript/summernote/opencart.js');
 			$this->document->addStyle('view/javascript/summernote/summernote.css');
 		}
+        $this->document->addScript('view/javascript/jquery-ui.sortable/jquery-ui.min.js');
 
 		$heading_title = $this->language->get('heading_title');
 		$data['heading_title'] = $heading_title;
@@ -443,7 +469,6 @@ class ControllerMasterMaster extends Controller {
 			'text_default',
 			'text_enabled',
 			'text_disabled',
-			
 			'entry_image',
 			'entry_type',
 			'entry_logo',
@@ -469,14 +494,13 @@ class ControllerMasterMaster extends Controller {
             'entry_tag',
             'entry_tag_placeholder',
 			'help_keyword',
-			
 			'button_save',
 			'button_cancel',
-
 			'tab_general',
 			'tab_data',
 			'tab_design',
 		);
+
 		foreach($lang_list as $key) {
 			$data[$key] = $this->language->get($key);
 		}
@@ -649,13 +673,16 @@ class ControllerMasterMaster extends Controller {
 			$exp_list = $this->model_visitor_visitor->getExpByVisitor($expert['author_id']);
 			$exp_default = !empty($exp_list) ? $exp_list[0]['exp_id'] : 0;
 
-			if(isset($expert['exp_id'])) {
-				$exp_id = $expert['exp_id'];
-			}else if(isset($expert['author_exp'])) {
-				$exp_id = $expert['author_exp'];
-			}else{
+            //Логика заключается в том что если поменяли должность пользователю в Б24,
+            // то она сразу поменяется на сайте в вебинаре.
+            // Если вернуть как было, то придется синхронизировать мероприятие
+//			if(!empty($expert['exp_id'])) {
+//				$exp_id = $expert['exp_id'];
+//			}else if(!empty($expert['author_exp'])) {
+//				$exp_id = $expert['author_exp'];
+//			}else{
 				$exp_id = $exp_default;
-			}
+			//}
 
 			if($author_info) {
 				$data['experts'][] = array(
@@ -696,6 +723,13 @@ class ControllerMasterMaster extends Controller {
 			$data['date_available'] = date('Y-m-d H:i:s');
 		}
 
+        if (isset($this->request->post['duration'])) {
+            $data['duration'] = $this->request->post['duration'];
+        } elseif (!empty($master_info)) {
+            $data['duration'] = ($master_info['duration'] != '0000-00-00') ? $master_info['duration'] : '';
+        } else {
+            $data['duration'] = date('H:i', strtotime('01:00'));
+        }
 
 		if (isset($this->request->post['master_layout'])) {
 			$data['master_layout'] = $this->request->post['master_layout'];

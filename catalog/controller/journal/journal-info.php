@@ -2,6 +2,7 @@
 $this->load->language('journal/journal');
 
 $this->load->model('journal/journal');
+$this->load->model('company/company');
 
 $this->load->model('themeset/themeset');
 $this->load->model('themeset/image');
@@ -115,13 +116,33 @@ if ($journal_info) {
         } else {
             $logo = '';
         }
+
+        if ($case['company_id']) {
+            $data['case'] = $case['company_id'];
+        } else {
+            $data['case'] = null;
+        }
         $case['logo'] = $logo;
     }
     $data['case'] = $case;
 
     $data['type'] = $journal_info['type'];
 
-    $data['video'] = $journal_info['video'];
+    if (strpos($journal_info['video'], 'youtube') !== false || strpos($journal_info['video'], 'youtu.be') !== false) {
+
+        $data['video'] = $journal_info['video'];
+    } else {
+        if (preg_match('/video-(\d+)_(\d+)/', $journal_info['video'], $matches)) {
+            $oid = '-' . $matches[1];
+            $id = $matches[2];
+
+            $newVideoUrl = "https://vk.com/video_ext.php?oid={$oid}&id={$id}&hd=2&autoplay=0";
+
+            $data['video'] = $newVideoUrl;
+        } else {
+            $data['video'] = $journal_info['video'];
+        }
+    }
 
     $data['copies'] = $this->model_journal_journal->getCopies($journal_id);
 
@@ -179,48 +200,60 @@ if ($journal_info) {
         }
     }
 
-    if($journal_info && $journal_info['master_id']) {
+    if ($journal_info && $journal_info['master_id']) {
 
         $this->load->model('master/master');
         $this->load->model('themeset/themeset');
 
         $master_info = $this->model_master_master->getMaster($journal_info['master_id']);
         $html = '';
-        if($master_info) {
-            $html .= '<div class="amaster__cont ">';
-            $html .= '	<div class="amaster__title title">АКТУАЛЬНОЕ ОНЛАЙН-СОБЫТИЕ</div>';
-            $html .= '	<div class="master__item">';
-            $html .= '		<div class="master__img">';
-            $html .= '			<div class="master__image">';
-            /*if(!empty($master_info['logo'])) {
-                $html .= '				<img src="'.$this->model_themeset_themeset->resize_crop($master_info['logo']).'" alt="" class="master__logo">';
-            }*/
-            $html .= '				<img src="'.$this->model_themeset_themeset->resize_crop($master_info['image']).'" alt="">';
-            $html .= '			</div>';
-            $html .= '			<a href="' . $master_info['link'] . '" class="btn btn-red master__reg" target="_blank"><span>Зарегистрироваться</span></a>';
-            $html .= '		</div>';
-            $html .= '		<div class="master__data">';
-            $html .= '			<div class="master__date date">'.$master_info['date'].' <span>'.$master_info['time'].'</span></div>';
-            $html .= '			<div class="master__name">'.$master_info['title'].'</div>';
-            $html .= '			<div class="master__preview">';
-            $html .= '				<p><strong>В программе:</strong></p>';
-            $html .=  				html_entity_decode($master_info['preview']);
-            $html .= '			</div>';
-            /*
-            $html .= '			<div class="master__more"><a href="' . $master_info['link'] . '" target="_blank"><svg class="ico ico-center"><use xlink:href="#dots" /></svg></a></div>';
-            */
-            $html .= '			<div class="master__author">';
-            $html .= '				<p><strong>'.$master_info['author'].'</strong></p>';
-            $html .= '				<p>'.$master_info['exp'].'</p>';
-            $html .= '			</div>';
-            $html .= '		</div>';
-            $html .= '	</div>';
-            $html .= '</div>';
-        }
+//        if($master_info) {
+//            $html .= '<div class="amaster__cont ">';
+//            $html .= '	<div class="amaster__title title">АКТУАЛЬНОЕ ОНЛАЙН-СОБЫТИЕ</div>';
+//            $html .= '	<div class="master__item">';
+//            $html .= '		<div class="master__img">';
+//            $html .= '			<div class="master__image">';
+//            /*if(!empty($master_info['logo'])) {
+//                $html .= '				<img src="'.$this->model_themeset_themeset->resize_crop($master_info['logo']).'" alt="" class="master__logo">';
+//            }*/
+//            $html .= '				<img src="'.$this->model_themeset_themeset->resize_crop($master_info['image']).'" alt="">';
+//            $html .= '			</div>';
+//            $html .= '			<a href="' . $master_info['link'] . '" class="btn btn-red master__reg" target="_blank"><span>Зарегистрироваться</span></a>';
+//            $html .= '		</div>';
+//            $html .= '		<div class="master__data">';
+//            $html .= '			<div class="master__date date">'.$master_info['date'].' <span>'.$master_info['time'].'</span></div>';
+//            $html .= '			<div class="master__name">'.$master_info['title'].'</div>';
+//            $html .= '			<div class="master__preview">';
+//            $html .= '				<p><strong>В программе:</strong></p>';
+//            $html .=  				html_entity_decode($master_info['preview']);
+//            $html .= '			</div>';
+//            /*
+//            $html .= '			<div class="master__more"><a href="' . $master_info['link'] . '" target="_blank"><svg class="ico ico-center"><use xlink:href="#dots" /></svg></a></div>';
+//            */
+//            $html .= '			<div class="master__author">';
+//            $html .= '				<p><strong>'.$master_info['author'].'</strong></p>';
+//            $html .= '				<p>'.$master_info['exp'].'</p>';
+//            $html .= '			</div>';
+//            $html .= '		</div>';
+//            $html .= '	</div>';
+//            $html .= '</div>';
+//        }
 
         $data['html'] = $html;
 
     }
+
+    $company_info = $this->model_company_company->getCompany($case['company_id']);
+
+    $image = $this->model_themeset_themeset->resize($company_info['image'], 168, 73);
+
+    $data['company'] = array(
+        'company_id' => $company_info['company_id'],
+        'image' => $image,
+        'title' => $company_info['title'],
+        'preview' => $company_info['description'],
+        'href' => $this->url->link('company/info', 'company_id=' . $company_info['company_id'])
+    );
 
     $data['column_left'] = $this->load->controller('common/column_left');
     $data['column_right'] = $this->load->controller('common/column_right');

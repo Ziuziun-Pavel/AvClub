@@ -87,9 +87,10 @@
 				];
 			}
 			$arSettings = static::getAppSettings();
+
 			if($arSettings !== false)
 			{
-				if(isset($arParams[ 'this_auth' ]) && $arParams[ 'this_auth' ] == 'Y')
+                if(isset($arParams[ 'this_auth' ]) && $arParams[ 'this_auth' ] == 'Y')
 				{
 					$url = 'https://oauth.bitrix.info/oauth/token/';
 				}
@@ -101,6 +102,7 @@
 						$arParams[ 'params' ][ 'auth' ] = $arSettings[ 'access_token' ];
 					}
 				}
+
 
 				$sPostFields = http_build_query($arParams[ 'params' ]);
 

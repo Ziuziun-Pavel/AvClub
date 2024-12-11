@@ -45,8 +45,6 @@ class ModelThemesetEvents extends Model
 
         $event_id = $this->db->getLastId();
 
-//        var_dump($event_id);
-
         foreach ($data['event_description'] as $language_id => $value) {
             $this->db->query("INSERT INTO " . DB_PREFIX . "avevent_description SET event_id = '" . (int)$event_id . "', language_id = '" . (int)$language_id . "', title = '" . $this->db->escape($value['title']) . "', description = '" . $this->db->escape($value['description']) . "', meta_title = '" . $this->db->escape($value['meta_title']) . "', meta_h1 = '" . $this->db->escape($value['meta_h1']) . "', meta_description = '" . $this->db->escape($value['meta_description']) . "', meta_keyword = '" . $this->db->escape($value['meta_keyword']) . "'");
         }
@@ -403,7 +401,7 @@ class ModelThemesetEvents extends Model
             FROM " . DB_PREFIX . "visitor avc_visitor
             LEFT JOIN " . DB_PREFIX . "visitor_exp avc_visitor_exp ON avc_visitor.visitor_id = avc_visitor_exp.visitor_id
             WHERE avc_visitor.b24id IN ('$expertsValues')
-            ORDER BY avc_visitor.visitor_id ASC";
+            ORDER BY avc_visitor_exp.main DESC, avc_visitor_exp.exp_id DESC";
 
         $query = $this->db->query($sql);
 
@@ -421,6 +419,7 @@ class ModelThemesetEvents extends Model
     {
         $this->db->query("INSERT INTO " . DB_PREFIX . "master SET 
 			date_available = '" . $this->db->escape($data['date_available']) . "', 
+			duration = '" . $this->db->escape($data['duration']) . "', 
 			type = '" . $this->db->escape($data['type']) . "', 
 			image = '" . $this->db->escape($data['image']) . "', 
 			logo = '" . $this->db->escape($data['logo']) . "', 
@@ -477,6 +476,7 @@ class ModelThemesetEvents extends Model
 
     public function editMaster($master_id, $data) {
         $this->db->query("UPDATE " . DB_PREFIX . "master SET date_available = '" . $this->db->escape($data['date_available']) . "', 
+		duration = '" . $this->db->escape($data['duration']) . "', 
 		type = '" . $this->db->escape($data['type']) . "', 
 		image = '" . $this->db->escape($data['image']) . "', 
 		logo = '" . $this->db->escape($data['logo']) . "', 
@@ -523,6 +523,8 @@ class ModelThemesetEvents extends Model
                 $this->db->query("INSERT INTO " . DB_PREFIX . "master_to_layout SET master_id = '" . (int)$master_id . "', store_id = '" . (int)$store_id . "', layout_id = '" . (int)$layout_id . "'");
             }
         }
+
+        $this->db->query("DELETE FROM " . DB_PREFIX . "url_alias WHERE query = 'master_id=" . (int)$master_id . "'");
 
         if ($data['keyword']) {
             $this->db->query("INSERT INTO " . DB_PREFIX . "url_alias SET query = 'master_id=" . (int)$master_id . "', keyword = '" . $this->db->escape($data['keyword']) . "'");

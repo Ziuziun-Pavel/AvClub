@@ -21,6 +21,9 @@ class ModelRegisterRegister extends Model
     private $url_check_registration = "http://clients.techin.by/avclub/site/api/v1/deal/check-registration";
     private $url_create_smart_proccess = "http://clients.techin.by/avclub/site/api/v1/smart-process/create";
     private $url_get_catalog_list = "http://clients.techin.by/avclub/site/api/v1/deal/get-catalog-list";
+
+    private $url_get_company_fields = "http://clients.techin.by/avclub/site/api/v1/company/{id}/get-fields-info";
+
     private $url_deal = "http://clients.techin.by/avclub/site/api/v1/deal/create";
 
     private $debug = 0;
@@ -211,6 +214,13 @@ class ModelRegisterRegister extends Model
         $mail->setHtml($this->load->view('register/mail_code', $data));
         // $mail->setText($text);
         $mail->send();
+
+        $log = array(
+            'step' => 'Отправка почты ',
+            'browser' => $_SERVER['HTTP_USER_AGENT'],
+            'email' => $email
+        );
+        $this->log($log, 'sms');
     }
 
     public function getCompanyNameByB24id($b24_company_id = 0)
@@ -260,33 +270,33 @@ class ModelRegisterRegister extends Model
             $sql .= " AND c.b24id = '" . (int)$data['filter_b24id'] . "'";
         }
 
-        if (!empty($data['filter_name'])) {
-            $sql .= " AND (";
-
-            $implode = array();
-
-            $words = explode(' ', trim(preg_replace('/\s+/', ' ', $data['filter_name'])));
-
-            foreach ($words as $word) {
-                $word = htmlspecialchars_decode($word);
-                $implode[] = "(c.title LIKE '%" . $this->db->escape($word) . "%' OR c.alternate LIKE '%" . $this->db->escape($word) . "%')";
-            }
-
-            if ($implode) {
-                $sql .= " " . implode(" AND ", $implode) . "";
-            }
-
-            $sql .= ")";
-        }
-
-        if (!empty($data['filter_address'])) {
-            $city = $this->db->escape($data['filter_address']);
-            $sql .= " AND ('" . $city . "' LIKE CONCAT('%', c.city, '%'))";
-        }
-
         if (!empty($data['filter_inn'])) {
             $sql .= " AND c.inn = '" . (int)$data['filter_inn'] . "'";
         } else {
+            if (!empty($data['filter_name'])) {
+                $sql .= " AND (";
+
+                $implode = array();
+
+                $words = explode(' ', trim(preg_replace('/\s+/', ' ', $data['filter_name'])));
+
+                foreach ($words as $word) {
+                    $word = htmlspecialchars_decode($word);
+                    $implode[] = "(c.title LIKE '%" . $this->db->escape($word) . "%' OR c.alternate LIKE '%" . $this->db->escape($word) . "%')";
+                }
+
+                if ($implode) {
+                    $sql .= " " . implode(" AND ", $implode) . "";
+                }
+
+                $sql .= ")";
+            }
+
+            if (!empty($data['filter_address'])) {
+                $city = $this->db->escape($data['filter_address']);
+                $sql .= " AND ('" . $city . "' LIKE CONCAT('%', c.city, '%'))";
+            }
+
             if (!empty($data['filter_site'])) {
                 $site = $this->db->escape($data['filter_site']);
 
@@ -756,11 +766,14 @@ class ModelRegisterRegister extends Model
          }*/
 
         $contact_info = array(
+            'user_id' => $data['user_id'],
             'name' => $data['name'],
             'last_name' => $data['lastname'],
             'post' => $data['post'],
             'email' => $data['email'],
             'phone' => $data['phone'],
+            'type' => $data['type'],
+            'sphere' => $data['sphere'],
             'userFieldsChanged' => $data["userFieldsChanged"] ?? false,
             'isCompanyChanged' => $data["isCompanyChanged"] ?? false,
             'IsCompanyEdit' => $data["IsCompanyEdit"] ?? false,
@@ -772,6 +785,8 @@ class ModelRegisterRegister extends Model
             'company_inn' => $data['company_inn'],
             'company_address' => $data['company_address'],
             'company_director' => $data['company_director'],
+            'influencePurchase' => $data['degree'],
+            'professional_activity' => $data['group'],
             'company_activity' => array($data['company_activity']),
             'b24_company_old_id' => $data['b24_company_old_id'],
         );
@@ -797,7 +812,8 @@ class ModelRegisterRegister extends Model
                     'company_inn' => $contact_info['company_inn'],
                     'company_address' => $contact_info['company_address'],
                     'company_director' => $contact_info['company_director'],
-                    'company_activity' => $contact_info['company_activity'],
+                    'company_type' => $contact_info['type'],
+                    'company_industry' => $contact_info['sphere'],
                 );
 
                 if (!empty($contact_info['b24_company_old_id'])) {
@@ -831,7 +847,6 @@ class ModelRegisterRegister extends Model
             } else {
                 /* CREATE NEW COMPANY */
                 $company_fields = array(
-                    'company_id' => $contact_info['company_name'],
                     'company_name' => htmlspecialchars_decode($contact_info['company_name']),
                     'company_city' => $contact_info['company_city'],
                     'company_phone' => $contact_info['company_phone'],
@@ -841,6 +856,8 @@ class ModelRegisterRegister extends Model
                     'company_address' => $contact_info['company_address'],
                     'company_director' => $contact_info['company_director'],
                     'company_activity' => $contact_info['company_activity'],
+                    'company_type' => $contact_info['type'],
+                    'company_industry' => $contact_info['sphere'],
                 );
 
                 if (!empty($contact_info['b24_company_old_id'])) {
@@ -895,10 +912,10 @@ class ModelRegisterRegister extends Model
             $new = true;
         }
 
-        if ($contact_info['userFieldsChanged'] || $contact_info['isCompanyChanged'] || $contact_info['IsCompanyEdit']) {
+        if ($contact_info['userFieldsChanged'] || $contact_info['isCompanyChanged'] || !$contact_info['user_id']) {
 //            if ($new && $contact_info['isExpert']) {
 
-            if ($data["isExpert"]) {
+            if (!$data["isExpert"]) {
                 $url = $this->url_contact_create;
             } else {
                 $url = str_replace('{id}', $data['old_user_id'], $this->url_contact_update);
@@ -927,7 +944,6 @@ class ModelRegisterRegister extends Model
             $json['COMPANY_ID'] = !empty($contact_info['company_id']) ? $contact_info['company_id'] : 0;
 
             $contact_id = !empty($json['id']) ? $json['id'] : 0;
-
             return $json;
         } else {
             return array(
@@ -938,7 +954,6 @@ class ModelRegisterRegister extends Model
                 "COMPANY_ID" => !empty($contact_info['company_id']) ? $contact_info['company_id'] : 0
             );
         }
-        die();
 
     }
 
@@ -1088,11 +1103,17 @@ class ModelRegisterRegister extends Model
             case 'sms':
                 $file = 'sms.log';
                 break;
+                case 'token':
+                $file = 'token.log';
+                break;
             case 'register_info':
                 $file = 'register_event.log';
                 break;
             case 'login':
                 $file = 'login.log';
+                break;
+            case 'update_event':
+                $file = 'update_event.log';
                 break;
 
             default:
@@ -1115,5 +1136,26 @@ class ModelRegisterRegister extends Model
         $log->write($message);
 
     }
+
+    public function getCompanyTypeAndSphere($company_id)
+    {
+        $company_info = array();
+        $url = $this->url_get_company_fields;
+
+        if ($company_id) {
+            $url = str_replace('{id}', $company_id, $this->url_get_company_fields);
+        }
+
+        $ch_deal = curl_init($url);
+        curl_setopt($ch_deal, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch_deal, CURLOPT_TIMEOUT, 60);
+        $body = curl_exec($ch_deal);
+        curl_close($ch_deal);
+        $json = json_decode($body, true);
+
+        $company_info = !empty($json['fields']) ? $json['fields'] : array();
+        return $company_info;
+    }
+
 
 }

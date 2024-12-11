@@ -7,6 +7,8 @@ class ModelVisitorExpert extends Model
     private $url_get_registrations = "http://clients.techin.by/avclub/site/api/v1/deal/get-user-event-list";
 
     private $url_get_quiz_list = "http://clients.techin.by/avclub/site/api/v1/deal/get-quiz-list";
+    private $url_get_service_list = "http://clients.techin.by/avclub/site/api/v1/deal/get-service-list";
+    private $url_get_app_list = "http://clients.techin.by/avclub/site/api/v1/deal/get-service-list";
 
     public function getExpert($expert_id, $exp_id = 0, $expert = true)
     {
@@ -23,13 +25,14 @@ class ModelVisitorExpert extends Model
 		v.b24id,  
 		v.company_id,
 		v.expert,
+		v.award,
 		v.field_useful,
 		v.field_regalia,
 		(SELECT COUNT(va.visitor_id) FROM " . DB_PREFIX . "visitor_alternate va WHERE va.visitor_id = " . (int)$expert_id . ") as alternate_count  
 		FROM " . DB_PREFIX . "visitor v 
 		WHERE 
 		v.visitor_id = '" . (int)$expert_id . "' 
-		AND v.status = '1'";
+		";
 
         if ($expert) {
             $sql .= " AND v.expert = '1' ";
@@ -76,6 +79,7 @@ class ModelVisitorExpert extends Model
                 'b24id' => $query->row['b24id'],
                 'company_id' => $query->row['company_id'],
                 'expert' => $query->row['expert'],
+                'award' => $query->row['award'],
                 'alternate_count' => $query->row['alternate_count'],
                 'field_useful' => $query->row['field_useful'],
                 'field_regalia' => $query->row['field_regalia'],
@@ -95,6 +99,7 @@ class ModelVisitorExpert extends Model
             'modified',
             'articles'
         );
+
         $sort_items = array(
             'lastname' => " LCASE(v.lastname) ",
             'modified' => " CASE WHEN article_date THEN article_date ELSE v.date_modified END ",
@@ -244,9 +249,9 @@ class ModelVisitorExpert extends Model
         }
 
 
-        $sql .= " WHERE 
-		v.expert = '1' 
-		AND v.status = '1'
+        $sql .= " WHERE
+        v.status = '1' 
+		AND v.expert = '1' 
         AND v.image IS NOT NULL AND v.image <> ''
 		";
 
@@ -338,7 +343,6 @@ class ModelVisitorExpert extends Model
 
         $sql .= " WHERE 
             v.expert = '1' 
-            AND v.status = '1'
             AND v.image IS NOT NULL AND v.image <> ''
             ";
 
@@ -830,6 +834,7 @@ class ModelVisitorExpert extends Model
             'contact_id' => $contact_id,
             'type' => $type
         );
+
         $ch = curl_init($this->url_get_registrations);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT, 60);
@@ -858,8 +863,572 @@ class ModelVisitorExpert extends Model
 
         $json = json_decode($body, true);
 
+//        $json = array(
+//            "message" => "OK",
+//            "code" => 200,
+//            "list" => array(
+//                array(
+//                    "name" => "Алая Зебра: Многофункциональный зал «Пирамида»",
+//                    "date_end" => "2024-12-02T03:00:00+03:00",
+//                    "link" => "https://voting.avclub.pro/alayazebra/?b24form_user=2.1515623-1732095398-dad5a9bc7ef1696c3c8b775e62a911be599cf48e6e5870181fb0c1fee36e4e45",
+//                    "answers" => "",
+//                    "landing_url" => "https://www.avclub.pro/cases/turnir-proav-mnogofunktsionalny-zal-piramida/",
+//                    "status" => "wait"
+//                ),
+//                array(
+//                    "name" => "Алая Зебра: ГУЗ «Тульский областной клинический онкоцентр»",
+//                    "date_end" => "2024-12-02T03:00:00+03:00",
+//                    "link" => "https://voting.avclub.pro/alayazebra/?b24form_user=2.1501837-1732036908-ab98bf8b7f2756f962011db836042bbf501673c5f61446a7dd550016da8642af",
+//                    "answers" => "",
+//                    "landing_url" => "https://www.avclub.pro/cases/turnir-proav-guz-tulsky-oblastnoy-klinichesky-onkotsentr/#",
+//                    "status" => "wait"
+//                ),
+//                array(
+//                    "name" => "Алая Зебра: ООО «ГЕРС Технолоджи»",
+//                    "date_end" => "2024-12-02T03:00:00+03:00",
+//                    "link" => "https://voting.avclub.pro/alayazebra/?b24form_user=2.1479269-1732031320-83622ef73ac166b8e00c22438ce6de40830b6c8f22e3b19aaeeea70a696e6e3d",
+//                    "answers" => "",
+//                    "landing_url" => "https://www.avclub.pro/cases/turnir-proav-ooo-gyers-tehnolodzhi/#",
+//                    "status" => "wait"
+//                ),
+//                array(
+//                    "name" => "Алая Зебра: Озвучивание технохаба Сбербанка",
+//                    "date_end" => "2024-12-02T03:00:00+03:00",
+//                    "link" => "https://voting.avclub.pro/alayazebra/?b24form_user=2.1464537-1731499245-451d70ba884f8450908902d5a20056bee3e5ae957c4c091d4943f99a19acb5f5",
+//                    "answers" => "",
+//                    "landing_url" => "https://www.avclub.pro/cases/turnir-proav-ozvuchivaniye-tehnohaba-sberbanka/",
+//                    "status" => "wait"
+//                ),
+//                array(
+//                    "name" => "Алая зебра: Офис компании ЛИИС",
+//                    "date_end" => "2024-12-02T03:00:00+03:00",
+//                    "link" => "https://voting.avclub.pro/alayazebra/?b24form_user=2.1427499-1731793397-cfc86233f647095e089e087fa520bc521b3348ad67ead00649dd8abef6ac3d26",
+//                    "answers" => "",
+//                    "landing_url" => "https://www.avclub.pro/cases/turnir-proav-ofis-kompanii-liis/#",
+//                    "status" => "wait"
+//                ),
+//                array(
+//                    "name" => "Алая зебра: Корпоративный музей АО «Океанрыбфлот»",
+//                    "date_end" => "2024-12-02T03:00:00+03:00",
+//                    "link" => "https://voting.avclub.pro/alayazebra/?b24form_user=2.1381999-1731777121-cddf926e9330e36a12cc82f293af6d0152dbcca882cf78089c8debcab1bde9c4",
+//                    "answers" => "",
+//                    "landing_url" => "https://www.avclub.pro/cases/osnashcheniye-muzeya-okeanrybflot/#",
+//                    "status" => "wait"
+//                ),
+//                array(
+//                    "name" => "The Best of AV FOCUS 2024: широкоформатный дисплей EliteBoard LC-92US1AX",
+//                    "date_end" => "2024-08-21T03:00:00+03:00",
+//                    "link" => "https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1344481-1724404620-ed5e0e52e8232e61e33d8f897e1798bbe279fbb65543f97e5a0b5854859ea497",
+//                    "answers" => "",
+//                    "landing_url" => "https://www.avclub.pro/news/best-of-avf-24-shirokoformatny-displey-eliteboard-lc-92us1ax/",
+//                    "status" => "fail"
+//                ),
+//                array(
+//                    "name" => "The Best of AV FOCUS 2024: LED-дисплей «все в одном» EliteBoard DC-120U1IO",
+//                    "date_end" => "2024-08-21T03:00:00+03:00",
+//                    "link" => "https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1299943-1724332054-18feb1d2107171358a052fc5ba6b5c99816dd0d274a6b4f57f8eccd3d1e2e250",
+//                    "answers" => "",
+//                    "landing_url" => "https://www.avclub.pro/news/best-of-avf-24-led-displey-vse-v-odnom-eliteboard-dc-120u1io/",
+//                    "status" => "fail"
+//                )
+//            ),
+//            "quiz" => [
+//                [
+//                    "id" => "35043",
+//                    "name" => "Алая Зебра",
+//                    "type" => "quiz",
+//                    "date_end" => "2024-12-02T03:00:00+03:00"
+//                ]
+//            ]
+//        );
+
         return $json;
     }
+
+    public function getServices($contact_id = 0, $type = 'future')
+    {
+        $fields = array(
+            'contact_id' => $contact_id,
+            'type' => $type
+        );
+
+        $ch = curl_init($this->url_get_service_list);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
+        $body = curl_exec($ch);
+        curl_close($ch);
+
+        $json = json_decode($body, true);
+
+        if ($type === 'future') {
+            $json = [
+                'list' => [
+                    0 => [
+                        'title' => 'service 1',
+                        'date' => '29.08.2024',
+                        'link' => 'https://timeweb.cloud/'
+                    ],
+                    1 => [
+                        'title' => 'service 2',
+                        'date' => '22.08.2024',
+                        'link' => 'https://timeweb.cloud/'
+                    ],
+                ],
+                'code' => 200,
+                'message' => 'OK'
+            ];
+        } else {
+            $json = [
+                'list' => [
+                    0 => [
+                        'title' => 'service 3',
+                        'date' => '1.05.2024',
+                        'link' => 'https://timeweb.cloud/'
+                    ],
+                    1 => [
+                        'title' => 'service 4',
+                        'date' => '26.06.2024',
+                        'link' => 'https://timeweb.cloud/'
+                    ],
+                ],
+                'code' => 200,
+                'message' => 'OK'
+            ];
+        }
+
+
+        return $json;
+    }
+
+    public function getApps($contact_id = 0, $type = 'forum', $last_id = 0)
+    {
+        $fields = array(
+            'contact_id' => $contact_id,
+            'type' => $type
+        );
+
+        $ch = curl_init($this->url_get_app_list);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
+        $body = curl_exec($ch);
+        curl_close($ch);
+
+        $json = json_decode($body, true);
+
+//        $json = [];
+//
+//        if ($type === 'forum') {
+//            $json = [
+//                'list' => [
+//                    0 => [
+//                        'title' => 'Онлайн событие: Форум1',
+//                        'date' => '2024-08-05T03:00:00+03:00',
+//                        'status' => 'wait',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                            ]
+//                    ],
+//                    1 => [
+//                        'title' => 'Онлайн событие: Форум2',
+//                        'date' => '2024-06-05T03:00:00+03:00',
+//                        'status' => 'filled',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ],
+//                    2 => [
+//                        'title' => 'Онлайн событие: Форум3',
+//                        'date' => '2024-01-01T03:00:00+03:00',
+//                        'status' => 'published',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ],
+//                    3 => [
+//                        'title' => 'Онлайн событие: Форум4',
+//                        'date' => '2025-10-10T03:00:00+03:00',
+//                        'status' => 'processing',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ],
+//                    4 => [
+//                        'title' => 'Онлайн событие: Форум5',
+//                        'date' => '2024-02-11T03:00:00+03:00',
+//                        'status' => 'video',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ]
+//                ],
+//                'code' => 200,
+//                'message' => 'OK'
+//            ];
+//        } elseif ($type === 'webinar') {
+//            $json = [
+//                'list' => [
+//                    0 => [
+//                        'title' => 'Онлайн событие: Вебинар1',
+//                        'date' => '2024-08-05T03:00:00+03:00',
+//                        'status' => 'wait',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ],
+//                    1 => [
+//                        'title' => 'Онлайн событие: Вебинар2',
+//                        'date' => '2024-06-05T03:00:00+03:00',
+//                        'status' => 'filled',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ],
+//                    2 => [
+//                        'title' => 'Онлайн событие: Вебинар3',
+//                        'date' => '2024-01-01T03:00:00+03:00',
+//                        'status' => 'published',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ],
+//                    3 => [
+//                        'title' => 'Онлайн событие: Вебинар4',
+//                        'date' => '2025-10-10T03:00:00+03:00',
+//                        'status' => 'processing',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ],
+//                    4 => [
+//                        'title' => 'Онлайн событие: Вебинар5',
+//                        'date' => '2024-02-11T03:00:00+03:00',
+//                        'status' => 'video',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ]
+//                ],
+//                'code' => 200,
+//                'message' => 'OK'
+//            ];
+//        } elseif ($type === 'pubs') {
+//            $json = [
+//                'list' => [
+//                    0 => [
+//                        'title' => 'Онлайн событие: Публикация1',
+//                        'date' => '2024-08-05T03:00:00+03:00',
+//                        'status' => 'wait',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ],
+//                    1 => [
+//                        'title' => 'Онлайн событие: Публикация2',
+//                        'date' => '2024-06-05T03:00:00+03:00',
+//                        'status' => 'filled',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ],
+//                    2 => [
+//                        'title' => 'Онлайн событие: Публикация3',
+//                        'date' => '2024-01-01T03:00:00+03:00',
+//                        'status' => 'published',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ],
+//                    3 => [
+//                        'title' => 'Онлайн событие: Публикация4',
+//                        'date' => '2025-10-10T03:00:00+03:00',
+//                        'status' => 'processing',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ],
+//                    4 => [
+//                        'title' => 'Онлайн событие: Публикация5',
+//                        'date' => '2024-02-11T03:00:00+03:00',
+//                        'status' => 'video',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ]
+//                ],
+//                'code' => 200,
+//                'message' => 'OK'
+//            ];
+//        } elseif ($type === 'ads') {
+//            $json = [
+//                'list' => [
+//                    0 => [
+//                        'title' => 'Онлайн событие: Реклама1',
+//                        'date' => '2024-08-05T03:00:00+03:00',
+//                        'status' => 'wait',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ],
+//                    1 => [
+//                        'title' => 'Онлайн событие: Реклама2',
+//                        'date' => '2024-06-05T03:00:00+03:00',
+//                        'status' => 'filled',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ],
+//                    2 => [
+//                        'title' => 'Онлайн событие: Реклама3',
+//                        'date' => '2024-01-01T03:00:00+03:00',
+//                        'status' => 'published',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ],
+//                    3 => [
+//                        'title' => 'Онлайн событие: Реклама4',
+//                        'date' => '2025-10-10T03:00:00+03:00',
+//                        'status' => 'processing',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ],
+//                    4 => [
+//                        'title' => 'Онлайн событие: Реклама5',
+//                        'date' => '2024-02-11T03:00:00+03:00',
+//                        'status' => 'video',
+//                        'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                        'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                        'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                        'act_url' => 'https://timeweb.cloud/',
+//                        'reports' => [
+//                            'chat' => 'https://timeweb.cloud/',
+//                            'visit' => 'https://timeweb.cloud/',
+//                            'event' => 'https://timeweb.cloud/',
+//                        ]
+//                    ]
+//                ],
+//                'code' => 200,
+//                'message' => 'OK'
+//            ];
+//        }
+
+        return $json;
+    }
+
+    public function getFinishedApps($contact_id = 0, $year = 2024, $last_id = 0)
+    {
+        $fields = array(
+            'contact_id' => $contact_id,
+            'type' => 'ended',
+            'year' => $year,
+            'last_id' => $last_id
+        );
+
+        $ch = curl_init($this->url_get_app_list);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
+        $body = curl_exec($ch);
+        curl_close($ch);
+
+        $json = json_decode($body, true);
+
+//        $json = [
+//            'list' => [
+//                0 => [
+//                    'title' => 'Онлайн событие: Завершенный1',
+//                    'date' => '2024-08-05T03:00:00+03:00',
+//                    'status' => 'wait',
+//                    'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                    'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                    'act_url' => 'https://timeweb.cloud/',
+//                    'reports' => [
+////                        'chat' => 'https://timeweb.cloud/',
+////                        'visit' => 'https://timeweb.cloud/',
+//                        'event' => 'https://timeweb.cloud/',
+//                    ]
+//                ],
+//                1 => [
+//                    'title' => 'Онлайн событие: Завершенный2',
+//                    'date' => '2024-06-05T03:00:00+03:00',
+//                    'status' => 'filled',
+//                    'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                    'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                    'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                    'act_url' => 'https://timeweb.cloud/',
+//                    'reports' => [
+//                        'chat' => 'https://timeweb.cloud/',
+//                        'visit' => 'https://timeweb.cloud/',
+////                        'event' => 'https://timeweb.cloud/',
+//                    ]
+//                ],
+//                2 => [
+//                    'title' => 'Онлайн событие: Завершенный3',
+//                    'date' => '2024-01-01T03:00:00+03:00',
+//                    'status' => 'published',
+//                    'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                    'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                    'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                    'act_url' => 'https://timeweb.cloud/',
+//                    'reports' => [
+////                        'chat' => 'https://timeweb.cloud/',
+////                        'visit' => 'https://timeweb.cloud/',
+//                        'event' => 'https://timeweb.cloud/',
+//                    ]
+//                ],
+//                3 => [
+//                    'title' => 'Онлайн событие: Завершенный4',
+//                    'date' => '2025-10-10T03:00:00+03:00',
+//                    'status' => 'processing',
+//                    'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                    'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                    'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                    'act_url' => 'https://timeweb.cloud/',
+//                    'reports' => [
+//                        'chat' => 'https://timeweb.cloud/',
+//                        'visit' => 'https://timeweb.cloud/',
+//                        'event' => 'https://timeweb.cloud/',
+//                    ]
+//                ],
+//                4 => [
+//                    'title' => 'Онлайн событие: Завершенный5',
+//                    'date' => '2024-02-11T03:00:00+03:00',
+//                    'status' => 'video',
+//                    'link_crm' => 'https://voting.avclub.pro/crm_form_z5s8h/?b24form_user=2.1255539-1723731070-db48e2fb7f164b2358f25ccab931c7e73ad296b367aba23b1fd3fc6630c61017',
+//                    'answers' => '{"\u041e\u0446\u0435\u043d\u0438\u0442\u0435 \u0432\u044b\u0431\u0440\u0430\u043d\u043d\u044b\u0439 \u043f\u0440\u043e\u0434\u0443\u043a\u0442":["3"]}',
+//                    'landing_url' => 'https://www.avclub.pro/news/best-of-avf-24-motorizirovannaya-mobilnaya-stoyka-onkron-ts1991e/',
+//                    'act_url' => 'https://timeweb.cloud/',
+//                    'reports' => [
+//                        'chat' => 'https://timeweb.cloud/',
+//                        'visit' => 'https://timeweb.cloud/',
+//                        'event' => 'https://timeweb.cloud/',
+//                    ]
+//                ]
+//            ],
+//            'code' => 200,
+//            'message' => 'OK'
+//        ];
+
+        return $json;
+    }
+
 
     public function isExpert($b24id = 0, $visitor_id = 0)
     {
@@ -867,20 +1436,28 @@ class ModelVisitorExpert extends Model
             $sql = "SELECT COUNT(*) AS total 
             FROM " . DB_PREFIX . "visitor 
             WHERE visitor_id = '" . (int)$visitor_id . "' 
-            AND status = '1'
-            AND expert = '1'";
+            AND status = 1
+            AND expert = 1";
         } else {
             $sql = "SELECT COUNT(*) AS total 
             FROM " . DB_PREFIX . "visitor 
             WHERE b24id = '" . (int)$b24id . "' 
-            AND status = '1'
-            AND expert = '1'";
+            AND status = 1
+            AND expert = 1";
         }
-
 
         $query = $this->db->query($sql);
 
         return ($query->row['total'] > 0);
+    }
+
+    public function isModified($contact_id = 0)
+    {
+        $this->load->model('register/register');
+
+        $result = $this->model_register_register->getContactInfo($contact_id);
+
+        return $result['UF_CRM_1706776822503'];
     }
 
     private function mb_ucfirst($string, $encoding = 'UTF-8')

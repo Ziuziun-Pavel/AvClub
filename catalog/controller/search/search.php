@@ -214,6 +214,10 @@ class ControllerSearchSearch extends Controller {
 
 					$journal_info = $this->model_journal_journal->getJournal($result['id']);
 
+//                    if ($result['id'] == 5966 || $result['id'] == 5968) {
+//                        var_dump($journal_info);
+//                    }
+
 					if(!$journal_info) {continue;}
 
 					$author_info = $this->model_visitor_visitor->getVisitor($journal_info['author_id'], $journal_info['author_exp']);
@@ -244,7 +248,6 @@ class ControllerSearchSearch extends Controller {
 
 					$data['results'][] = array(
 						'journal_id' 	 	=> $journal_info['journal_id'],
-						'type' 	 				=> $journal_info['type'],
 						'type' 	 				=> $journal_info['type'],
 						'type_text' 	 	=> ($journal_info['type'] === 'video' && $journal_info['master_old']) ? $type_list['video_master'] : $type_list[$journal_info['type']],
 						'author' 	 			=> !empty($author_info['name']) ? $author_info['name'] : '',
@@ -344,7 +347,7 @@ class ControllerSearchSearch extends Controller {
 				
 			}
 
-
+//die();
 			$url = '';
 
 			if (isset($this->request->get['search'])) {

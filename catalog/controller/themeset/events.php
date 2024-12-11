@@ -32,8 +32,31 @@ class ControllerThemesetEvents extends Controller
         header('Content-Type: application/json');
         $data = $_REQUEST;
 
+        $this->load->library('validator');
+        $validator = new Validator();
+
+        $validator->validateRequired($data, ['date', 'date_stop', 'address', 'type']);
+        $validator->validateDate($data, ['date', 'date_stop']);
+        $validator->validateNumeric($data, ['price', 'count']);
+        $validator->validateURL($data, ['image']);
+
+        if ($validator->hasErrors()) {
+            $json = ['status' => '400', 'errors' => $validator->getErrors()];
+            echo json_encode($json);
+            return;
+        }
+
         $this->load->model('themeset/events');
+        $this->load->model('register/register');
         $this->load->model('themeset/themeset');
+
+        $logData = [
+            'datetime' => date('Y-m-d H:i:s'),
+            'from' => 'b24',
+            'request_data' => $data,
+            'event_info' => null,
+            'result' => null
+        ];
 
         if (!empty($data)) {
             $event_info = array(
@@ -132,7 +155,7 @@ class ControllerThemesetEvents extends Controller
             }
 
             if (isset($this->request->post['date_stop'])) {
-                $data['date_stop'] = $this->request->post['date_stop'];
+                $event_info['date_stop'] = $this->request->post['date_stop'];
             } elseif (!empty($event_info)) {
                 $event_info['date_stop'] = ($event_info['date_stop'] != '0000-00-00') ? $event_info['date_stop'] : '';
             } else {
@@ -236,8 +259,10 @@ class ControllerThemesetEvents extends Controller
             $coordinatesArray = explode(" ", $coordinates);
             $reversedCoordinates = $coordinatesArray[1] . ',' . $coordinatesArray[0];
             $cord = str_replace(" ", ",", $reversedCoordinates);
-            
+
             $event_info['coord'] = $cord;
+
+            $logData['event_info'] = $event_info;
 
 
             if ($data['event_db_id']) {
@@ -249,6 +274,7 @@ class ControllerThemesetEvents extends Controller
 
             $link = 'https://www.avclub.pro/event/' . $event_info['keyword'];
             $json = ['url' => $link, 'id' => $event_id, 'b24_id' => (int)$data['event_id']];
+            $logData['json'] = $json;
 
             echo json_encode($json);
         } else {
@@ -256,9 +282,13 @@ class ControllerThemesetEvents extends Controller
                 'alert' => 'ошибка обновления мероприятия списка',
                 'date' => $data
             );
+            $logData['json'] = $message;
+
             $this->model_themeset_themeset->alert($message);
             echo '0';
         }
+        $this->model_register_register->log($logData, 'update_event');
+
     }
 
     public function updateMasterList()
@@ -266,21 +296,49 @@ class ControllerThemesetEvents extends Controller
         header('Content-Type: application/json');
         $data = $_REQUEST;
 
+        $this->load->library('validator');
+        $validator = new Validator();
+
+        $validator->validateRequired($data, ['title', 'date_available', 'preview', 'description']);
+        $validator->validateDateTime($data, ['date_available',]);
+        $validator->validateURL($data, ['image']);
+
+        if ($validator->hasErrors()) {
+            $json = ['status' => '400', 'errors' => $validator->getErrors()];
+            echo json_encode($json);
+            return;
+        }
+
+        $logData = [
+            'datetime' => date('Y-m-d H:i:s'),
+            'from' => 'b24',
+            'request_data' => $data,
+            'master_info' => null,
+            'result' => null
+        ];
+
         $this->load->model('master/master');
+        $this->load->model('register/register');
         $this->load->model('themeset/events');
         $this->load->model('themeset/themeset');
         $this->load->model('tool/image');
 
-
         if (!empty($data)) {
             if (!isset($this->request->post['tags'])) {
-                $company_ids = $this->model_themeset_events->getCompanyIDs($data["company"]);
+                $company_ids = $this->model_themeset_events->getCompanyIDs(array_unique($data["company"]));
+                $preview = ($data["preview"] !== 'false') ? $data["preview"] : '';
+
+                if (!$data["title"] || !$data["type"] || !$data['b24id']) {
+                    $json = ['status' => '400', 'message' => 'Ошибка валидации!'];
+
+                    echo json_encode($json);
+                }
 
                 $master_info = [
                     'master_description' => [
                         1 => [
                             'title' => $data["title"],
-                            'preview' => $data["preview"],
+                            'preview' => $preview,
                             'description' => $data["description"],
                             'meta_title' => '',
                             'meta_h1' => '',
@@ -288,11 +346,11 @@ class ControllerThemesetEvents extends Controller
                             'meta_keyword' => '',
                         ]
                     ],
-
                     'link' => 'https://www.avclub.pro/event-register/?webinar_id=' . $data['b24id'],
                     'type' => $data["type"],
                     'logo' => '',
                     'date_available' => $data["date_available"],
+                    'duration' => $data["duration"],
                     'author_search' => '',
                     'authors_search' => '',
                     'company' => $company_ids,
@@ -304,24 +362,30 @@ class ControllerThemesetEvents extends Controller
 
                 $image_events_dir = DIR_IMAGE . 'catalog/webinars/';
 
-                $image_path = $image_events_dir . basename($data['image']);
+                $image_path = $image_events_dir . 'webinar_' . $data['b24id'] . basename($data['image']);
 
                 copy($data['image'], $image_path);
                 $baseURL = "https://www.avclub.pro/image";
 
                 if (isset($data['image']) && is_file($image_path)) {
-                    $cleanedURL = str_replace($baseURL, '', $this->model_tool_image->resize('catalog/webinars/' . basename($data['image']), 100, 100));
-                    $master_info['image'] = $cleanedURL;
-                } elseif (!empty($master_info) && is_file($image_path)) {
-                    $cleanedURL = $this->model_tool_image->resize('catalog/webinars/' . basename($data['image']), 100, 100);
-                    $master_info['image'] = $cleanedURL;
+                    $master_info['image'] = 'catalog/webinars/' . 'webinar_' . $data['b24id'] . basename($data['image']);
                 } else {
-                    $master_info['image'] = $this->model_tool_image->resize('no_image.png', 100, 100);
+                    $master_info['image'] = $this->model_tool_image->resize('no_image.png', 180, 180);
                 }
+
+//                if (isset($data['image']) && is_file($image_path)) {
+//                    $cleanedURL = str_replace($baseURL, '', $this->model_tool_image->resize('catalog/webinars/' . basename($data['image']), 100, 100));
+//                    $master_info['image'] = $cleanedURL;
+//                } elseif (!empty($master_info) && is_file($image_path)) {
+//                    $cleanedURL = $this->model_tool_image->resizeNew('catalog/webinars/' . basename($data['image']), 180, 180);
+//                    $master_info['image'] = $cleanedURL;
+//                } else {
+//                    $master_info['image'] = $this->model_tool_image->resize('no_image.png', 180, 180);
+//                }
 
                 if ($data["type"] === "meetup") {
 
-                    if ($data["moderator"]) {
+                    if ($data["moderator"] && $data["moderator"] !== 'undefined') {
                         $moderatorInfo = $this->model_themeset_events->getExperts([0 => $data["moderator"]]);
 
                         if (!empty($moderatorInfo)) {
@@ -336,13 +400,13 @@ class ControllerThemesetEvents extends Controller
 
                     $experts = [];
 
+
                     if (!empty($expertsInfo)) {
-                        foreach ($expertsInfo as $expert) {
+                        foreach ($expertsInfo as $key => $expert) {
                             $experts[(string)$expert["visitor_id"]]["author_id"] = $expert["visitor_id"];
                             $experts[(string)$expert["visitor_id"]]["exp_id"] = $expert["exp_id"];
                         }
                         $master_info['experts'] = $experts;
-
                     }
                 }
 
@@ -353,11 +417,15 @@ class ControllerThemesetEvents extends Controller
                     $master_id = $this->model_themeset_events->addMaster($master_info);
                 }
 
+                $logData['master_info'] = $master_info;
+
                 if ($master_id) {
                     $json = ['status' => '200', 'message' => 'Список вебинаров успешно обновлен', 'id' => $master_id, 'b24_id' => $data['b24id'], 'url' => 'https://www.avclub.pro/obuchenie/' . $master_info['keyword'] . '/'];
                 } else {
                     $json = ['status' => '400', 'message' => 'Ошибка обнавления списка вебинаров',];
                 }
+
+                $logData['result'] = $json;
 
                 echo json_encode($json);
             } else {
@@ -376,20 +444,22 @@ class ControllerThemesetEvents extends Controller
                     $master_id = $data['master_db_id'];
                 }
 
+                $logData['master_info'] = $master_info;
+
 
                 if ($master_id) {
                     $json = ['status' => '200', 'message' => 'Список тегов успешно обновлен', 'id' => $master_id, 'b24_id' => $data['b24id'], 'url' => 'https://www.avclub.pro/obuchenie/' . $master_info['keyword'] . '/'];
                 } else {
                     $json = ['status' => '400', 'message' => 'Ошибка обнавления списка тегов',];
                 }
-
+                $logData['result'] = $json;
                 echo json_encode($json);
 
             }
 
 
         }
-
+        $this->model_register_register->log($logData, 'update_event');
 
     }
 

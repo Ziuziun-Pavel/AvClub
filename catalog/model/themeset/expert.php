@@ -1,7 +1,7 @@
 <?php
 class ModelThemesetExpert extends Model {
 
-	private $b24_list = 'https://avclub.bitrix24.ru/rest/669/2yt2mpuav23aqllx/';
+	private $b24_list = 'https://avclub.bitrix24.ru/rest/677/hgv4fvnz8xdrqk2k/';
 
 	// UF_CRM_1678367582 = 1 - архивный контакт
 
@@ -30,32 +30,42 @@ class ModelThemesetExpert extends Model {
 		$this->load->model('themeset/tag');
 
 		/* ОБЯЗАТЕЛЬНО ОСТАВИТЬ! */
-		$bitrixWebHook = $this->b24_list;
-		require_once(DIR_SYSTEM . 'library/crest/crest.php');
+		//$bitrixWebHook = $this->b24_list;
+        $client_id = $this->config->get('themeset_bitrix_company_client_id');
+        $client_secret = $this->config->get('themeset_bitrix_company_client_secret');
+
+        require_once(DIR_SYSTEM . 'library/crest/crest.php');
 
 		$expert_info = array();
 
+        $result = CRest::call(
+            'crm.contact.get',
+            [
+                "id" 	=> $contact_id,
+            ]
+        );
 
-		if(!empty($options['user_data'])) {
-			$result = $options['user_data'];
-			$info = $options['user_data'];
-		}else{
-
-			$result = $this->model_register_register->getContactInfo($contact_id);
-			$info = $result;
-
-			if(empty($info['ID'])) {
-				$result = CRest::call(
-					'crm.contact.get',
-					[
-						"id" 	=> $contact_id,
-					]
-				);
-
-				$info = $result['result'];
-			}
-
-		}
+        $info = $result['result'];
+//		if(!empty($options['user_data'])) {
+//			$result = $options['user_data'];
+//			$info = $options['user_data'];
+//		}else{
+//
+//			$result = $this->model_register_register->getContactInfo($contact_id);
+//			$info = $result;
+//
+//			if(empty($info['ID'])) {
+//				$result = CRest::call(
+//					'crm.contact.get',
+//					[
+//						"id" 	=> $contact_id,
+//					]
+//				);
+//
+//				$info = $result['result'];
+//			}
+//
+//		}
 
 		$message .= "------------------\nRESULT\n------------------\n";
 		if(!empty($info)) {
@@ -118,7 +128,7 @@ class ModelThemesetExpert extends Model {
 			$expert_info['field_expertise'] = !empty($info['UF_CRM_1686648613']) ? $info['UF_CRM_1686648613'] : '';
 			$expert_info['field_useful'] = !empty($info['UF_CRM_1686648651']) ? $info['UF_CRM_1686648651'] : '';
 			$expert_info['field_regalia'] = !empty($info['UF_CRM_1686648672']) ? $info['UF_CRM_1686648672'] : '';
-
+			$expert_info['award'] = !empty($info['UF_CRM_1724141437']) ? $info['UF_CRM_1724141437'] : '';
 
 			$expert_info['emails'] = array();
 			if(!empty($info['EMAIL'])) {
@@ -140,10 +150,11 @@ class ModelThemesetExpert extends Model {
 			}
 
 			$photo = '';
+
 			if(!empty($info['PHOTO']['downloadUrl'])) {
-//                var_dump($contact_id);
 				$photo = $this->saveExpertPhoto($info['PHOTO']['downloadUrl'], $contact_id);
 			}
+
 			$expert_info['photo'] = $photo;
 
 			/* tags */
@@ -337,6 +348,7 @@ class ModelThemesetExpert extends Model {
 			'field_expertise'		=> '',
 			'field_useful'			=> '',
 			'field_regalia'			=> '',
+			'award'			=> ''
 		);
 		foreach($key_list as $key=>$default) {
 			if(!isset($data[$key])) {$data[$key] = $default;}
@@ -391,6 +403,7 @@ class ModelThemesetExpert extends Model {
 				field_expertise = '" . $this->db->escape($data['field_expertise']) . "', 
 				field_useful = '" . $this->db->escape($data['field_useful']) . "', 
 				field_regalia = '" . $this->db->escape($data['field_regalia']) . "', 
+				award = '" . $this->db->escape($data['award']) . "', 
 				company_id = '" . (int)$company_id . "', 
 				salt = '" . $this->db->escape($salt = token(9)) . "', 
 				password = '" . $this->db->escape(sha1($salt . sha1($salt . sha1(token(9))))) . "', 
@@ -408,6 +421,7 @@ class ModelThemesetExpert extends Model {
 				firstname = '" . $this->db->escape($data['firstname']) . "', 
 				lastname = '" . $this->db->escape($data['lastname']) . "', 
 				image = '" . $this->db->escape($data['photo']) . "', 
+				award = '" . $this->db->escape($data['award']) . "', 
 				field_expertise = '" . $this->db->escape($data['field_expertise']) . "', 
 				field_useful = '" . $this->db->escape($data['field_useful']) . "', 
 				field_regalia = '" . $this->db->escape($data['field_regalia']) . "', 
@@ -495,77 +509,122 @@ class ModelThemesetExpert extends Model {
 
 	}
 
+    public function saveExpertPhoto($link = '', $expert_id = 0, $dir_path = 'catalog/experts/') {
+        $b24_url = $this->config->get('themeset_bitrix_url');
+        $url = 'https://' . $b24_url . $link;
 
-	public function saveExpertPhoto($link = '', $expert_id = 0, $dir_path = 'catalog/experts/') {
-		$refresh_token = $this->config->get('themeset_bitrix_company_refresh_token');
-		$client_id = $this->config->get('themeset_bitrix_company_client_id');
-		$client_secret = $this->config->get('themeset_bitrix_company_client_secret');
-		$b24_url = $this->config->get('themeset_bitrix_url');
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_POST, 0);
+        curl_setopt($ch,CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $image = curl_exec($ch);
+        curl_close($ch);
 
+        $image_type = exif_imagetype($url);
+        $extension = image_type_to_extension($image_type);
 
+        $image_path = $dir_path . $expert_id . $extension;
 
-        if(!$refresh_token || !$client_id || !$client_secret || !$b24_url) {return false;}
+        $savefile = fopen(DIR_IMAGE . $image_path, 'w');
+        fwrite($savefile, $image);
+        fclose($savefile);
 
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_POST, false);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_URL,'https://oauth.bitrix.info/oauth/token/?grant_type=refresh_token&client_id='.$client_id.'&client_secret='.$client_secret.'&refresh_token=' . $refresh_token);
-		$result = json_decode(curl_exec($ch), true);
+        /* REMOVE OLD IMAGE */
+        $dir = DIR_IMAGE . 'cache/' . $dir_path;
+        $files = array();
+        $path = array($dir . $expert_id . '-*');
+        while (count($path) != 0) {
+            $next = array_shift($path);
 
-		curl_close($ch);
+            foreach (glob($next) as $file) {
+                if (is_dir($file)) {
+                    $path[] = $file . '/*';
+                }
+                $files[] = $file;
+            }
+        }
+        rsort($files);
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
+        /* # REMOVE OLD IMAGE */
 
-		if(empty($result['access_token']) || empty($result['refresh_token'])) {return false;}
+        return $image_path;
 
-		$access_token = $result['access_token'];
-		$refresh_token = $result['refresh_token'];
-		
-		$this->load->model('themeset/themeset');
-		$this->model_themeset_themeset->editSetting('themeset', array('themeset_bitrix_company_refresh_token'=>$refresh_token));
+    }
 
-		$url = 'https://' . $b24_url . $link . '&auth=' . $access_token;
-
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_POST, 0);
-		curl_setopt($ch,CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		$image = curl_exec($ch);
-		curl_close($ch);
-
-		$image_type = exif_imagetype($url);
-		$extension = image_type_to_extension($image_type);
-
-		$image_path = $dir_path . $expert_id . $extension;
-
-		$savefile = fopen(DIR_IMAGE . $image_path, 'w');
-		fwrite($savefile, $image);
-		fclose($savefile);
-
-		/* REMOVE OLD IMAGE */
-		$dir = DIR_IMAGE . 'cache/' . $dir_path;
-		$files = array();
-		$path = array($dir . $expert_id . '-*');
-		while (count($path) != 0) {
-			$next = array_shift($path);
-
-			foreach (glob($next) as $file) {
-				if (is_dir($file)) {
-					$path[] = $file . '/*';
-				}
-				$files[] = $file;
-			}
-		}
-		rsort($files);
-		foreach ($files as $file) {
-			if (is_file($file)) {
-				unlink($file);
-			}
-		}
-		/* # REMOVE OLD IMAGE */
-
-		return $image_path;
-
-	}
+//	public function saveExpertPhoto($link = '', $expert_id = 0, $dir_path = 'catalog/experts/') {
+//		$refresh_token = $this->config->get('themeset_bitrix_company_refresh_token');
+//		$client_id = $this->config->get('themeset_bitrix_company_client_id');
+//		$client_secret = $this->config->get('themeset_bitrix_company_client_secret');
+//		$b24_url = $this->config->get('themeset_bitrix_url');
+//
+//
+//
+//        if(!$refresh_token || !$client_id || !$client_secret || !$b24_url) {return false;}
+//
+//		$ch = curl_init();
+//		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+//		curl_setopt($ch, CURLOPT_POST, false);
+//		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+//		curl_setopt($ch, CURLOPT_URL,'https://oauth.bitrix.info/oauth/token/?grant_type=refresh_token&client_id='.$client_id.'&client_secret='.$client_secret.'&refresh_token=' . $refresh_token);
+//		$result = json_decode(curl_exec($ch), true);
+//
+//		curl_close($ch);
+//
+//		if(empty($result['access_token']) || empty($result['refresh_token'])) {return false;}
+//
+//		$access_token = $result['access_token'];
+//		$refresh_token = $result['refresh_token'];
+//
+//		$this->load->model('themeset/themeset');
+//		$this->model_themeset_themeset->editSetting('themeset', array('themeset_bitrix_company_refresh_token'=>$refresh_token));
+//
+//		$url = 'https://' . $b24_url . $link . '&auth=' . $access_token;
+//
+//		$ch = curl_init();
+//		curl_setopt($ch, CURLOPT_POST, 0);
+//		curl_setopt($ch,CURLOPT_URL, $url);
+//		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+//		$image = curl_exec($ch);
+//		curl_close($ch);
+//
+//		$image_type = exif_imagetype($url);
+//		$extension = image_type_to_extension($image_type);
+//
+//		$image_path = $dir_path . $expert_id . $extension;
+//
+//		$savefile = fopen(DIR_IMAGE . $image_path, 'w');
+//		fwrite($savefile, $image);
+//		fclose($savefile);
+//
+//		/* REMOVE OLD IMAGE */
+//		$dir = DIR_IMAGE . 'cache/' . $dir_path;
+//		$files = array();
+//		$path = array($dir . $expert_id . '-*');
+//		while (count($path) != 0) {
+//			$next = array_shift($path);
+//
+//			foreach (glob($next) as $file) {
+//				if (is_dir($file)) {
+//					$path[] = $file . '/*';
+//				}
+//				$files[] = $file;
+//			}
+//		}
+//		rsort($files);
+//		foreach ($files as $file) {
+//			if (is_file($file)) {
+//				unlink($file);
+//			}
+//		}
+//		/* # REMOVE OLD IMAGE */
+//
+//		return $image_path;
+//
+//	}
 
 	/*
 	Обновляем связь id Б24 с контактами на сайте, если контакт не архивный

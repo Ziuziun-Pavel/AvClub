@@ -6,6 +6,10 @@ class ControllerExtensionModuleJournalOpinion extends Controller {
 		$this->load->model('themeset/themeset');
 		$this->load->model('visitor/visitor');
 
+		if (isset($_GET['deb'])) {
+			//var_dump($this);
+		}
+
         if ($this->visitor->getId()) {
             $master_info = $this->config->get('av_master');
             $data['master_info'] = array(

@@ -28,10 +28,12 @@ class ControllerRegisterEdit extends Controller {
 
 		$expert_info = $this->model_visitor_expert->getExpert($expert_id, 0, false);
         $is_expert = $this->model_visitor_expert->isExpert(0, $expert_id);
+        $is_modified = $this->model_visitor_expert->isModified($expert_info['b24id']) === "1";
 
 		if($expert_info) {
 			$data['alternate_count'] = $expert_info['alternate_count'];
             $data['is_expert'] = $is_expert;
+            $data['is_modified'] = $is_modified;
 
 			// $this->model_themeset_expert->getContactInfo($b24id);
 			$contact_info = $this->model_register_register->getContactInfo($b24id);
@@ -204,6 +206,7 @@ class ControllerRegisterEdit extends Controller {
 		$this->load->model('register/register');
 		$this->load->model('themeset/expert');
 		$this->load->model('themeset/image');
+		$this->load->model('visitor/expert');
 
 		$return = array();
 		$data = array();
@@ -212,6 +215,7 @@ class ControllerRegisterEdit extends Controller {
 		$expert_id = $this->visitor->getId();
 
 		$b24id = $this->model_register_register->getB24Id($expert_id);//id первого пользователя
+        $is_expert = $this->model_visitor_expert->isExpert(0, $expert_id);
 
         if(!$b24id) {
 			$error = true;
@@ -225,9 +229,10 @@ class ControllerRegisterEdit extends Controller {
 			$user_data = array(
 				'user_id'						=> $b24id,
 				'old_user_id'					=> $b24id,
+				'isExpert'					=> $is_expert,
                 'IsCompanyEdit'					=> true,
-                'IsCompanyChanged'				=> isset($post['isCompanyChanged']) && $post['isCompanyChanged'] === 'true' ? 1 : 0,
-                'IsContactEdit'					=> isset($post['isProfileEdit']) && $post['isProfileEdit'] === 'true' ? 1 : 0,
+                'IsCompanyChanged'				=> isset($post['isCompanyChanged']) && $post['isCompanyChanged'] === 'true' ? true : false,
+                'userFieldsChanged'					=> isset($post['isProfileEdit']) && $post['isProfileEdit'] === 'true' ? true : false,
                 'name'							=> isset($post['name']) ? $post['name'] : '',
 				'lastname'						=> isset($post['lastname']) ? $post['lastname'] : '',
 				'post'							=> isset($post['post']) ? $post['post'] : '',
@@ -260,8 +265,8 @@ class ControllerRegisterEdit extends Controller {
 				$user_data['photo'] = '';
 			}
 
-			
 			// $return_contact = $this->model_register_register->updateContact($user_data);
+
 			$return_contact = $this->model_register_register->createContact($user_data);
 
 			if(!empty($return_contact['code']) && $return_contact['code'] == 200) {

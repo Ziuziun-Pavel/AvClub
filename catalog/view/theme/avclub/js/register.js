@@ -112,6 +112,86 @@ $(function () {
         return false;
     });
 
+    $(document).on('submit', '#registration-phone-number', function (e) {
+        e.preventDefault();
+        var
+            form = $(this),
+            data = $(this).serialize(),
+            telephone = form.find('input[name="telephone"]'),
+            mess = form.find('.reg__error'),
+            error = false;
+
+        var code = $('.iti__selected-dial-code').text();
+
+        form.find('.invalid').removeClass('invalid');
+        var isPhoneValid = $('#telephone').intlTelInput('isValidNumber');
+
+        if (isPhoneValid === false) {
+            addInvalid(telephone.closest('.regphone__inp'));
+            error = true;
+            mess.show()
+            mess.text("Введите правильный номер телефона")
+            $.ajax({
+                type: "POST",
+                url: "index.php?route=register/login/logPhone",
+                dataType: "json",
+                data: {
+                    'telephone': code + $('input[name="telephone"]').val()
+                },
+                beforeSend: function (json) {
+                },
+                complete: function (json) {
+                },
+                success: function (json) {
+                },
+                error: function (json) {
+
+                }
+            });
+        }
+
+        if (!error) {
+            $.ajax({
+                type: "POST",
+                url: "index.php?route=register/form/authorize",
+                dataType: "json",
+                data: {
+                    'telephone': code + $('input[name="telephone"]').val(),
+                    'r': $('input[name="r"]').val(),
+                    'sid': $('input[name="sid"]').val()
+                },
+                beforeSend: function (json) {
+                    $('.reg__load').fadeIn();
+                },
+                complete: function (json) {
+                    $('.reg__load').fadeOut();
+                },
+                success: function (json) {
+                    console.log(json)
+                    if (json['error']) {
+                        mess.text(json['error']);
+                        if (mess.is(':hidden')) {
+                            mess.stop(true, true).slideDown();
+                        }
+                        return;
+
+                    } else if (mess.is(':visible')) {
+                        mess.stop(true, true).slideUp();
+                    }
+
+                    if (json['template']) {
+                        $('.regdata').html(json['template']);
+                    }
+                },
+                error: function (json) {
+                    console.log('authorize error', json);
+                }
+            });
+        }
+
+        return false;
+    });
+
     $(document).on('submit', '#registration-code', function (e) {
         e.preventDefault();
         var
@@ -227,12 +307,6 @@ $(function () {
 
     $(document).on('click', '#button-save', function (e) {
         e.preventDefault();
-        console.log('1')
-        if (userFieldsChanged) {
-            console.log('Данные пользователя изменились!');
-        } else {
-            console.log('Данные пользователя НЕ изменились');
-        }
 
         initialFormState = $('#register-newuser').serialize();
         var
@@ -317,9 +391,7 @@ $(function () {
             }
             var company_activity = form.find('input[name="company_activity"]').closest('.regform__inp');
 
-            console.log(!form.find('.regform__select--text').hasClass('noedit'))
-            console.log($('.regform__select--text span').html().trim() === '')
-            if (!form.find('.regform__select--text').hasClass('noedit') && $('.regform__select--text span').html().trim() === '') {
+            if (!form.find('.regbrand__fields').hasClass('noedit') && $('.regform__select--text span').text().trim() === '') {
                 addInvalid(company_activity);
                 error = true;
                 console.log('error5');
@@ -496,5 +568,198 @@ $(function () {
         });
     })
 
+    $(document).on('click', '#register-user', function (e) {
+        e.preventDefault();
+        var
+            btn = $(this),
+            promo_mess = btn.closest('.regpromo__inp').siblings('.regform__inp-error'),
+            code_mess = btn.closest('.regphone__input').siblings('.regform__inp-error'),
+            data = '',
+            sid = $('#register-newuser input[name="sid"]').val();
+
+        var name = $('input[name="name"]').val();
+        var lastname = $('input[name="lastname"]').val();
+        var email = $('input[name="email"]').val();
+        var post = $('input[name="post"]').val();
+        var degree = $("input[name='degree']:checked").val();
+        var group = $("input[name='group']:checked").val();
+
+        var companyName = $('input[name="company"]').val();
+        var city = $('input[name="city"]').val();
+        var companyPhone = $('input[name="company_phone"]').val();
+        var companySite = $('input[name="company_site"]').val();
+        var companyActivity = $('input[name="company_activity"]:checked').val();
+        var companyB24Id = $('input[name="b24_company_id"]').val();
+        var type = $("input[name='type']:checked").val();
+        var sphere = $("input[name='sphere']:checked").val();
+
+        var inputCode = $('input[name="code"]').val();
+        var promo = $('input[name="promo"]').val();
+
+        if (!name) {
+            $("input[name='name']").closest('.regform__inp').addClass('invalid');
+            $("input[name='name']").closest('.regform__outer').find('.regform__inp-error').text('Введите имя').css('color', 'red');
+        } else {
+            $("input[name='name']").closest('.regform__inp').removeClass('invalid');
+            $("input[name='name']").closest('.regform__outer').find('.regform__inp-error').text('');
+        }
+
+        if (!lastname) {
+            $("input[name='lastname']").closest('.regform__inp').addClass('invalid');
+            $("input[name='lastname']").closest('.regform__outer').find('.regform__inp-error').text('Введите фамилию').css('color', 'red');
+        } else {
+            $("input[name='lastname']").closest('.regform__inp').removeClass('invalid');
+            $("input[name='lastname']").closest('.regform__outer').find('.regform__inp-error').text('');
+        }
+
+        if (!email) {
+            $("input[name='email']").closest('.regform__inp').addClass('invalid');
+            $("input[name='email']").closest('.regform__outer').find('.regform__inp-error').text('Введите email').css('color', 'red');
+        } else {
+            $("input[name='email']").closest('.regform__inp').removeClass('invalid');
+            $("input[name='email']").closest('.regform__outer').find('.regform__inp-error').text('');
+        }
+
+        if (!post) {
+            $("input[name='post']").closest('.regform__inp').addClass('invalid');
+            $("input[name='post']").closest('.regform__outer').find('.regform__inp-error').text('Введите должность').css('color', 'red');
+        } else {
+            $("input[name='post']").closest('.regform__inp').removeClass('invalid');
+            $("input[name='post']").closest('.regform__outer').find('.regform__inp-error').text('');
+        }
+
+        if (!companyName || !companySite || !city) {
+            $(".company__block").css('border-color', 'red');
+            $(".company__block").find('.regform__inp-error').text('Заполните данные о  компании').css('color', 'red');
+        } else {
+            $(".company__block").css('border-color', '#b5a0a0');
+            $(".company__block").find('.regform__inp-error').text('');
+        }
+
+        if (!inputCode) {
+            $("input[name='code']").closest('.regform__inp').addClass('invalid');
+            $("input[name='code']").closest('.regform__outer').find('.regform__inp-error').text('Введите проверочный код').css('color', 'red');
+        } else {
+            $("input[name='code']").closest('.regform__inp').removeClass('invalid');
+            $("input[name='code']").closest('.regform__outer').find('.regform__inp-error').text('');
+        }
+
+        if (!name ||
+            !lastname ||
+            !email ||
+            !post ||
+            !companyName ||
+            !city ||
+            !companySite ||
+            !inputCode
+        ) {
+            if (inputCode) {
+                $("html, body").animate({
+                    scrollTop: $(".reguser").offset().top
+                });
+
+            } else {
+                $("html, body").animate({
+                    scrollTop: $("input[name='code']").closest('.regform__outer').offset().top
+                });
+            }
+            return;
+
+        }
+
+        console.log(degree)
+        console.log(group)
+        console.log(type)
+        console.log(sphere)
+
+        if (promo) {
+            data = 'sid=' + sid
+                + '&hasPromo=1&promo=' + promo
+                + '&code=' + inputCode
+                + '&name=' + name
+                + '&lastname=' + lastname
+                + '&email=' + email
+                + '&post=' + post
+                + '&company=' + companyName
+                + '&company_city=' + city
+                + '&company_phone=' + companyPhone
+                + '&company_site=' + companySite
+                + '&company_activity=' + companyActivity
+                + '&company_b24_id=' + companyB24Id
+                + '&user_field_changed=' + userFieldsChanged
+                + '&form_register=' + true
+                + '&company_changed=' + companyChanged
+                + '&degree=' + degree
+                + '&group=' + group
+                + '&type=' + type
+                + '&sphere=' + sphere
+            ;
+        } else {
+            data = 'sid=' + sid
+                + '&hasPromo=0'
+                + '&code=' + inputCode
+                + '&name=' + name
+                + '&lastname=' + lastname
+                + '&email=' + email
+                + '&post=' + post
+                + '&company=' + companyName
+                + '&company_city=' + city
+                + '&company_phone=' + companyPhone
+                + '&company_site=' + companySite
+                + '&company_activity=' + companyActivity
+                + '&company_b24_id=' + companyB24Id
+                + '&user_field_changed=' + userFieldsChanged
+                + '&form_register=' + true
+                + '&company_changed=' + companyChanged
+                + '&degree=' + degree
+                + '&group=' + group
+                + '&type=' + type
+                + '&sphere=' + sphere
+            ;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "index.php?route=register/form/register",
+            dataType: "json",
+            data: data,
+            beforeSend: function (json) {
+                $('.reg__load').fadeIn();
+            },
+            complete: function (json) {
+                $('.reg__load').fadeOut();
+            },
+            success: function (json) {
+                yaGoal('register-success')
+
+                if (json['reload']) {
+                    location.reload();
+                }
+
+                console.log(json)
+
+                if (json['code_error'] ) {
+                    $("input[name='code']").closest('.regform__outer').find('.regform__inp-error').text('Неверный проверочный код').css('color', 'red')
+                } else if (code_mess.is(':visible')) {
+                    $("input[name='code']").closest('.regform__outer').find('.regform__inp-error').text('');
+                }
+
+                if (json['promo_error'] ) {
+                    $("input[name='promo']").closest('.regform__outer').find('.regform__inp-error').text('Введите промокод').css('color', 'red')
+                } else if (promo_mess.is(':visible')) {
+                    $("input[name='promo']").closest('.regform__outer').find('.regform__inp-error').text('');
+
+                }
+
+                if (json['template']) {
+                    $('.regdata').html(json['template']);
+
+                }
+            },
+            error: function (json) {
+                console.log('register', json);
+            }
+        });
+    })
 
 });

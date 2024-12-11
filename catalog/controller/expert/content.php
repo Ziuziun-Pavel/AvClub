@@ -82,19 +82,19 @@ class ControllerExpertContent extends Controller {
 		}
 
 		/* bio */
-		$data['bio'] = array();
-		$bio_keys = array(
-			'field_useful' => 'В чем могу быть полезен',
-			'field_regalia' => 'Заслуги и регалии',
-		);
-		foreach($bio_keys as $key=>$title) {
-			if(!empty($expert_info[$key])) {
-				$data['bio'][] = array(
-					'title'	=> $title,
-					'text'	=> $expert_info[$key]
-				);
-			}
-		}
+//		$data['bio'] = array();
+//		$bio_keys = array(
+//			'field_useful' => 'В чем могу быть полезен',
+//			'field_regalia' => 'Заслуги и регалии',
+//		);
+//		foreach($bio_keys as $key=>$title) {
+//			if(!empty($expert_info[$key])) {
+//				$data['bio'][] = array(
+//					'title'	=> $title,
+//					'text'	=> $expert_info[$key]
+//				);
+//			}
+//		}
 
 		$data['continue'] = $this->url->link('common/home');
 

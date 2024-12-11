@@ -1,7 +1,7 @@
 <?php
 class ModelThemesetCompanies extends Model {
 
-	private $b24_hook = 'https://avclub.bitrix24.ru/rest/669/2yt2mpuav23aqllx/';
+	private $b24_hook = 'https://avclub.bitrix24.ru/rest/677/hgv4fvnz8xdrqk2k/';
 
 
 	public function getCompanyInfo($company_id = 0, $show_info = false, $options = array()) {
@@ -11,7 +11,11 @@ class ModelThemesetCompanies extends Model {
 
 		$message = "\n\n\n\n\n";
 
-		$bitrixWebHook = $this->b24_hook;
+		//$bitrixWebHook = $this->b24_hook;
+
+        $client_id = $this->config->get('themeset_bitrix_company_client_id');
+        $client_secret = $this->config->get('themeset_bitrix_company_client_secret');
+
 		require_once(DIR_SYSTEM . 'library/crest/crest.php');
 
 		/*$result = CRest::call(
@@ -104,8 +108,6 @@ class ModelThemesetCompanies extends Model {
 		if(!empty($info['UF_CRM_1670916428']['downloadUrl'])) {
 			$logo = $this->saveCompanyLogo($info['UF_CRM_1670916428']['downloadUrl'], $company_id);
 		}
-
-
 		$social = array();
 		if(!empty($info['IM'])) {
 			foreach($info['IM'] as $soc_item) {
@@ -500,13 +502,15 @@ class ModelThemesetCompanies extends Model {
 
     }
 
-
 	private function getCompanyFromB24($company_id) {
 		$company_data = array();
 		$counter = 0;
 
-		$bitrixWebHook = $this->b24_hook;
-		require_once(DIR_SYSTEM . 'library/crest/crest.php');
+		//$bitrixWebHook = $this->b24_hook;
+        $client_id = $this->config->get('themeset_bitrix_company_client_id');
+        $client_secret = $this->config->get('themeset_bitrix_company_client_secret');
+
+        require_once(DIR_SYSTEM . 'library/crest/crest.php');
 
 		while(empty($company_data) && $counter < 3) {
 
@@ -562,7 +566,6 @@ class ModelThemesetCompanies extends Model {
 		return $tags;
 	}
 
-
 	private function getListElements($list_id = 0, $filter_data = array()) {
 
 		$tags = array();
@@ -589,75 +592,122 @@ class ModelThemesetCompanies extends Model {
 		return $tags;
 	}
 
-
-	private function saveCompanyLogo($link = '', $company_id = 0) {
-		$refresh_token = $this->config->get('themeset_bitrix_company_refresh_token');
-		$client_id = $this->config->get('themeset_bitrix_company_client_id');
-		$client_secret = $this->config->get('themeset_bitrix_company_client_secret');
+    private function saveCompanyLogo($link = '', $company_id = 0) {
 		$b24_url = $this->config->get('themeset_bitrix_url');
+        $url = 'https://' . $b24_url . $link;
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_POST, 0);
+        curl_setopt($ch,CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $image = curl_exec($ch);
+        curl_close($ch);
 
-		if(!$refresh_token || !$client_id || !$client_secret || !$b24_url) {return false;}
+        $image_type = exif_imagetype($url);
+        $extension = image_type_to_extension($image_type);
 
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_POST, false);
-		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-		curl_setopt($ch, CURLOPT_URL,'https://oauth.bitrix.info/oauth/token/?grant_type=refresh_token&client_id='.$client_id.'&client_secret='.$client_secret.'&refresh_token=' . $refresh_token);
-		$result = json_decode(curl_exec($ch), true);
+        $image_path = 'catalog/companies/' . $company_id . $extension;
 
-		curl_close($ch);
+        $savefile = fopen(DIR_IMAGE . $image_path, 'w');
+        fwrite($savefile, $image);
+        fclose($savefile);
 
-		if(empty($result['access_token']) || empty($result['refresh_token'])) {return false;}
+        /* REMOVE OLD IMAGE */
+        $dir = DIR_IMAGE . 'cache/catalog/companies/';
+        $files = array();
+        $path = array($dir . $company_id . '-*');
+        while (count($path) != 0) {
+            $next = array_shift($path);
 
-		$access_token = $result['access_token'];
-		$refresh_token = $result['refresh_token'];
-		
-		$this->load->model('themeset/themeset');
-		$this->model_themeset_themeset->editSetting('themeset', array('themeset_bitrix_company_refresh_token'=>$refresh_token));
+            foreach (glob($next) as $file) {
+                if (is_dir($file)) {
+                    $path[] = $file . '/*';
+                }
+                $files[] = $file;
+            }
+        }
+        rsort($files);
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
+        /* # REMOVE OLD IMAGE */
 
-		$url = 'https://' . $b24_url . $link . '&auth=' . $access_token;
+        return $image_path;
 
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_POST, 0);
-		curl_setopt($ch,CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		$image = curl_exec($ch);
-		curl_close($ch);
+    }
 
-		$image_type = exif_imagetype($url);
-		$extension = image_type_to_extension($image_type);
 
-		$image_path = 'catalog/companies/' . $company_id . $extension;
-
-		$savefile = fopen(DIR_IMAGE . $image_path, 'w');
-		fwrite($savefile, $image);
-		fclose($savefile);
-
-		/* REMOVE OLD IMAGE */
-		$dir = DIR_IMAGE . 'cache/catalog/companies/';
-		$files = array();
-		$path = array($dir . $company_id . '-*');
-		while (count($path) != 0) {
-			$next = array_shift($path);
-
-			foreach (glob($next) as $file) {
-				if (is_dir($file)) {
-					$path[] = $file . '/*';
-				}
-				$files[] = $file;
-			}
-		}
-		rsort($files);
-		foreach ($files as $file) {
-			if (is_file($file)) {
-				unlink($file);
-			}
-		}
-		/* # REMOVE OLD IMAGE */
-
-		return $image_path;
-
-	}
+//	private function saveCompanyLogo($link = '', $company_id = 0) {
+//		$refresh_token = $this->config->get('themeset_bitrix_company_refresh_token');
+//		$client_id = $this->config->get('themeset_bitrix_company_client_id');
+//		$client_secret = $this->config->get('themeset_bitrix_company_client_secret');
+//		$b24_url = $this->config->get('themeset_bitrix_url');
+//
+//		if(!$refresh_token || !$client_id || !$client_secret || !$b24_url) {return false;}
+//
+//		$ch = curl_init();
+//		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+//		curl_setopt($ch, CURLOPT_POST, false);
+//		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+//		curl_setopt($ch, CURLOPT_URL,'https://oauth.bitrix.info/oauth/token/?grant_type=refresh_token&client_id='.$client_id.'&client_secret='.$client_secret.'&refresh_token=' . $refresh_token);
+//		$result = json_decode(curl_exec($ch), true);
+//
+//		curl_close($ch);
+//        var_dump($result);
+//
+//		if(empty($result['access_token']) || empty($result['refresh_token'])) {return false;}
+//
+//		$access_token = $result['access_token'];
+//		$refresh_token = $result['refresh_token'];
+//
+//		$this->load->model('themeset/themeset');
+//		$this->model_themeset_themeset->editSetting('themeset', array('themeset_bitrix_company_refresh_token'=>$refresh_token));
+//
+//		$url = 'https://' . $b24_url . $link . '&auth=' . $access_token;
+//var_dump($url);
+//die();
+//		$ch = curl_init();
+//		curl_setopt($ch, CURLOPT_POST, 0);
+//		curl_setopt($ch,CURLOPT_URL, $url);
+//		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+//		$image = curl_exec($ch);
+//		curl_close($ch);
+//
+//		$image_type = exif_imagetype($url);
+//		$extension = image_type_to_extension($image_type);
+//
+//		$image_path = 'catalog/companies/' . $company_id . $extension;
+//
+//		$savefile = fopen(DIR_IMAGE . $image_path, 'w');
+//		fwrite($savefile, $image);
+//		fclose($savefile);
+//
+//		/* REMOVE OLD IMAGE */
+//		$dir = DIR_IMAGE . 'cache/catalog/companies/';
+//		$files = array();
+//		$path = array($dir . $company_id . '-*');
+//		while (count($path) != 0) {
+//			$next = array_shift($path);
+//
+//			foreach (glob($next) as $file) {
+//				if (is_dir($file)) {
+//					$path[] = $file . '/*';
+//				}
+//				$files[] = $file;
+//			}
+//		}
+//		rsort($files);
+//		foreach ($files as $file) {
+//			if (is_file($file)) {
+//				unlink($file);
+//			}
+//		}
+//		/* # REMOVE OLD IMAGE */
+//
+//		return $image_path;
+//
+//	}
 
 
 	private function alert($data = array()) {
@@ -692,7 +742,5 @@ class ModelThemesetCompanies extends Model {
 		$mail->setText($message);
 		$mail->send();
 	}
-
-
 
 }

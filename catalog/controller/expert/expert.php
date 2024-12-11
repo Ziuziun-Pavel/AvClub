@@ -20,7 +20,6 @@ class ControllerExpertExpert extends Controller
         $data['edit_success'] = !empty($this->session->data['edit_success']) ? $this->session->data['edit_success'] : false;
         unset($this->session->data['edit_success']);
 
-
         if (isset($this->request->get['expert_id'])) {
             $expert_id = (int)$this->request->get['expert_id'];
         } else if ($this->request->get['route'] === 'register/account') {
@@ -49,13 +48,16 @@ class ControllerExpertExpert extends Controller
 
         $status_logged = $this->visitor->isLogged() && $expert_id == $this->visitor->getId() ? true : false;
 
+
         if ($expert_info && (($status_logged && $this->request->get['route'] === 'register/account') || !empty($expert_info['expert']))) {
+            $is_modified = $this->model_visitor_expert->isModified($expert_info['b24id']) === "1";
 
             $data['registers'] = array();
             $data['logged'] = $status_logged;
             $data['event_list'] = $status_logged;
             $data['alternate_count'] = $expert_info['alternate_count'];
             $data['is_expert'] = $is_expert;
+            $data['is_modified'] = $is_modified;
 
             $data['edit_info'] = $status_logged ? $this->url->link('register/edit') : '';
             $data['publication'] = $status_logged ? $this->url->link('register/publication') : '';
@@ -155,10 +157,12 @@ class ControllerExpertExpert extends Controller
             } else {
                 $show_tab = '';
             }
+            $data['show_tab'] = $show_tab;
 
             $tabs = $this->model_visitor_expert->getTabsExpert($expert_id);
 
             if ($tabs) {
+                $data['show_tab'] = 'speeches';
 
                 if ($show_tab) {
                     foreach ($tabs as $key => $tab) {
@@ -291,6 +295,7 @@ class ControllerExpertExpert extends Controller
                     $active_tab = false;
                 }
             }
+
 
             // BANNER
             $data['banner'] = array();
@@ -448,38 +453,44 @@ class ControllerExpertExpert extends Controller
                 $time = strtotime($event_item['date']);
 
                 $statuses = array();
+                $active = false;
 
-                $statuses[] = array(
-                    'text' => 'Заявка на рассмотрении',
-                    'active' => true
-                );
+                if ($event_item['status'] === 'invited') {
+                    $statuses[] = array(
+                        'text' => 'Выслано приглашение',
+                        'active' => false,
+                        'preactive' => false
+                    );
+                } else {
+                    $statuses[] = array(
+                        'text' => 'Заявка на рассмотрении',
+                        'active' => false,
+                        'preactive' => false
+                    );
+                }
 
                 if ($event_item['status'] === 'consideration') {
-                    $statuses[] = array('text' => 'Участие одобрено', 'active' => false);
+                    $statuses[] = array('text' => 'Участие одобрено', 'active' => false, 'preactive' => true);
                 }
 
                 if ($event_item['status'] === 'paid_participation') {
-                    $statuses[] = array('text' => 'Предложено платное участие', 'active' => false);
+                    $statuses[] = array('text' => 'Предложено платное участие', 'active' => false, 'preactive' => true);
                 }
 
                 if (in_array($event_item['status'], array('admitted', 'visited', 'noVisited'))) {
-                    $statuses[] = array('text' => 'Участие одобрено', 'active' => true);
+                    $statuses[] = array('text' => 'Участие одобрено', 'active' => true, 'preactive' => true);
                 }
 
                 if ($event_item['status'] === 'visited') {
-                    $statuses[] = array('text' => 'Успешный визит', 'active' => true);
+                    $statuses[] = array('text' => 'Успешный визит', 'active' => true, 'preactive' => true);
                 }
 
                 if ($event_item['status'] === 'noVisited') {
-                    $statuses[] = array('text' => 'Визит не состоялся', 'active' => true);
+                    $statuses[] = array('text' => 'Визит не состоялся', 'active' => true, 'preactive' => true);
                 }
 
-                foreach ($statuses as $key => &$status) {
-                    if ($key == count($statuses) - 2 && !$statuses[count($statuses) - 1]['active']) {
-                        $status['preactive'] = true;
-                    } else {
-                        $status['preactive'] = false;
-                    }
+                if ($event_item['status'] === 'noVisited') {
+                    $statuses[] = array('text' => 'Визит не состоялся', 'active' => true, 'preactive' => true);
                 }
 
                 $addresses = array();
@@ -506,12 +517,27 @@ class ControllerExpertExpert extends Controller
                     case 'webinar':
                         $event_item_info['date'] .= ' ' . date('H:i', $time);
                         $event_item_info['url'] = $event_item['url'];
-                        $event_item_info['type_text'] = $time < $now ? 'Прошедший вебинар' : 'Вебинар';
+                        $event_item_info['type_text'] = $time < $now ? 'Прошедший онлайн-событие' : 'Онлайн-событие';
                         break;
 
                     case 'forum':
+                        $date_stop = $event_item['date_end'] ? strtotime($event_item['date_end']) : $time;
+                        $date_month = $month_list[(int)date('m', $time)];
+
+                        $date_stop_month = $month_list[(int)date('m', $date_stop)];
+
                         $event_item_info['link'] = $event_item['ticket_public_url'];
-                        $event_item_info['sum'] = $event_item['sum'];
+
+                        $event_item_info['date'] = date('d', $time);
+
+                        $event_item_info['date_stop'] = date('d', $date_stop);
+
+                        $event_item_info['date_month'] = $date_month;
+                        $event_item_info['date_year'] = date('Y', $time);
+                        $event_item_info['date_stop_month'] = $date_stop_month;
+
+                        $event_item_info['ticket_public_url'] = $event_item['ticket_public_url'];
+                        $event_item_info['qr'] = $event_item['qr'];
                         $event_item_info['location'] = $event_item['location'];
                         $event_item_info['address'] = $event_item['address'];
                         $event_item_info['addresses'] = $addresses;
@@ -524,8 +550,7 @@ class ControllerExpertExpert extends Controller
 
             }
 
-            array_multisort($sort_forum, SORT_DESC, $data['event_list']);
-
+            array_multisort($sort_forum, SORT_ASC, $data['event_list']);
             $return['template'] = $this->load->view('expert/expert_events', $data);
 
         } else {
@@ -838,7 +863,7 @@ class ControllerExpertExpert extends Controller
         $this->response->setOutput(json_encode($return));
     }
 
-    public function getVotes()
+    public function getActiveVotes()
     {
         $return = array();
         $data = array();
@@ -850,9 +875,131 @@ class ControllerExpertExpert extends Controller
 
         if (isset($this->request->get['expert_id'])) {
             $expert_id = (int)$this->request->get['expert_id'];
+        } else if ($this->request->get['route'] === 'register/account') {
+            $expert_id = $this->visitor->getId();
         } else {
             $expert_id = 0;
         }
+
+        $data['expert_id'] = $expert_id;
+
+        $last_id = $this->request->get['last_id'];
+
+        $expert_info = $this->model_visitor_expert->getExpert($expert_id, 0, false);
+
+        if ($expert_info && $this->visitor->getId() && $this->visitor->getId() == $expert_id) {
+
+            $month_list = array(
+                1 => 'января',
+                2 => 'февраля',
+                3 => 'марта',
+                4 => 'апреля',
+                5 => 'мая',
+                6 => 'июня',
+                7 => 'июля',
+                8 => 'августа',
+                9 => 'сентября',
+                10 => 'октября',
+                11 => 'ноября',
+                12 => 'декабря'
+            );
+
+            $now = strtotime("now");
+
+            $vote_list = [];
+
+            $vote_list = $this->model_visitor_expert->getVotes($expert_info['b24id'], $last_id);
+
+            $sort_vote_list = array();
+            $sort_quiz_list = array();
+
+            foreach ($vote_list['list'] as $vote_item) {
+                if ($vote_item['status'] !== 'wait') {
+                    continue;
+                }
+
+                $time = strtotime($vote_item['date_end']);
+
+                $statuses = array();
+
+                $statuses[] = array(
+                    'text' => 'Ожидание голосования',
+                    'active' => false,
+                    'preactive' => false
+                );
+
+                if ($vote_item['status'] === 'success') {
+                    $statuses[] = array('text' => 'Прошёл опрос', 'active' => true, 'preactive' => true);
+                }
+
+                if ($vote_item['status'] === 'fail') {
+                    $statuses[] = array('text' => 'Не прошёл опрос', 'active' => true, 'preactive' => true);
+                }
+
+                $vote_item_info = array(
+                    'name' => $vote_item['name'],
+                    'status' => $vote_item['status'],
+                    'link' => $vote_item['link'],
+                    'landing_url' => $vote_item['landing_url'] ?? '',
+                    'statuses' => $statuses,
+                    'date_end' => date('d', $time) . '&nbsp;' . $month_list[(int)date('m', $time)] . '&nbsp;' . date('Y', $time),
+                    'answers' => json_decode($vote_item['answers'], true)
+                );
+
+                $data['vote_list'][] = $vote_item_info;
+
+                $sort_vote_list[] = $time;
+
+            }
+
+            foreach ($vote_list['quiz'] as $quiz_item) {
+                $time = strtotime($quiz_item['date_end']);
+
+                $quiz_item_info = array(
+                    'id' => $quiz_item['id'],
+                    'link' => $this->url->link('voting/voting', 'quiz_id=' . $quiz_item['id']),
+                    'name' => $quiz_item['name'],
+                    'type' => $quiz_item['type'],
+                    'date_end' => date('d', $time) . '&nbsp;' . $month_list[(int)date('m', $time)] . '&nbsp;' . date('Y', $time)
+                );
+
+                $data['quiz_list'][] = $quiz_item_info;
+
+                $sort_quiz_list[] = $time;
+            }
+
+            array_multisort($sort_vote_list, SORT_DESC, $data['vote_list']);
+            array_multisort($sort_quiz_list, SORT_DESC, $data['quiz_list']);
+
+            $return['template'] = $this->load->view('expert/expert_votes', $data);
+
+        } else {
+            $return['error'] = true;
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($return));
+    }
+
+    public function getFinishedVotes()
+    {
+        $return = array();
+        $data = array();
+
+        session_write_close();
+
+        $this->load->model('register/register');
+        $this->load->model('visitor/expert');
+
+        if (isset($this->request->get['expert_id'])) {
+            $expert_id = (int)$this->request->get['expert_id'];
+        } else if ($this->request->get['route'] === 'register/account') {
+            $expert_id = $this->visitor->getId();
+        } else {
+            $expert_id = 0;
+        }
+
+        $data['expert_id'] = $expert_id;
 
         $last_id = $this->request->get['last_id'];
 
@@ -884,21 +1031,26 @@ class ControllerExpertExpert extends Controller
             $sort_vote_list = array();
 
             foreach ($vote_list as $vote_item) {
+                if ($vote_item['status'] === 'wait') {
+                    continue;
+                }
+
                 $time = strtotime($vote_item['date_end']);
 
                 $statuses = array();
 
                 $statuses[] = array(
                     'text' => 'Ожидание голосования',
-                    'active' => true
+                    'active' => false,
+                    'preactive' => false
                 );
 
                 if ($vote_item['status'] === 'success') {
-                    $statuses[] = array('text' => 'Прошёл опрос', 'active' => true);
+                    $statuses[] = array('text' => 'Прошёл опрос', 'active' => true, 'preactive' => true);
                 }
 
                 if ($vote_item['status'] === 'fail') {
-                    $statuses[] = array('text' => 'Не прошёл опрос', 'active' => true);
+                    $statuses[] = array('text' => 'Не прошёл опрос', 'active' => true, 'preactive' => true);
                 }
 
                 foreach ($statuses as $key => &$status) {
@@ -913,10 +1065,12 @@ class ControllerExpertExpert extends Controller
                     'name' => $vote_item['name'],
                     'status' => $vote_item['status'],
                     'link' => $vote_item['link'],
+                    'landing_url' => $vote_item['landing_url'] ?? '',
                     'statuses' => $statuses,
                     'date_end' => date('d', $time) . '&nbsp;' . $month_list[(int)date('m', $time)] . '&nbsp;' . date('Y', $time),
                     'answers' => json_decode($vote_item['answers'], true)
                 );
+
 
                 $data['vote_list'][] = $vote_item_info;
 
@@ -927,6 +1081,386 @@ class ControllerExpertExpert extends Controller
             array_multisort($sort_vote_list, SORT_DESC, $data['vote_list']);
 
             $return['template'] = $this->load->view('expert/expert_votes', $data);
+
+        } else {
+            $return['error'] = true;
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($return));
+    }
+
+    public function getServices()
+    {
+        $return = array();
+        $data = array();
+
+        session_write_close();
+
+        $this->load->model('register/register');
+        $this->load->model('visitor/expert');
+
+        if (isset($this->request->get['expert_id'])) {
+            $expert_id = (int)$this->request->get['expert_id'];
+        } else if ($this->request->get['route'] === 'register/account') {
+            $expert_id = $this->visitor->getId();
+        } else {
+            $expert_id = 0;
+        }
+
+        $data['expert_id'] = $expert_id;
+
+        $type = $this->request->get['type'];
+
+        $expert_info = $this->model_visitor_expert->getExpert($expert_id, 0, false);
+
+        if ($expert_info && $this->visitor->getId() && $this->visitor->getId() == $expert_id) {
+
+            $month_list = array(
+                1 => 'января',
+                2 => 'февраля',
+                3 => 'марта',
+                4 => 'апреля',
+                5 => 'мая',
+                6 => 'июня',
+                7 => 'июля',
+                8 => 'августа',
+                9 => 'сентября',
+                10 => 'октября',
+                11 => 'ноября',
+                12 => 'декабря'
+            );
+
+            $now = strtotime("now");
+
+            $services_list = [];
+
+            $services_list = $this->model_visitor_expert->getServices($expert_info['b24id'], $type)['list'];
+
+            $sort_services_list = array();
+
+            foreach ($services_list as $service_item) {
+                $time = strtotime($service_item['date']);
+
+                $service_item_info = array(
+                    'title' => $service_item['title'],
+                    'link' => $service_item['link'],
+                    'date' => date('d', $time) . '&nbsp;' . $month_list[(int)date('m', $time)] . '&nbsp;' . date('Y', $time)
+                );
+
+                $data['services_list'][] = $service_item_info;
+
+                $sort_services_list[] = $time;
+
+            }
+
+            array_multisort($sort_services_list, SORT_DESC, $data['services_list']);
+
+            $return['template'] = $this->load->view('expert/expert_services', $data);
+
+        } else {
+            $return['error'] = true;
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($return));
+    }
+
+    public function getApps($type = 'forum')
+    {
+        $return = array();
+        $data = array();
+
+        session_write_close();
+
+        $this->load->model('register/register');
+        $this->load->model('visitor/expert');
+
+        if (isset($this->request->get['expert_id'])) {
+            $expert_id = (int)$this->request->get['expert_id'];
+        } else if ($this->request->get['route'] === 'register/account') {
+            $expert_id = $this->visitor->getId();
+        } else {
+            $expert_id = 0;
+        }
+
+        $data['expert_id'] = $expert_id;
+
+        $last_id = $this->request->get['last_id'];
+        $type = $this->request->get['type'];
+
+        $expert_info = $this->model_visitor_expert->getExpert($expert_id, 0, false);
+
+        if ($expert_info && $this->visitor->getId() && $this->visitor->getId() == $expert_id) {
+
+            $month_list = array(
+                1 => 'января',
+                2 => 'февраля',
+                3 => 'марта',
+                4 => 'апреля',
+                5 => 'мая',
+                6 => 'июня',
+                7 => 'июля',
+                8 => 'августа',
+                9 => 'сентября',
+                10 => 'октября',
+                11 => 'ноября',
+                12 => 'декабря'
+            );
+
+            $now = strtotime("now");
+
+            $app_list = [];
+
+            $app_list = $this->model_visitor_expert->getApps($expert_info['b24id'], $type, $last_id)['list'];
+
+            $sort_app_list = array();
+
+            foreach ($app_list as $app_item) {
+//                if ($app_item['status'] !== 'wait') {
+//                    continue;
+//                }
+
+                $time = strtotime($app_item['date']);
+
+                $statuses = array();
+
+                if ($app_item['status'] === 'wait') {
+                    $statuses[] = array('text' => 'Ожидание заполнения', 'active' => true, 'preactive' => true);
+
+                    $statuses[] = array('text' => 'Бриф заполнен', 'active' => false, 'preactive' => false);
+
+                    $statuses[] = array('text' => 'Мероприятие опубликовано', 'active' => false, 'preactive' => false);
+
+                    $statuses[] = array('text' => 'Обработка результатов', 'active' => false, 'preactive' => false);
+
+                    $statuses[] = array('text' => 'Работа над видео', 'active' => false, 'preactive' => false);
+                } else {
+                    $statuses[] = array(
+                        'text' => 'Ожидание заполнения',
+                        'active' => false,
+                        'preactive' => false
+                    );
+                }
+
+
+                if ($app_item['status'] === 'filled') {
+                    $statuses[] = array('text' => 'Бриф заполнен', 'active' => true, 'preactive' => true);
+
+                    $statuses[] = array('text' => 'Мероприятие опубликовано', 'active' => false, 'preactive' => false);
+
+                    $statuses[] = array('text' => 'Обработка результатов', 'active' => false, 'preactive' => false);
+
+                    $statuses[] = array('text' => 'Работа над видео', 'active' => false, 'preactive' => false);
+                }
+
+                if ($app_item['status'] === 'published') {
+                    $statuses[] = array('text' => 'Бриф заполнен', 'active' => false, 'preactive' => false);
+
+                    $statuses[] = array('text' => 'Мероприятие опубликовано', 'active' => true, 'preactive' => true);
+
+                    $statuses[] = array('text' => 'Обработка результатов', 'active' => false, 'preactive' => false);
+
+                    $statuses[] = array('text' => 'Работа над видео', 'active' => false, 'preactive' => false);
+                }
+
+                if ($app_item['status'] === 'processing') {
+                    $statuses[] = array('text' => 'Бриф заполнен', 'active' => false, 'preactive' => false);
+
+                    $statuses[] = array('text' => 'Мероприятие опубликовано', 'active' => false, 'preactive' => false);
+
+                    $statuses[] = array('text' => 'Обработка результатов', 'active' => true, 'preactive' => true);
+
+                    $statuses[] = array('text' => 'Работа над видео', 'active' => false, 'preactive' => false);
+                }
+
+                if ($app_item['status'] === 'video') {
+                    $statuses[] = array('text' => 'Бриф заполнен', 'active' => false, 'preactive' => false);
+
+                    $statuses[] = array('text' => 'Мероприятие опубликовано', 'active' => false, 'preactive' => false);
+
+                    $statuses[] = array('text' => 'Обработка результатов', 'active' => false, 'preactive' => false);
+
+                    $statuses[] = array('text' => 'Работа над видео', 'active' => true, 'preactive' => true);
+                }
+
+                $app_item_info = array(
+                    'title' => $app_item['title'],
+                    'date' => date('d', $time) . '&nbsp;' . $month_list[(int)date('m', $time)] . '&nbsp;' . date('Y', $time),
+                    'status' => $app_item['status'],
+                    'link_crm' => $app_item['link_crm'],
+                    'act_url' => $app_item['act_url'],
+                    'reports' => $app_item['reports'],
+                    'landing_url' => $app_item['landing_url'],
+                    'answers' => json_decode($app_item['answers'], true),
+                    'statuses' => $statuses
+                );
+
+                $data['app_list'][] = $app_item_info;
+
+                $sort_app_list[] = $time;
+
+            }
+
+            array_multisort($sort_app_list, SORT_DESC, $data['app_list']);
+
+            switch ($type) {
+                case 'webinar':
+                    $return['template'] = $this->load->view('expert/expert_apps_webinars', $data);
+                    break;
+                case 'pubs':
+                    $return['template'] = $this->load->view('expert/expert_apps_pubs', $data);
+                    break;
+                case 'ads':
+                    $return['template'] = $this->load->view('expert/expert_apps_ads', $data);
+                    break;
+                default:
+                    $return['template'] = $this->load->view('expert/expert_apps_forums', $data);
+                    break;
+            }
+
+        } else {
+            $return['error'] = true;
+        }
+
+        $this->response->addHeader('Content-Type: application/json');
+        $this->response->setOutput(json_encode($return));
+    }
+
+    public function getFinishedApps()
+    {
+        $return = array();
+        $data = array();
+        $years = [2024, 2023, 2022];
+
+        session_write_close();
+
+        $this->load->model('register/register');
+        $this->load->model('visitor/expert');
+
+        if (isset($this->request->get['expert_id'])) {
+            $expert_id = (int)$this->request->get['expert_id'];
+        } else if ($this->request->get['route'] === 'register/account') {
+            $expert_id = $this->visitor->getId();
+        } else {
+            $expert_id = 0;
+        }
+
+        $data['expert_id'] = $expert_id;
+
+        $last_id = $this->request->get['last_id'];
+        $type = $this->request->get['type'];
+        $year = isset($this->request->get['year']) ? $this->request->get['year'] : 2024;
+
+        $expert_info = $this->model_visitor_expert->getExpert($expert_id, 0, false);
+
+        if ($expert_info && $this->visitor->getId() && $this->visitor->getId() == $expert_id) {
+
+            $month_list = array(
+                1 => 'января',
+                2 => 'февраля',
+                3 => 'марта',
+                4 => 'апреля',
+                5 => 'мая',
+                6 => 'июня',
+                7 => 'июля',
+                8 => 'августа',
+                9 => 'сентября',
+                10 => 'октября',
+                11 => 'ноября',
+                12 => 'декабря'
+            );
+
+            $now = strtotime("now");
+
+            $app_list = [];
+
+            $app_list = $this->model_visitor_expert->getFinishedApps($expert_info['b24id'], $year , $last_id)['list'];
+
+            $sort_app_list = array();
+
+            /*
+             * статусы:
+             * - ждём заполнения
+             * (отображаем:
+             *      1)название(в названии прописываем формат "Онлайн-событие: формат(из сделки)"),
+             *      2)дата проведения,
+             *      3)кнопка "заполнить бриф")
+             * - бриф заполнен
+             * (отображаем:
+             *      1)название(в названии прописываем формат "Онлайн-событие: формат(из сделки)"),
+             *      2)дата проведения,
+             *      3)ответы заполненного брифа(по аналогии с голосованием(вопрос-ответ)) json
+             *      )
+             * - мероприятие опубликовано(кликабельная ссылка)
+             * (отображаем:
+             *      1)название(в названии прописываем формат "Онлайн-событие: формат(из сделки)"),
+             *      2)дата проведения,
+             *      3)ответы заполненного брифа(по аналогии с голосованием(вопрос-ответ))
+             *      4)ссылка на лендинг
+             *      )
+             * - обработка результатов(после завершения события)
+             * (отображаем:
+             *      1)название(в названии прописываем формат "Онлайн-событие: формат(из сделки)"),
+             *      2)дата проведения,
+             *      3)ссылка на акт
+             *      4)ответы заполненного брифа(по аналогии с голосованием(вопрос-ответ))
+             *      5)ссылка на лендинг
+             *      )
+             * - работа над видео
+             * (отображаем:
+             *      1)название(в названии прописываем формат "Онлайн-событие: формат(из сделки)"),
+             *      2)дата проведения,
+             *      3)ссылка на акт
+             *      4)ссылки на отчет(1-3)
+             *      5)ответы заполненного брифа(по аналогии с голосованием(вопрос-ответ))
+             *      6)ссылка на лендинг
+             *      )
+             */
+
+            foreach ($app_list as $app_item) {
+                $time = strtotime($app_item['date']);
+
+                $statuses = [];
+
+                if ($app_item['status'] === 'finish') {
+                    $statuses[] = array('text' => 'Ожидание заполнения', 'active' => false, 'preactive' => false);
+
+                    $statuses[] = array('text' => 'Бриф заполнен', 'active' => false, 'preactive' => false);
+
+                    $statuses[] = array('text' => 'Мероприятие опубликовано', 'active' => false, 'preactive' => false);
+
+                    $statuses[] = array('text' => 'Обработка результатов', 'active' => false, 'preactive' => false);
+
+                    $statuses[] = array('text' => 'Работа над видео', 'active' => false, 'preactive' => false);
+
+                    $statuses[] = array('text' => 'Завершён', 'active' => true, 'preactive' => true);
+                }
+
+                $app_item_info = array(
+                    'title' => $app_item['title'],
+                    'date' => date('d', $time) . '&nbsp;' . $month_list[(int)date('m', $time)] . '&nbsp;' . date('Y', $time),
+                    'status' => $app_item['status'],
+                    'year' => $year,
+                    'link_crm' => $app_item['link_crm'],
+                    'video' => $app_item['video'],
+                    'act_url' => $app_item['act_url'],
+                    'reports' => $app_item['reports'],
+                    'landing_url' => $app_item['landing_url'],
+                    'answers' => json_decode($app_item['answers'], true),
+                    'statuses' => $statuses
+                );
+
+                $data['app_list'][] = $app_item_info;
+
+                $sort_app_list[] = $time;
+
+            }
+
+            array_multisort($sort_app_list, SORT_DESC, $data['app_list']);
+            $data['years'] = array_unique($years);
+
+            $return['template'] = $this->load->view('expert/expert_apps_finished', $data);
 
         } else {
             $return['error'] = true;

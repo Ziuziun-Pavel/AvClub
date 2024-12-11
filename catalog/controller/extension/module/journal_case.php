@@ -4,6 +4,7 @@ class ControllerExtensionModuleJournalCase extends Controller {
 		
 		$this->load->model('journal/journal');
 		$this->load->model('themeset/themeset');
+        $this->load->model('company/company');
 
 		$data['heading_title'] = $this->config->get('journal_case_title');
 
@@ -32,10 +33,13 @@ class ControllerExtensionModuleJournalCase extends Controller {
 			}
 
 			$case = $this->model_journal_journal->getCase($result['journal_id']);
+            $company_info = $this->model_company_company->getCompany($case['company_id']);
 
 			$data['journals'][] = array(
 				'journal_id' 	 	=> $result['journal_id'],
 				'type' 	 				=> $result['type'],
+                'company_id' => $company_info['company_id'],
+                'company_title' => $company_info['title'],
 				'case' 	 				=> $case,
 				'thumb'     	  => $image,
 				'title'       	=> $result['title'],

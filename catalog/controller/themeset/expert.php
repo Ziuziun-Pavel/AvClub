@@ -1,7 +1,7 @@
 <?php
 class ControllerThemesetExpert extends Controller {
 
-	private $b24_hook = 'https://avclub.bitrix24.ru/rest/669/2yt2mpuav23aqllx/';
+	private $b24_hook = 'https://avclub.bitrix24.ru/rest/677/hgv4fvnz8xdrqk2k/';
 
 
 	public function index() {
@@ -67,6 +67,43 @@ class ControllerThemesetExpert extends Controller {
 		foreach($result['result'] as $contact) {
 			$link = $this->url->link('themeset/expert/getContactById', 'contact_id=' . $contact['ID']);
 			echo '<br><a href="' . $link . '">' . $link . '<a>';
+		}
+
+		echo '<pre>';
+		print_r($result);
+		echo '</pre>';
+
+	}
+
+	public function updateContacts() {
+
+		$bitrixWebHook = $this->b24_hook;
+
+		require_once(DIR_SYSTEM . 'library/crest/crest.php');
+
+		$result = CRest::call(
+			'crm.contact.list',
+			[
+				"order" 	=> array(
+					"DATE_CREATE"=>"ASC"
+				),
+				"filter"		=> ["UF_CRM_1676312951" => 1],
+				"select"	=> array('ID', 'NAME', 'LAST_NAME', 'TYPE_ID', 'SOURCE_ID'),
+				"limit" => 10,
+				"start"	=> !empty($this->request->get['start']) ? $this->request->get['start'] : 0
+			]
+		);
+
+        $this->load->model('themeset/expert');
+
+        $show_info = isset($this->request->get['show_info']) && $this->request->get['show_info'] == 0 ? false : true;
+
+        $options = array(
+            'show_result' => !empty($this->request->get['show_result']) ? true : false
+        );
+
+		foreach($result['result'] as $contact) {
+            $this->model_themeset_expert->getContactInfo($contact['ID'], $show_info, false, $options);
 		}
 
 		echo '<pre>';

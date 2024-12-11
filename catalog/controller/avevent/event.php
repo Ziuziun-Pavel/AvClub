@@ -247,10 +247,31 @@ class ControllerAveventEvent extends Controller {
 
 				switch($key) {
 					case 'video':
-					$data['video'] = array(
-						'href'	=> $event_info['video'],
-						'image'	=> $this->model_themeset_themeset->resize_crop($event_info['video_image'])
-					);
+
+                    if (strpos($event_info['video'], 'youtube') !== false || strpos($event_info['video'], 'youtu.be') !== false) {
+                        $data['video'] = array(
+                            'href'	=> $event_info['video'],
+                            'image'	=> $this->model_themeset_themeset->resize_crop($event_info['video_image'])
+                        );
+                    } else {
+                        if (preg_match('/video-(\d+)_(\d+)/', $event_info['video'], $matches)) {
+                            $oid = '-' . $matches[1];
+                            $id = $matches[2];
+
+                            $newVideoUrl = "https://vk.com/video_ext.php?oid={$oid}&id={$id}&hd=2&autoplay=0";
+
+                            $data['video'] = array(
+                                'href'	=> $newVideoUrl,
+                                'image'	=> $this->model_themeset_themeset->resize_crop($event_info['video_image'])
+                            );
+                        } else {
+                            $data['video'] = array(
+                                'href'	=> $event_info['video'],
+                                'image'	=> $this->model_themeset_themeset->resize_crop($event_info['video_image'])
+                            );
+                        }
+                    }
+
 					break;
 
 					case 'brand':
@@ -260,13 +281,15 @@ class ControllerAveventEvent extends Controller {
 					if($brand_list) {
 						$sort_brand = array();
 						foreach($brand_list as $brand) {
-							$data['brand_list'][] = array(
-								'company_id'	=> $brand['company_id'],
-								'title'				=> $brand['title'],
-								'image'				=> $this->model_tool_image->resize($brand['image'], 214, 100),
-								'href'				=> !empty($brand['status']) ? $this->url->link('company/info', 'company_id=' . $brand['company_id']) : '',
-							);
-							$sort_brand[] = $brand['title'];
+                            if ($brand['image']) {
+                                $data['brand_list'][] = array(
+                                    'company_id'	=> $brand['company_id'],
+                                    'title'				=> $brand['title'],
+                                    'image'				=> $this->model_tool_image->resize($brand['image'], 214, 100),
+                                    'href'				=> !empty($brand['status']) ? $this->url->link('company/info', 'company_id=' . $brand['company_id']) : '',
+                                );
+                                $sort_brand[] = $brand['title'];
+                            }
 						}
 						array_multisort($sort_brand, SORT_ASC, $data['brand_list']);
 					}
